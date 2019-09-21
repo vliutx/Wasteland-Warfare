@@ -5,8 +5,8 @@ import Config from './config/config.js';
 class Game extends Phaser.Game {
   constructor () {
     super(Config);
-    this.scene.add('Boot', BootScene);
-    this.scene.start('Boot');
+    this.scene.add('GameScene', GameScene);
+    this.scene.start('GameScene');
   }
 }
 
