@@ -1,8 +1,10 @@
 /*global Phaser*/
 export default class GameScene extends Phaser.Scene {
+
   constructor () {
     super('GameScene');
   }
+
 
   init (data) {
     // Initialization code goes here
@@ -19,6 +21,8 @@ export default class GameScene extends Phaser.Scene {
     this.centerY = this.cameras.main.height / 2;
 
     this.ENEMY_SPEED = 1/10000;
+    this.path;
+    this.graphics;  
   }
   
 
@@ -26,91 +30,235 @@ export default class GameScene extends Phaser.Scene {
   //  we need to create a simple path element
   create (data) {
     // this graphics element is for visualization only
-    var graphics = this.add.graphics();
+
+
+    // this.map =      [[ 0,-1, 0, 0, 0, 0, 0, 0, 0, 0],
+    //                 [ 0,-1, 0, 0, 0, 0, 0, 0, 0, 0],
+    //                 [ 0,-1,-1,-1,-1,-1,-1,-1, 0, 0],
+    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
+    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
+    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
+    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
+    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0]];
+    
+
+    this.graphics = this.add.graphics();
+    // draw gridlines
+    this.drawGrid(this.graphics);
   
+  //PATH FOR EXAMPLE
+    //  The this.path for our enemies
+    //  parameters are at the start x and y of our this.path
+    // this.path = this.add.path(96, -32);
+    // this.path.lineTo(96, 164);
+    // this.path.lineTo(480, 164);
+    // this.path.lineTo(480, 644);
 
-    //  The path for our enemies
-    //  parameters are at the start x and y of our path
-    var path = this.add.path(96, -32); // CHECK FOR CONFLICTS WITH SIZE OF GAME SCREEN
-    path.lineTo(96,200); //add lines for enemies to follow 
-    path.lineTo(480, 200);
-    path.lineTo(480, 830);
+  //NEW PATH FOR GAME //
+    this.path = this.add.path(100, 0); // CHECK FOR CONFLICTS WITH SIZE OF GAME SCREEN
+    this.path.lineTo(100,500); //add lines for enemies to follow 
+    this.path.lineTo(300, 500);
+    this.path.lineTo(300, 100);
+    this.path.lineTo(500, 100);
+    this.path.lineTo(500, 500);
+    this.path.lineTo(700, 500);
+    this.path.lineTo(700, -50);
     
-    graphics.lineStyle(3, 0xffffff, 1);
+    //Make path Visibile
+    this.graphics.lineStyle(3, 0xffffff, 1);
     // visualize the path
-    path.draw(graphics);
+    this.path.draw(this.graphics);
 
-    //  Create Enemies
-    this.Enemy = new Phaser.Class({
 
-      Extends: Phaser.GameObjects.Image,
-
-      startOnPath: function() {
-         // set the t parameter at the start of the path
-        this.follower.t = 0;
-        
-        // get x and y of the given t point            
-        path.getPoint(this.follower.t, this.follower.vec);
-        
-        // set the x and y of our enemy to the received from the previous step
-        this.setPosition(this.follower.vec.x, this.follower.vec.y);
-      },
-
-      initialize:
-
-      function Enemy (scene)
-      {
-          Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'enemy');
-
-          this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
-      },
-      update: function (time, delta)
-      {
-          // move the t point along the path, 0 is the start and 0 is the end
-          this.follower.t += this.ENEMY_SPEED * delta;
-
-          // get the new x and y coordinates in vec
-          path.getPoint(this.follower.t, this.follower.vec);
-          
-          // update enemy x and y to the newly obtained x and y
-          this.setPosition(this.follower.vec.x, this.follower.vec.y);
-
-          // if we have reached the end of the path, remove the enemy
-          if (this.follower.t >= 1)
-          {
-              this.setActive(false);
-              this.setVisible(false);
-          }
-      }
-    
-    });
-
+  //Add enemies
     // Add enemy group to the game
-    this.enemies = this.add.group({ classType: this.Enemy, runChildUpdate: true });
+    this.enemies = this.add.group({ classType: Enemy, runChildUpdate: true });
     this.nextEnemy = 0;
-    var test_enemy = this.enemies.get();
-    test_enemy.setVisible(true);
-    test_enemy.setActive(true);
-    //test_enemy.startOnPath();
+
+    //Declare wave size and spawned variable
+    this.waveSize = 5;
+    this.spawned = 0;
+
+  
+  //Add turrents
+    this.turrets = this.add.group({ classType: Turret, runChildUpdate: true});
+    this.input.on('pointerdown', this.placeTurret);
+    console.log(typeof(map));
+
+
+    //console.log(typeof(this.map));
+  } //END CREATE FUNC
+
+// Add Functions (when called in create, must use this.<function name>())
+  //Draw out a grid on the map
+
+
+  drawGrid(graphics){
+    graphics.lineStyle(1, 0x0000ff, 0.8);
+    for (var i=0; i<12; i++){ // horizontal lines
+      graphics.moveTo(0, i*50);
+      graphics.lineTo(840, i*50);
+    }
+    for (var j=0; j<16; j++){ // vertical lines
+      graphics.moveTo(j*50, 0);
+      graphics.lineTo(j*50, 640);
+    }
+    graphics.strokePath();
+  } 
+
+
+  placeTurret(pointer) {
+    var i = Math.floor(pointer.y/50);
+    var j = Math.floor(pointer.x/50);
+    console.log(typeof(this.map))
+    var turret = this.turrets.get();
+    turret.setActive(true);
+    turret.setVisible(true);
+    turret.place(i, j);
+//!!!! Map is not defined here
+    
+    
+    // if((this.map[i][j] === 0)) {
+    //     var turret = this.turrets.get();
+    //     if (turret)
+    //     {
+    //         turret.setActive(true);
+    //         turret.setVisible(true);
+    //         turret.place(i, j);
+    //     }   
+    // }
+
   }
 
   update (time, delta) {
     // Update the scene
-        // if its time for the next enemy
+    
+  // Creates continuous strean of enemies
     // if (time > this.nextEnemy)
     // {        
-    //     var enemy = this.enemies.get();
-    //     if (enemy)
-    //     {
-    //         enemy.setActive(true);
-    //         enemy.setVisible(true);
-            
-    //         // place the enemy at the start of the path
-    //         enemy.startOnPath();
-            
-    //         this.nextEnemy = time + 2000;
-    //     }       
-    // }
+    //   var enemy = this.enemies.get();
+    //   if (enemy)
+    //   {
+    //     enemy.setActive(true);
+    //     enemy.setVisible(true);
+        
+    //     // place the enemy at the start of the path
+    //     enemy.startOnPath();
+        
+    //     this.nextEnemy = time + 2000;
+    //   }       
+    // }    
+
+
+  //Creates wave of enemies 
+    if ((time > this.nextEnemy) && (this.spawned < this.waveSize)){ 
+      var enemy = this.enemies.get();
+      if (enemy){
+        // place the enemy at the start of the path
+        enemy.startOnPath();
+        enemy.setActive(true);
+        enemy.setVisible(true);
+
+        //Spawn new enemy 
+        this.nextEnemy = time + 300;
+        //increment # of enemies spawned
+        this.spawned+=1;
+      }         
+    }
+
 
   }
+
+  // Class at end
 }
+
+var Enemy = new Phaser.Class({
+
+  Extends: Phaser.GameObjects.Image,
+
+  initialize: //Class variables/methods
+
+  //Constructor
+  function Enemy (scene)
+  {
+    // Declare path object from scene !!!!!!
+    this.path = scene.path;
+    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'enemy');
+    this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+  },
+
+  // Initialize Variables
+  ENEMY_SPEED: 1/10000,
+
+  //Places the enemy at the first point of our path
+  startOnPath: function ()
+  {
+      
+      // set the t parameter at the start of the path
+      this.follower.t = 0;
+      
+      // get x and y of the given t point            
+      this.path.getPoint(this.follower.t, this.follower.vec);
+      
+      
+      // set the x and y of our enemy to the received from the previous step
+      this.setPosition(this.follower.vec.x, this.follower.vec.y);
+      
+  },
+
+  //Updates enemy position along path
+  update: function (time, delta)
+  {
+    
+    // move the t point along the path, 0 is the start and 0 is the end
+    this.follower.t += this.ENEMY_SPEED * delta;
+
+    // get the new x and y coordinates in vec
+    this.path.getPoint(this.follower.t, this.follower.vec);
+    
+    // update enemy x and y to the newly obtained x and y
+    this.setPosition(this.follower.vec.x, this.follower.vec.y);
+
+    // if we have reached the end of the path, remove the enemy
+    if (this.follower.t >= 1)
+    {
+        this.setActive(false);
+        this.setVisible(false);
+    }
+  }
+ 
+});
+
+//Create class for turrets
+var Turret = new Phaser.Class({
+
+  Extends: Phaser.GameObjects.Image,
+
+  initialize: 
+
+  // Turrent constructor
+  function Turret(scene){
+    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'turret');
+    this.nextTic = 0;
+  },
+
+   // we will place the turret according to the grid
+  place: function(i, j) {            
+    this.y = i * 50 + 50/2;
+    this.x = j * 50 + 50/2;
+    this.map = scene.map;
+    console.log(this.map)
+    this.map[i][j] = 1;             //error here
+  },
+
+  update: function (time, delta){
+    // time to shoot
+    if(time > this.nextTic) {                
+      this.nextTic = time + 1000;
+    }
+  }
+
+})
+
+
+
