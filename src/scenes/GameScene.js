@@ -32,14 +32,18 @@ export default class GameScene extends Phaser.Scene {
     // this graphics element is for visualization only
 
 
-    // this.map =      [[ 0,-1, 0, 0, 0, 0, 0, 0, 0, 0],
-    //                 [ 0,-1, 0, 0, 0, 0, 0, 0, 0, 0],
-    //                 [ 0,-1,-1,-1,-1,-1,-1,-1, 0, 0],
-    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
-    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
-    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
-    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0],
-    //                 [ 0, 0, 0, 0, 0, 0, 0,-1, 0, 0]];
+    this.map =      [[ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
+                    [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
+                    [ 0, 0, -1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
     
 
     this.graphics = this.add.graphics();
@@ -55,14 +59,14 @@ export default class GameScene extends Phaser.Scene {
     // this.path.lineTo(480, 644);
 
   //NEW PATH FOR GAME //
-    this.path = this.add.path(100, 0); // CHECK FOR CONFLICTS WITH SIZE OF GAME SCREEN
-    this.path.lineTo(100,500); //add lines for enemies to follow 
-    this.path.lineTo(300, 500);
-    this.path.lineTo(300, 100);
-    this.path.lineTo(500, 100);
-    this.path.lineTo(500, 500);
-    this.path.lineTo(700, 500);
-    this.path.lineTo(700, -50);
+    this.path = this.add.path(125, 0); // CHECK FOR CONFLICTS WITH SIZE OF GAME SCREEN
+    this.path.lineTo(125,525); //add lines for enemies to follow 
+    this.path.lineTo(325, 525);
+    this.path.lineTo(325, 125);
+    this.path.lineTo(525, 125);
+    this.path.lineTo(525, 525);
+    this.path.lineTo(725, 525);
+    this.path.lineTo(725, -50);
     
     //Make path Visibile
     this.graphics.lineStyle(3, 0xffffff, 1);
@@ -146,20 +150,21 @@ export default class GameScene extends Phaser.Scene {
 
   placeTurret(pointer) {
     
-    var i = pointer.y;
-    var j = pointer.x;
+    var i = Math.floor(pointer.y/50);
+    var j = Math.floor(pointer.x/50);
+    if (this.scene.map[i][j] === 0){
+      var turret = this.scene.turrets.get()
+      if (turret){
+        turret.setActive(true);
+        turret.setVisible(true);
+        turret.place(i, j);
+      }
+    }
 
-    var turret = this.scene.turrets.get()
-    turret.setActive(true);
-    turret.setVisible(true);
-    turret.place(i, j);
+
   }
 
-
-
-}
-
-
+} // END GAME
 
 var Enemy = new Phaser.Class({
 
@@ -233,11 +238,9 @@ var Turret = new Phaser.Class({
 
    // we will place the turret according to the grid
   place: function(i, j) {            
-    this.y = i;
-    this.x = j;
-    
-    //console.log(this.map)
-    //this.map[i][j] = 1;             //error here
+    this.y = i * 50 + 50/2;
+    this.x = j * 50 + 50/2;
+    this.scene.map[i][j] = 1;
   },
 
   update: function (time, delta){
