@@ -11,11 +11,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload () {
-    // Preload game assets - turrets and bullets
+    // Preload game assets - turrets, bullets, and enemies
     this.load.atlas('sprites', './assets/spritesheet.png', './assets/spritesheet.json');
     this.load.image('bullet', 'assets/bullet.png');
     this.load.image('logo', './assets/logo.png');
     this.load.image('fastenemy', './assets/FastEnemy.png')
+    this.load.image('toughenemy', './assets/ToughEnemy.png')
+    this.load.image('desertBackground', './assets/background.png')
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -30,6 +32,8 @@ export default class GameScene extends Phaser.Scene {
   //  In our game, enemies will move along a predefined path so
   //  we need to create a simple path element
   create (data) {
+
+    this.add.image(400, 300, "desertBackground");
     // this graphics element is for visualization only
 
 
@@ -70,12 +74,14 @@ export default class GameScene extends Phaser.Scene {
     // visualize the path
     this.path.draw(this.graphics);
 
-
   //Add enemies
     // Add enemy group to the game
-    this.enemies1 = this.add.group({ classType: Enemy1, runChildUpdate: true });
-    this.enemies2 = this.add.group({ classType: Enemy2, runChildUpdate: true });
+    this.enemies1 = this.physics.add.group({ classType: Regular, runChildUpdate: true });
+    this.enemies2 = this.physics.add.group({ classType: Fast, runChildUpdate: true });
+    this.bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true});
     this.nextEnemy = 0;
+
+    this.physics.add.overlap(enemies, bullets, damageEnemy);
 
     // Add enemy2 group to the game
     //Declare wave size and spawned variable
@@ -87,13 +93,21 @@ export default class GameScene extends Phaser.Scene {
 
   //Add turrets
     this.turrets = this.add.group({ classType: Turret, runChildUpdate: true});
-    console.log(typeof(this.turrets))
     this.input.on('pointerdown', this.placeTurret);
 
+function damageEnemy(enemy, bullet) {
+    // only if both enemy and bullet are alive
+    if (enemy.active === true && bullet.active === true) {
+        // we remove the bullet right away
+        bullet.setActive(false);
+        bullet.setVisible(false);
 
-    //console.log(typeof(this.map));
+        // decrease the enemy hp with BULLET_DAMAGE
+        enemy.receiveDamage(BULLET_DAMAGE);
+    }
+
   } //END CREATE FUNC
-
+}
 // Add Functions (when called in create, must use this.<function name>())
   //Draw out a grid on the map
 
@@ -187,8 +201,8 @@ export default class GameScene extends Phaser.Scene {
         this.spawned+=1;
       }
       //end game. Doesn't work
-      if (this.GameOver){
-        this.scene.start('EndScene');
+      if (this.gameOver){
+        this.scene.start('GameOver');
       }
     }
 
@@ -198,7 +212,139 @@ export default class GameScene extends Phaser.Scene {
   // Class at end
 }
 
-var Enemy1 = new Phaser.Class({
+var Regular = new Phaser.Class({
+
+  Extends: Phaser.GameObjects.Image,
+
+  initialize: //Class variables/methods
+
+  //Constructor
+  function Enemy (scene)
+  {
+    // Declare path object from scene !!!!!!
+    this.path = scene.path;
+    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'enemy');
+    this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+    this.hp = 0;
+  },
+
+  // Initialize Variables
+  ENEMY_SPEED: 1/10000,
+
+  //Places the enemy at the first point of our path
+  startOnPath: function ()
+  {
+
+      // set the t parameter at the start of the path
+      this.follower.t = 0;
+      this.hp = 100;
+
+      // get x and y of the given t point
+      this.path.getPoint(this.follower.t, this.follower.vec);
+
+
+      // set the x and y of our enemy to the received from the previous step
+      this.setPosition(this.follower.vec.x, this.follower.vec.y);
+  },
+  receiveDamage: function(damage) {
+      this.hp -= damage;
+
+      // if hp drops below 0 we deactivate this enemy
+      if(this.hp <= 0) {
+          this.setActive(false);
+          this.setVisible(false);
+      }
+  },
+
+  //Updates enemy position along path
+  update: function (time, delta)
+  {
+    console.log(this.gameOver) //does nothing
+    // move the t point along the path, 0 is the start and 0 is the end
+    this.follower.t += this.ENEMY_SPEED * delta;
+
+    // get the new x and y coordinates in vec
+    this.path.getPoint(this.follower.t, this.follower.vec);
+
+    // update enemy x and y to the newly obtained x and y
+    this.setPosition(this.follower.vec.x, this.follower.vec.y);
+
+    // if we have reached the end of the path, remove the enemy
+    if (this.follower.t >= 1)
+    {
+        this.setActive(false);
+        this.setVisible(false);
+        this.health -= 1;  //doesn't work
+        this.gameOver = true;
+
+    }
+
+  }
+
+});
+
+var Fast = new Phaser.Class({
+
+  Extends: Phaser.GameObjects.Image,
+
+  initialize: //Class variables/methods
+
+  //Constructor
+  function Enemy (scene)
+  {
+    // Declare path object from scene !!!!!!
+    this.path = scene.path;
+    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fastenemy');
+    this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+  },
+
+  // Initialize Variables
+  ENEMY_SPEED: 1/5000,
+
+  //Places the enemy at the first point of our path
+  startOnPath: function ()
+  {
+
+      // set the t parameter at the start of the path
+      this.follower.t = 0;
+
+      // get x and y of the given t point
+      this.path.getPoint(this.follower.t, this.follower.vec);
+
+
+      // set the x and y of our enemy to the received from the previous step
+      this.setPosition(this.follower.vec.x, this.follower.vec.y);
+
+  },
+
+  //Updates enemy position along path
+  update: function (time, delta)
+  {
+
+    // move the t point along the path, 0 is the start and 0 is the end
+    this.follower.t += this.ENEMY_SPEED * delta;
+
+    // get the new x and y coordinates in vec
+    this.path.getPoint(this.follower.t, this.follower.vec);
+
+    // update enemy x and y to the newly obtained x and y
+    this.setPosition(this.follower.vec.x, this.follower.vec.y);
+
+    // if we have reached the end of the path, remove the enemy
+    if (this.follower.t >= 1)
+    {
+        this.setActive(false);
+        this.setVisible(false);
+        this.health -= 1;
+        this.gameOver = true;
+
+    }
+  }
+
+});
+
+//not used yet
+var Tough = new Phaser.Class({
 
   Extends: Phaser.GameObjects.Image,
 
@@ -255,66 +401,6 @@ var Enemy1 = new Phaser.Class({
 
     }
 
-  }
-
-});
-
-var Enemy2 = new Phaser.Class({
-
-  Extends: Phaser.GameObjects.Image,
-
-  initialize: //Class variables/methods
-
-  //Constructor
-  function Enemy (scene)
-  {
-    // Declare path object from scene !!!!!!
-    this.path = scene.path;
-    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fastenemy');
-    this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
-  },
-
-  // Initialize Variables
-  ENEMY_SPEED: 1/5000,
-
-  //Places the enemy at the first point of our path
-  startOnPath: function ()
-  {
-
-      // set the t parameter at the start of the path
-      this.follower.t = 0;
-
-      // get x and y of the given t point
-      this.path.getPoint(this.follower.t, this.follower.vec);
-
-
-      // set the x and y of our enemy to the received from the previous step
-      this.setPosition(this.follower.vec.x, this.follower.vec.y);
-
-  },
-
-  //Updates enemy position along path
-  update: function (time, delta)
-  {
-
-    // move the t point along the path, 0 is the start and 0 is the end
-    this.follower.t += this.ENEMY_SPEED * delta;
-
-    // get the new x and y coordinates in vec
-    this.path.getPoint(this.follower.t, this.follower.vec);
-
-    // update enemy x and y to the newly obtained x and y
-    this.setPosition(this.follower.vec.x, this.follower.vec.y);
-
-    // if we have reached the end of the path, remove the enemy
-    if (this.follower.t >= 1)
-    {
-        this.setActive(false);
-        this.setVisible(false);
-        this.health -= 1;
-        this.gameOver = true;
-
-    }
   }
 
 });
