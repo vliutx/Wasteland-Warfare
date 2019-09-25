@@ -88,12 +88,12 @@ export default class GameScene extends Phaser.Scene {
     this.turrets = this.add.group({ classType: Turret, runChildUpdate: true});
     
     this.input.on('pointerdown', this.placeTurret);
+  
+  //Spawn bullets
+    this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true});
+  
 
-    //console.log(typeof(this.turrets));
-
-
-    //console.log(typeof(this.map));
-  } //END CREATE FUNC
+  }
 
 // Add Functions (when called in create, must use this.<function name>())
 
@@ -115,6 +115,7 @@ export default class GameScene extends Phaser.Scene {
     //     this.nextEnemy = time + 2000;
     //   }       
     // }    
+  
     
   //Creates wave of enemies 
     if ((time > this.nextEnemy) && (this.spawned < this.waveSize)){ 
@@ -164,6 +165,23 @@ export default class GameScene extends Phaser.Scene {
 
   }
 
+  //Allows turrets to fire bullets
+  addBullet(x, y, angle) {
+    var bullet = this.bullets.get();
+    if (bullet){
+        bullet.fire(x, y, angle);
+    }
+  }
+
+  getEnemy(x, y, distance) {
+    var enemyUnits = this.enemies.getChildren();
+    for(var i = 0; i < enemyUnits.length; i++) {       
+        if(enemyUnits[i].active && Phaser.Math.Distance.Between(x, y, enemyUnits[i].x, enemyUnits[i].y) <= distance)
+            return enemyUnits[i];
+    }
+    return false;
+  }
+  
 } // END GAME
 
 var Enemy = new Phaser.Class({
@@ -243,14 +261,81 @@ var Turret = new Phaser.Class({
     this.scene.map[i][j] = 1;
   },
 
+  fire: function() {
+      var enemy = this.scene.getEnemy(this.x, this.y, 200);
+      if(enemy) {
+          var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+          this.scene.addBullet(this.x, this.y, angle);
+          this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+      }
+  },
+  
+
   update: function (time, delta){
     // time to shoot
-    if(time > this.nextTic) {                
+    if(time > this.nextTic) {
+      this.fire();
       this.nextTic = time + 1000;
     }
   }
 
 })
 
+var Bullet = new Phaser.Class({
 
+  Extends: Phaser.GameObjects.Image,
+
+  Initialize: //includes constructor for class and class methods
+
+  //Constructor
+  function Bullet (scene){
+    
+    //call bullet image
+    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
+
+    //change
+    this.dx = 0;
+    this.dy = 0;
+    this.lifespan = 0;
+
+  },
+
+  //Firing the bullet
+  fire: function(x,y,theta){
+    
+    //make bullet visibile and non-static
+    this.setActive(true);
+    this.setVisible(true);
+
+    //Set poosition to firing position
+    this.setPosition(x,y);
+
+    //Set the change in x and y coordinates
+    this.dx = Math.cos(theta);
+    this.dy = Math.sin(theta);
+
+    this.lifespan = 500;
+    //Set travel speed of bullet
+    this.speed = Phaser.Math.GetSpeed(600, 1);
+
+  },
+
+  update: function(time, delta){
+
+    //update x and y postion for bullet
+  
+
+    this.x += this.dx * (this.speed * delta);
+    this.y += this.dy * (this.speed * delta);
+
+    //decrease remaining lifespan
+    this.lifespan -= -delta
+
+    //disable bullet when lifespan too low
+    if (this.lifespan<=0){
+      this.setActive(false);
+      this.setVisible(false);
+    }
+  }
+})
 
