@@ -13,12 +13,12 @@ export default class GameScene extends Phaser.Scene {
   preload () {
     // Preload game assets - turrets and bullets
     this.load.atlas('sprites', './assets/spritesheet.png', './assets/spritesheet.json');
-    this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('bullet', './assets/bullet.png');
     this.load.image('logo', './assets/logo.png');
     this.load.image('fastenemy', './assets/FastEnemy.png')
     this.load.image('toughenemy', './assets/ToughEnemy.png')
     this.load.image('desertBackground', './assets/background.png')
-
+    this.load.spritesheet('ninja', 'assets/ninja.png', { frameWidth: 88, frameHeight: 88 })
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -71,6 +71,21 @@ export default class GameScene extends Phaser.Scene {
     // visualize the path
     this.path.draw(this.graphics);
 
+  //Add player and necessary things
+    var player = this.add.sprite(125,575,'ninja');
+    var bulletsPlayer;
+    this.nf = 0; //nextFire
+    this.fr = 200; //fireRate
+    this.bs = 1000; //speed or bullet speed
+    this.bulletsPlayer = this.physics.add.group({
+      defaultKey: "bullet",
+      maxSize: 1000
+    });
+    var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceBar.on("down", this.shoot, this);
+    
+  
+
   //Add enemies
     // Add enemy group to the game
     this.enemies1 = this.physics.add.group({ classType: Regular, runChildUpdate: true });
@@ -94,7 +109,13 @@ export default class GameScene extends Phaser.Scene {
   
   //Spawn bullets
     this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true});
-  
+    var bullet = this.bullets.get();
+    bullet.setScale(20);
+    bullet.setPosition(400,300);
+    bullet.setActive(true);
+    bullet.setVisible(true);
+    
+
 
   }
 
@@ -130,8 +151,34 @@ export default class GameScene extends Phaser.Scene {
       }         
     }
 
+    // bullet out of screen
+    this.bullets.children.each(
+    function (b) {
+      if (b.active) {
+        if (b.y < 0){
+          b.setActive(false);
+        } else if (b.y > this.cameras.main.height){
+          b.setActive(false);
+        } else if (b.x < 0){
+          b.setActive(false);
+        } else if (b.x > this.cameras.main.width){
+          b.setActive(false);
+        }
+      }
+    }.bind(this)
+    );
+
 
   } // END UPDATE
+
+  shoot () {
+    var velocityFromRotation = this.physics.velocityFromRotation;
+    var velocity = new Phaser.Math.Vector2();
+    velocityFromRotation(3*3.14159265/2, this.bs, velocity);
+    var bullet = this.bulletsPlayer.get();
+    bullet.setAngle(3*3.14159265/2);
+    bullet.enableBody(true, 125, 575, true, true).setVelocity(velocity.x,velocity.y);
+  }
   
   drawGrid(graphics){
     graphics.lineStyle(1, 0x0000ff, 0.8);
@@ -148,12 +195,13 @@ export default class GameScene extends Phaser.Scene {
 
   damageEnemy(enemy, bullet) {
     // only if both enemy and bullet are alive
-    //if (enemy.active === true && bullet.active === true) {
-        // we remove the bullet right away
+    console.log(1);
+    if (enemy.active === true && bullet.active === true) {
+    
         bullet.setActive(false);
         bullet.setVisible(false);
         enemy.receiveDamage(BULLET_DAMAGE);
-    //}
+    }
   }
 
 
@@ -230,7 +278,7 @@ var Regular = new Phaser.Class({
       
   },
 
-  recieveDamage: function(damage){
+  receiveDamage: function(damage){
     this.hp -= damage;
     // if hp drops below 0 we deactivate this enemy
     if(this.hp <= 0) {
@@ -358,7 +406,7 @@ var Bullet = new Phaser.Class({
   function Bullet (scene){
     
     //call bullet image
-    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
+    Phaser.GameObjects.Image.call(this, scene, 0, 0, "bullet");
 
     //change
     this.dx = 0;
@@ -381,7 +429,7 @@ var Bullet = new Phaser.Class({
     this.dx = Math.cos(theta);
     this.dy = Math.sin(theta);
 
-    this.lifespan = 500;
+    this.lifespan = 300;
     //Set travel speed of bullet
     this.speed = Phaser.Math.GetSpeed(1000, 1);
 
