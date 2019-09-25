@@ -82,58 +82,21 @@ export default class GameScene extends Phaser.Scene {
   
   //Add turrents
     this.turrets = this.add.group({ classType: Turret, runChildUpdate: true});
+    
     this.input.on('pointerdown', this.placeTurret);
-    console.log(typeof(map));
+
+    //console.log(typeof(this.turrets));
 
 
     //console.log(typeof(this.map));
   } //END CREATE FUNC
 
 // Add Functions (when called in create, must use this.<function name>())
-  //Draw out a grid on the map
-
-
-  drawGrid(graphics){
-    graphics.lineStyle(1, 0x0000ff, 0.8);
-    for (var i=0; i<12; i++){ // horizontal lines
-      graphics.moveTo(0, i*50);
-      graphics.lineTo(840, i*50);
-    }
-    for (var j=0; j<16; j++){ // vertical lines
-      graphics.moveTo(j*50, 0);
-      graphics.lineTo(j*50, 640);
-    }
-    graphics.strokePath();
-  } 
-
-
-  placeTurret(pointer) {
-    var i = Math.floor(pointer.y/50);
-    var j = Math.floor(pointer.x/50);
-    console.log(typeof(this.map))
-    var turret = this.turrets.get();
-    turret.setActive(true);
-    turret.setVisible(true);
-    turret.place(i, j);
-//!!!! Map is not defined here
-    
-    
-    // if((this.map[i][j] === 0)) {
-    //     var turret = this.turrets.get();
-    //     if (turret)
-    //     {
-    //         turret.setActive(true);
-    //         turret.setVisible(true);
-    //         turret.place(i, j);
-    //     }   
-    // }
-
-  }
 
   update (time, delta) {
     // Update the scene
     
-  // Creates continuous strean of enemies
+// Creates continuous strean of enemies
     // if (time > this.nextEnemy)
     // {        
     //   var enemy = this.enemies.get();
@@ -148,8 +111,7 @@ export default class GameScene extends Phaser.Scene {
     //     this.nextEnemy = time + 2000;
     //   }       
     // }    
-
-
+    
   //Creates wave of enemies 
     if ((time > this.nextEnemy) && (this.spawned < this.waveSize)){ 
       var enemy = this.enemies.get();
@@ -167,10 +129,37 @@ export default class GameScene extends Phaser.Scene {
     }
 
 
+  } // END UPDATE
+  
+  drawGrid(graphics){
+    graphics.lineStyle(1, 0x0000ff, 0.8);
+    for (var i=0; i<12; i++){ // horizontal lines
+      graphics.moveTo(0, i*50);
+      graphics.lineTo(840, i*50);
+    }
+    for (var j=0; j<16; j++){ // vertical lines
+      graphics.moveTo(j*50, 0);
+      graphics.lineTo(j*50, 640);
+    }
+    graphics.strokePath();
+  } 
+
+  placeTurret(pointer) {
+    
+    var i = pointer.y;
+    var j = pointer.x;
+
+    var turret = this.scene.turrets.get()
+    turret.setActive(true);
+    turret.setVisible(true);
+    turret.place(i, j);
   }
 
-  // Class at end
+
+
 }
+
+
 
 var Enemy = new Phaser.Class({
 
@@ -244,11 +233,11 @@ var Turret = new Phaser.Class({
 
    // we will place the turret according to the grid
   place: function(i, j) {            
-    this.y = i * 50 + 50/2;
-    this.x = j * 50 + 50/2;
-    this.map = scene.map;
-    console.log(this.map)
-    this.map[i][j] = 1;             //error here
+    this.y = i;
+    this.x = j;
+    
+    //console.log(this.map)
+    //this.map[i][j] = 1;             //error here
   },
 
   update: function (time, delta){
