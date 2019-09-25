@@ -126,6 +126,22 @@ export default class GameScene extends Phaser.Scene {
         this.spawned+=1;
       }         
     }
+    // bullet out of screen
+    this.bullets.children.each(
+      function (b) {
+        if (b.active) {
+          if (b.y < 0){
+            b.setActive(false);
+          } else if (b.y > this.cameras.main.height){
+            b.setActive(false);
+          } else if (b.x < 0){
+            b.setActive(false);
+          } else if (b.x > this.cameras.main.width){
+            b.setActive(false);
+          }
+        }
+      }.bind(this)
+      );
 
 
   } // END UPDATE
