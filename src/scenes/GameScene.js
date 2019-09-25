@@ -108,7 +108,7 @@ export default class GameScene extends Phaser.Scene {
     this.input.on('pointerdown', this.placeTurret);
   
   //Spawn bullets
-    this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true});
+    this.bullets = this.add.group({ defaultKey: "bullet", classType: Bullet, runChildUpdate: true});
     var bullet = this.bullets.get();
     bullet.setScale(20);
     bullet.setPosition(400,300);
