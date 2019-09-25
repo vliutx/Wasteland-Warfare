@@ -90,12 +90,16 @@ export default class GameScene extends Phaser.Scene {
     // Add enemy group to the game
     this.enemies1 = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     this.enemies2 = this.physics.add.group({ classType: Fast, runChildUpdate: true });
-    this.bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true});
+    this.bullets = this.physics.add.group({ defaultKey: "bullet", classType: Bullet, runChildUpdate: true });
     this.nextEnemy = 0;
 
     //hitboxes
+    //this.physics.add.overlap(this.enemies2, this.bullets, function(){console.log("hit2")});
+    //this.physics.add.overlap(this.enemies1, this.bullets, function(){console.log("hit1")});
     this.physics.add.overlap(this.enemies1, this.bullets, this.damageEnemy);
     this.physics.add.overlap(this.enemies2, this.bullets, this.damageEnemy);
+    this.physics.add.overlap(this.enemies1, this.bulletsPlayer, this.damageEnemy);
+    this.physics.add.overlap(this.enemies2, this.bulletsPlayer, this.damageEnemy);
 
     //Declare wave size and spawned variable
     this.waveSize = 10;
@@ -108,7 +112,7 @@ export default class GameScene extends Phaser.Scene {
     this.input.on('pointerdown', this.placeTurret);
   
   //Spawn bullets
-    this.bullets = this.add.group({ defaultKey: "bullet", classType: Bullet, runChildUpdate: true});
+    //this.bullets = this.add.group({ defaultKey: "bullet", classType: Bullet, runChildUpdate: true});
     var bullet = this.bullets.get();
     bullet.setScale(20);
     bullet.setPosition(400,300);
