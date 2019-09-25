@@ -33,9 +33,9 @@ export default class GameOver extends Phaser.Scene {
     boundsAlignH: "center",
     boundsAlignV: "middle" };
     var gameOverText = this.add.text(this.centerX - 100, this.centerY - 25, 'Game Over', gameOverStyle);
-    var text = this.add.text(this.centerX - 100, this.centerY + 50, 'Play Again? Press Y/N', questionStyle);
+    var text = this.add.text(this.centerX - 100, this.centerY + 50, 'Play Again? Press Y', questionStyle);
     this.startKey = this.input.keyboard.addKey('Y');
-    this.titleKey = this.input.keyboard.addKey('N');
+    //this.titleKey = this.input.keyboard.addKey('N');
 
   }
 
@@ -43,8 +43,6 @@ export default class GameOver extends Phaser.Scene {
     // Update the scene
     if (this.startKey.isDown) {
       this.scene.start('Gameplay')
-    } else if (this.titleKey.isDown) {
-      this.scene.start('Title')
-    }
+    } 
   }
 }
