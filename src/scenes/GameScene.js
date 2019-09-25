@@ -67,7 +67,7 @@ export default class GameScene extends Phaser.Scene {
     this.path.lineTo(725, -50);
     
     //Make path Visibile
-    this.graphics.lineStyle(3, 0xffffff, 1);
+    this.graphics.lineStyle(3, 0x00000, 1);
     // visualize the path
     this.path.draw(this.graphics);
 
@@ -429,7 +429,7 @@ var Bullet = new Phaser.Class({
     this.dx = Math.cos(theta);
     this.dy = Math.sin(theta);
 
-    this.lifespan = 300;
+    this.lifespan = 350;
     //Set travel speed of bullet
     this.speed = Phaser.Math.GetSpeed(1000, 1);
 
@@ -444,7 +444,7 @@ var Bullet = new Phaser.Class({
     this.y += this.dy * (this.speed * delta);
 
     //decrease remaining lifespan
-    this.lifespan -= -delta
+    this.lifespan -= delta
 
     //disable bullet when lifespan too low
     if (this.lifespan<=0){
