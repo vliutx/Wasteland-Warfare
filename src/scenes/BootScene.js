@@ -113,6 +113,8 @@ update (time, delta) {
             this.spawned+=1
         }
     }
+    var cursors = this.input.keyboard.createCursorKeys();
+    var speed = 6;
 
     if (cursors.up.isDown) {
       player.y -= speed;
