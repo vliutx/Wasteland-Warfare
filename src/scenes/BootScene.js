@@ -14,6 +14,14 @@
                     [ 0, 0, -1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0],
                     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
 
+    var timeText;
+    var timeRemaining;
+    var buildPhase = false;
+    var startGame = false;
+    var startText;
+    var gameTime = 0;
+    var enemiesRemaining;
+    var waveNumber;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -44,7 +52,7 @@ export default class BootScene extends Phaser.Scene {
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
     var graphics = this.add.graphics();
-    drawLines(graphics);
+    //drawLines(graphics);
     path = this.add.path(125, 0);
     path.lineTo(125,525); //add lines for enemies to follow
     path.lineTo(325, 525);
@@ -71,40 +79,114 @@ export default class BootScene extends Phaser.Scene {
     this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
 
     this.input.on('pointerdown', placeTurret);
+    
 
     //Declare wave size and spawned variable
     this.waveSize = 10;
     this.spawned = 0;
+    enemiesRemaining = this.waveSize;
+
+    //Create timer variable and display text
+    this.buildTime = 5;
+    timeText = this.add.text(25, 600, timeRemaining, {fontSize: 20, color: '#FF0000', fontStyle: 'bold'});
+
+    //Prompt player to start game
+    startText = this.add.text(240, 40, "Press \"P\" to start the game", {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    //Create key for player to start game
+    var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    startKey.on("down", function(){
+        //start game
+        startGame = true;
+        //begin build phase
+        buildPhase = true;
+        //disable start text
+        startText.setVisible(false);    
+    });
+
+    //Add enemies remaining text
+    this.enemiesRemainingText = this.add.text(25, 600, enemiesRemaining, {fontSize: 20, color: '#FF0000', fontStyle: 'bold'});
+    this.enemiesRemainingText.setVisible(false);
+
+    
     }
 
 update (time, delta) {
 
-    if ((time > this.nextEnemy) && (this.spawned < this.waveSize))
-    {
+    //During build phase
+    if (buildPhase == true){
 
-        var fast = fast_enemies.get();
-        var regular = reg_enemies.get();
-
-        if (regular)
-        {
-            regular.setActive(true);
-            regular.setVisible(true);
-            regular.startOnPath(100);
-
-            this.nextEnemy = time + 20000;
-            this.spawned+=1
-        }
-
-        if (fast)
-        {
-            fast.setActive(true);
-            fast.setVisible(true);
-            fast.startOnPath(50);
-
-            this.nextEnemy = time + 10000;
-            this.spawned+=1
+        //Add game timer
+        gameTime += delta/1000;
+        timeRemaining =  Math.floor(this.buildTime - gameTime);
+        timeText.setText('Time before next wave: ' + timeRemaining);
+        
+        //When buildtime runs out, spawn the next wave
+        if (timeRemaining == 0){
+            //Build phase over
+            buildPhase = false;
+            //Reset gameTime    
+            gameTime = 0;
+            //Remove text
+            timeText.setVisible(false);
+            //reset enemies remaining
+            enemiesRemaining = this.waveSize;
+            this.spawned = 0;
+            //Add text
+            this.enemiesRemainingText.setVisible(true);
         }
     }
+
+    //During wave phase
+    if (buildPhase == false && startGame == true){
+        //Spawn waves of enemies
+        gameTime += delta;
+        //Enemies remaining text
+        this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
+        
+        if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
+
+            var fast = fast_enemies.get();
+            var regular = reg_enemies.get();
+
+            if (regular)
+            {
+                regular.setActive(true);
+                regular.setVisible(true);
+                regular.startOnPath(100);
+
+                this.nextEnemy = gameTime + 500;
+                this.spawned+=1
+            }
+
+            if (fast)
+            {
+                fast.setActive(true);
+                fast.setVisible(true);
+                fast.startOnPath(50);
+
+                this.nextEnemy = gameTime + 500;
+                this.spawned+=1
+            }
+        }
+
+        //All enemies despawned
+        if (enemiesRemaining == 0){
+            //begin build phase
+            buildPhase = true;
+            //Enable time remaining text
+            timeText.setVisible(true);
+            //reset game time
+            gameTime = 0;
+            //Enemy text disable
+            this.enemiesRemainingText.setVisible(false);    
+            //reset this.nextEnemy
+            this.nextEnemy = 0;
+        }
+    }
+
+
+
+
   }
 }
 
@@ -143,6 +225,7 @@ var Regular = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                enemiesRemaining -= 1;
             }
         },
         update: function (time, delta)
@@ -156,6 +239,7 @@ var Regular = new Phaser.Class({
             {
                 this.setActive(false);
                 this.setVisible(false);
+                enemiesRemaining -= 1;
             }
         }
 
@@ -194,6 +278,7 @@ var Fast = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                enemiesRemaining -= 1;
             }
         },
         update: function (time, delta)
@@ -207,6 +292,7 @@ var Fast = new Phaser.Class({
             {
                 this.setActive(false);
                 this.setVisible(false);
+                enemiesRemaining -= 1;
             }
         }
 
