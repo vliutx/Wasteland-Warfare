@@ -13,6 +13,15 @@
                     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
     var gunfire;
+    var timeText;
+    var timeRemaining;
+    var buildPhase = false;
+    var startGame = false;
+    var startText;
+    var gameTime = 0;
+    var enemiesRemaining;
+    var waveText;
+    var waveNumber;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -216,7 +225,7 @@ update (time, delta) {
     }
   }
 }
-
+}
 
 var Regular = new Phaser.Class({
 
