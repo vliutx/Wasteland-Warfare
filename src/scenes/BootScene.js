@@ -21,7 +21,9 @@
     var startText;
     var gameTime = 0;
     var enemiesRemaining;
+    var waveText;
     var waveNumber;
+
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -85,6 +87,12 @@ export default class BootScene extends Phaser.Scene {
     this.waveSize = 10;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
+    waveNumber = 0;
+
+    //Create wave text
+    waveText = this.add.text(360, 40, "Wave: " + waveNumber, {fontSize: 32, color: '#000000', fontStyle: 'bold'});
+    waveText.setVisible(false);
+    
 
     //Create timer variable and display text
     this.buildTime = 5;
@@ -100,7 +108,9 @@ export default class BootScene extends Phaser.Scene {
         //begin build phase
         buildPhase = true;
         //disable start text
-        startText.setVisible(false);    
+        startText.setVisible(false);  
+        //Enable wave text
+        waveText.setVisible(true);  
     });
 
     //Add enemies remaining text
@@ -111,7 +121,7 @@ export default class BootScene extends Phaser.Scene {
     }
 
 update (time, delta) {
-
+    
     //During build phase
     if (buildPhase == true){
 
@@ -181,6 +191,9 @@ update (time, delta) {
             this.enemiesRemainingText.setVisible(false);    
             //reset this.nextEnemy
             this.nextEnemy = 0;
+            //Increment wave number
+            waveNumber += 1;
+            waveText.setText("Wave: " + waveNumber);
         }
     }
 
