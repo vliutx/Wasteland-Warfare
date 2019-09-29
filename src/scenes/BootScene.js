@@ -1,18 +1,16 @@
 /*global Phaser*/
 
 
-    var map =      [[ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
-                    [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+    var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
 export default class BootScene extends Phaser.Scene {
@@ -27,11 +25,12 @@ export default class BootScene extends Phaser.Scene {
   preload () {
     // Preload assets
     this.load.atlas('sprites', 'assets/spritesheet.png', 'assets/spritesheet.json');
+    this.load.image('turret', 'assets/Turret1.png');
+    this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/bullet.png');
     this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
-    this.load.spritesheet('ninja', 'assets/ninja.png', { frameWidth: 88, frameHeight: 88 })
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -45,24 +44,23 @@ export default class BootScene extends Phaser.Scene {
 
     var graphics = this.add.graphics();
     drawLines(graphics);
-    path = this.add.path(125, 0);
-    path.lineTo(125,525); //add lines for enemies to follow
-    path.lineTo(325, 525);
-    path.lineTo(325, 125);
-    path.lineTo(525, 125);
-    path.lineTo(525, 525);
-    path.lineTo(725, 525);
-    path.lineTo(725, -50);
+    path = this.add.path(160, 0);
+    path.lineTo(160, 416); //add lines for enemies to follow
+    path.lineTo(416, 416);
+    path.lineTo(416, 160);
+    path.lineTo(544, 160);
+    path.lineTo(544, 544);
+    path.lineTo(800, 544);
+    path.lineTo(800, -50);
 
-    graphics.lineStyle(3, 0xffffff, 1);
-    path.draw(graphics);
+    this.scrapcount = this.add.text(0, 0, this.scraptext, {fontSize: 40, color: "#FFFFFF", fontStyle: 'bold'});
+    //path planning
+    //graphics.lineStyle(3, 0xffffff, 1);
+    //path.draw(graphics);
 
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
-
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
-
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
     this.nextEnemy = 0;
@@ -72,12 +70,22 @@ export default class BootScene extends Phaser.Scene {
 
     this.input.on('pointerdown', placeTurret);
 
+    //player stuff
+    player = this.physics.add.sprite(864, 32, 'player');
+    this.physics.world.setBounds(0, 0, 896, 640);
+    player.setCollideWorldBounds(true);
+    //player can shoot
+    var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceBar.on("down", function(){addBullet(player.x,player.y,Math.PI)});
+
     //Declare wave size and spawned variable
     this.waveSize = 10;
     this.spawned = 0;
     }
 
 update (time, delta) {
+
+    this.scrapcount.setText("Scraps: " + scraps);
 
     if ((time > this.nextEnemy) && (this.spawned < this.waveSize))
     {
@@ -105,9 +113,15 @@ update (time, delta) {
             this.spawned+=1
         }
     }
+
+    if (cursors.up.isDown) {
+      player.y -= speed;
+    } else if (cursors.down.isDown) {
+      player.y += speed;
+    } else {
+    }
   }
 }
-
 
 
 var Regular = new Phaser.Class({
@@ -143,6 +157,7 @@ var Regular = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                scraps += 1;
             }
         },
         update: function (time, delta)
@@ -194,6 +209,7 @@ var Fast = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                scraps += 1;
             }
         },
         update: function (time, delta)
@@ -234,10 +250,11 @@ var Turret = new Phaser.Class({
 
         function Turret (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'turret');
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
             this.nextTic = 0;
         },
         place: function(i, j) {
+
             this.y = i * 64 + 64/2;
             this.x = j * 64 + 64/2;
             map[i][j] = 1;
@@ -340,15 +357,17 @@ function canPlaceTurret(i, j) {
 }
 
 function placeTurret(pointer) {
-    var i = Math.floor(pointer.y/64);
-    var j = Math.floor(pointer.x/64);
-    if(canPlaceTurret(i, j)) {
-        var turret = turrets.get();
-        if (turret)
-        {
-            turret.setActive(true);
-            turret.setVisible(true);
-            turret.place(i, j);
+    if (scraps >= 2){
+        scraps -=2;
+        var i = Math.floor(pointer.y/64);
+        var j = Math.floor(pointer.x/64);
+        if(canPlaceTurret(i, j)) {
+            var turret = turrets.get();
+            if (turret){
+                turret.setActive(true);
+                turret.setVisible(true);
+                turret.place(i, j);
+            }
         }
     }
 }
