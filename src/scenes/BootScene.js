@@ -135,7 +135,6 @@ export default class BootScene extends Phaser.Scene {
     }
 
 update (time, delta) {
-    
     //During build phase
     if (buildPhase == true){
 
@@ -160,10 +159,6 @@ update (time, delta) {
         }
     }
 
-    this.scrapcount.setText("Scraps: " + scraps);
-
-    if ((time > this.nextEnemy) && (this.spawned < this.waveSize))
-    {
     //During wave phase
     if (buildPhase == false && startGame == true){
         //Spawn waves of enemies
@@ -214,6 +209,11 @@ update (time, delta) {
             waveText.setText("Wave: " + waveNumber);
         }
     }
+
+
+
+    this.scrapcount.setText("Scraps: " + scraps);
+
     var cursors = this.input.keyboard.createCursorKeys();
     var speed = 6
 
@@ -224,7 +224,6 @@ update (time, delta) {
     } else {
     }
   }
-}
 }
 
 var Regular = new Phaser.Class({
