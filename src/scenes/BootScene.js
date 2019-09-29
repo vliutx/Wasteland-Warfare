@@ -12,6 +12,7 @@
                     [ 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
                     [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
+    var gunfire;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -31,6 +32,8 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
+    this.load.image('player', './assets/MainPlayer.png');
+    this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -42,10 +45,13 @@ export default class BootScene extends Phaser.Scene {
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
-    var graphics = this.add.graphics();
+  /* var graphics = this.add.graphics();
     drawLines(graphics);
+    */
+
+    //create the path
     path = this.add.path(160, 0);
-    path.lineTo(160, 416); //add lines for enemies to follow
+    path.lineTo(160, 416);
     path.lineTo(416, 416);
     path.lineTo(416, 160);
     path.lineTo(544, 160);
@@ -53,8 +59,10 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-    this.scrapcount = this.add.text(0, 0, this.scraptext, {fontSize: 40, color: "#FFFFFF", fontStyle: 'bold'});
-    //path planning
+    //Add sound
+    gunfire = this.sound.add('gunshot');
+
+    //for path planning
     //graphics.lineStyle(3, 0xffffff, 1);
     //path.draw(graphics);
 
@@ -114,7 +122,7 @@ update (time, delta) {
         }
     }
     var cursors = this.input.keyboard.createCursorKeys();
-    var speed = 6;
+    var speed = 6
 
     if (cursors.up.isDown) {
       player.y -= speed;
@@ -342,11 +350,11 @@ function damageEnemy(enemy, bullet) {
 
 function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
-    for(var i = 0; i < 12; i++) {
+    for(var i = 0; i < 10; i++) {
         graphics.moveTo(0, i * 64);
         graphics.lineTo(896, i * 64);
     }
-    for(var j = 0; j < 16; j++) {
+    for(var j = 0; j < 14; j++) {
         graphics.moveTo(j * 64, 0);
         graphics.lineTo(j * 64, 640);
     }
@@ -379,5 +387,6 @@ function addBullet(x, y, angle) {
     if (bullet)
     {
         bullet.fire(x, y, angle);
+        gunfire.play()
     }
 }
