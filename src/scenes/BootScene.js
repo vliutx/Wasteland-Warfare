@@ -28,9 +28,9 @@ export default class BootScene extends Phaser.Scene {
     // Preload assets
     this.load.atlas('sprites', 'assets/spritesheet.png', 'assets/spritesheet.json');
     this.load.image('bullet', 'assets/bullet.png');
-    this.load.image('fastenemy', './assets/FastEnemy.png')
-    this.load.image('toughenemy', './assets/ToughEnemy.png')
-    this.load.image('desertBackground', './assets/background.png')
+    this.load.image('fastenemy', './assets/FastEnemy.png');
+    this.load.image('toughenemy', './assets/ToughEnemy.png');
+    this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.spritesheet('ninja', 'assets/ninja.png', { frameWidth: 88, frameHeight: 88 })
 
     // Declare variables for center of the scene
@@ -41,7 +41,7 @@ export default class BootScene extends Phaser.Scene {
   create() {
 
     //Add background to level
-    this.add.image(400, 300, "desertBackground");
+    this.add.image(this.centerX, this.centerY, "desertBackground");
 
     var graphics = this.add.graphics();
     drawLines(graphics);
@@ -325,7 +325,7 @@ function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
     for(var i = 0; i < 12; i++) {
         graphics.moveTo(0, i * 64);
-        graphics.lineTo(840, i * 64);
+        graphics.lineTo(896, i * 64);
     }
     for(var j = 0; j < 16; j++) {
         graphics.moveTo(j * 64, 0);
