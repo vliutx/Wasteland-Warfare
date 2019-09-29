@@ -31,7 +31,6 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
-    this.load.image('player', 'assets/MainPlayer.png');
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -54,6 +53,7 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
+    this.scrapcount = this.add.text(0, 0, this.scraptext, {fontSize: 40, color: "#FFFFFF", fontStyle: 'bold'});
     //path planning
     //graphics.lineStyle(3, 0xffffff, 1);
     //path.draw(graphics);
@@ -84,6 +84,8 @@ export default class BootScene extends Phaser.Scene {
     }
 
 update (time, delta) {
+
+    this.scrapcount.setText("Scraps: " + scraps);
 
     if ((time > this.nextEnemy) && (this.spawned < this.waveSize))
     {
@@ -158,6 +160,7 @@ var Regular = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                scraps += 1;
             }
         },
         update: function (time, delta)
@@ -209,6 +212,7 @@ var Fast = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
+                scraps += 1;
             }
         },
         update: function (time, delta)
@@ -253,6 +257,7 @@ var Turret = new Phaser.Class({
             this.nextTic = 0;
         },
         place: function(i, j) {
+
             this.y = i * 64 + 64/2;
             this.x = j * 64 + 64/2;
             map[i][j] = 1;
@@ -355,15 +360,17 @@ function canPlaceTurret(i, j) {
 }
 
 function placeTurret(pointer) {
-    var i = Math.floor(pointer.y/64);
-    var j = Math.floor(pointer.x/64);
-    if(canPlaceTurret(i, j)) {
-        var turret = turrets.get();
-        if (turret)
-        {
-            turret.setActive(true);
-            turret.setVisible(true);
-            turret.place(i, j);
+    if (scraps >= 2){
+        scraps -=2;
+        var i = Math.floor(pointer.y/64);
+        var j = Math.floor(pointer.x/64);
+        if(canPlaceTurret(i, j)) {
+            var turret = turrets.get();
+            if (turret){
+                turret.setActive(true);
+                turret.setVisible(true);
+                turret.place(i, j);
+            }
         }
     }
 }
