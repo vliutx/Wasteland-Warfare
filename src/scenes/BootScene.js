@@ -62,6 +62,7 @@ export default class BootScene extends Phaser.Scene {
     //Add sound
     gunfire = this.sound.add('gunshot');
 
+    this.scrapcount = this.add.text(0, 0, this.scraptext, {fontSize: 40, color: "#FFFFFF", fontStyle: "bold"});
     //for path planning
     //graphics.lineStyle(3, 0xffffff, 1);
     //path.draw(graphics);
