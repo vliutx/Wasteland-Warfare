@@ -71,7 +71,7 @@ export default class BootScene extends Phaser.Scene {
     this.input.on('pointerdown', placeTurret);
 
     //player stuff
-    player = this.physics.add.sprite(864, 608, 'player');
+    player = this.physics.add.sprite(864, 32, 'player');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
