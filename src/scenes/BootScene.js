@@ -1,18 +1,16 @@
 /*global Phaser*/
 
 
-    var map =      [[ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
-                    [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+    var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
 export default class BootScene extends Phaser.Scene {
@@ -27,6 +25,8 @@ export default class BootScene extends Phaser.Scene {
   preload () {
     // Preload assets
     this.load.atlas('sprites', 'assets/spritesheet.png', 'assets/spritesheet.json');
+    this.load.image('turret', 'assets/Turret1.png');
+    this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/bullet.png');
     this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
@@ -45,17 +45,18 @@ export default class BootScene extends Phaser.Scene {
 
     var graphics = this.add.graphics();
     drawLines(graphics);
-    path = this.add.path(125, 0);
-    path.lineTo(125,525); //add lines for enemies to follow
-    path.lineTo(325, 525);
-    path.lineTo(325, 125);
-    path.lineTo(525, 125);
-    path.lineTo(525, 525);
-    path.lineTo(725, 525);
-    path.lineTo(725, -50);
+    path = this.add.path(160, 0);
+    path.lineTo(160, 416); //add lines for enemies to follow
+    path.lineTo(416, 416);
+    path.lineTo(416, 160);
+    path.lineTo(544, 160);
+    path.lineTo(544, 544);
+    path.lineTo(800, 544);
+    path.lineTo(800, -50);
 
-    graphics.lineStyle(3, 0xffffff, 1);
-    path.draw(graphics);
+    //path planning
+    //graphics.lineStyle(3, 0xffffff, 1);
+    //path.draw(graphics);
 
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
 
@@ -234,7 +235,7 @@ var Turret = new Phaser.Class({
 
         function Turret (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'turret');
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
             this.nextTic = 0;
         },
         place: function(i, j) {
