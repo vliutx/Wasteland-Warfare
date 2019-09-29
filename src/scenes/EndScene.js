@@ -128,7 +128,5 @@ export default class EndScene extends Phaser.Scene {
     // Update the scene
     if (this.startKey.isDown) {
       this.scene.start('BootScene')
+      }
     }
-    }
-  }
-})
