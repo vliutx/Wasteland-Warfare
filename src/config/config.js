@@ -16,5 +16,5 @@ export default {
         debug: true
     }
   },
-//pixelArt: true
+pixelArt: true
 };

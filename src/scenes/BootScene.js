@@ -31,7 +31,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
-    this.load.spritesheet('ninja', 'assets/ninja.png', { frameWidth: 88, frameHeight: 88 })
+    this.load.image('player', 'assets/MainPlayer.png');
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -59,11 +59,8 @@ export default class BootScene extends Phaser.Scene {
     //path.draw(graphics);
 
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
-
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
-
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
 
     this.nextEnemy = 0;
@@ -72,6 +69,14 @@ export default class BootScene extends Phaser.Scene {
     this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
 
     this.input.on('pointerdown', placeTurret);
+
+    //player stuff
+    player = this.physics.add.sprite(864, 608, 'player');
+    this.physics.world.setBounds(0, 0, 896, 640);
+    player.setCollideWorldBounds(true);
+    //player can shoot
+    var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceBar.on("down", function(){addBullet(player.x,player.y,Math.PI)});
 
     //Declare wave size and spawned variable
     this.waveSize = 10;
@@ -105,6 +110,15 @@ update (time, delta) {
             this.nextEnemy = time + 10000;
             this.spawned+=1
         }
+    }
+    var cursors = this.input.keyboard.createCursorKeys();
+    var speed = 6
+
+    if (cursors.up.isDown) {
+      player.y -= speed;
+    } else if (cursors.down.isDown) {
+      player.y += speed;
+    } else {
     }
   }
 }
