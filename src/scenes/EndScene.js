@@ -38,21 +38,6 @@ export default class EndScene extends Phaser.Scene {
     this.add.image(400, 300, "desertBackground");
     // this graphics element is for visualization only
 
-
-    this.map =     [[ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
-                    [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1,-1,-1,-1,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1, 0, 0, 0,-1, 0, 0, 0,-1, 0, 0, 0,-1, 0],
-                    [ 0, 0, -1,-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1,-1, 0],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
-
-
     this.graphics = this.add.graphics();
     // draw gridlines
     this.drawGrid(this.graphics);
@@ -130,3 +115,4 @@ export default class EndScene extends Phaser.Scene {
       this.scene.start('BootScene')
       }
     }
+  }

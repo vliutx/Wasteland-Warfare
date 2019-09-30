@@ -22,6 +22,7 @@
     var enemiesRemaining;
     var waveText;
     var waveNumber;
+    var scrapText;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -71,7 +72,8 @@ export default class BootScene extends Phaser.Scene {
     //Add sound
     gunfire = this.sound.add('gunshot');
 
-    this.scrapcount = this.add.text(0, 0, this.scraptext, {fontSize: 40, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText.setVisible(false);
     //for path planning
     //graphics.lineStyle(3, 0xffffff, 1);
     //path.draw(graphics);
@@ -98,22 +100,27 @@ export default class BootScene extends Phaser.Scene {
     spaceBar.on("down", function(){addBullet(player.x,player.y,Math.PI)});
 
     //Declare wave size and spawned variable
-    this.waveSize = 10;
+    this.waveSize = 6;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
-    waveNumber = 0;
+    waveNumber = 1;
+    this.spawnDelay = 400;
 
     //Create wave text
-    waveText = this.add.text(360, 40, "Wave: " + waveNumber, {fontSize: 32, color: '#000000', fontStyle: 'bold'});
+    waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold'});
     waveText.setVisible(false);
     
-
     //Create timer variable and display text
     this.buildTime = 5;
-    timeText = this.add.text(25, 600, timeRemaining, {fontSize: 20, color: '#FF0000', fontStyle: 'bold'});
+    timeText = this.add.text(25, 600, timeRemaining, {fontSize: 26, color: '#000000', fontStyle: 'bold'});
+
+    //Add enemies remaining text
+    this.enemiesRemainingText = this.add.text(25, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    this.enemiesRemainingText.setVisible(false);
 
     //Prompt player to start game
-    startText = this.add.text(240, 40, "Press \"P\" to start the game", {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
+
     //Create key for player to start game
     var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     startKey.on("down", function(){
@@ -125,16 +132,14 @@ export default class BootScene extends Phaser.Scene {
         startText.setVisible(false);  
         //Enable wave text
         waveText.setVisible(true);  
+        //Enable scrap text
+        scrapText.setVisible(true);
     });
 
-    //Add enemies remaining text
-    this.enemiesRemainingText = this.add.text(25, 600, enemiesRemaining, {fontSize: 20, color: '#FF0000', fontStyle: 'bold'});
-    this.enemiesRemainingText.setVisible(false);
-
     
-    }
+  } //End create
 
-update (time, delta) {
+  update (time, delta) {
     //During build phase
     if (buildPhase == true){
 
@@ -161,11 +166,13 @@ update (time, delta) {
 
     //During wave phase
     if (buildPhase == false && startGame == true){
-        //Spawn waves of enemies
+        //Set timer 
         gameTime += delta;
-        //Enemies remaining text
+
+        //Display # of enemies remaining
         this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
-        
+
+        //Spawn in enemies
         if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
 
             var fast = fast_enemies.get();
@@ -177,7 +184,7 @@ update (time, delta) {
                 regular.setVisible(true);
                 regular.startOnPath(100);
 
-                this.nextEnemy = gameTime + 500;
+                this.nextEnemy = gameTime + this.spawnDelay;
                 this.spawned+=1
             }
 
@@ -187,7 +194,7 @@ update (time, delta) {
                 fast.setVisible(true);
                 fast.startOnPath(50);
 
-                this.nextEnemy = gameTime + 500;
+                this.nextEnemy = gameTime + this.spawnDelay+100;
                 this.spawned+=1
             }
         }
@@ -207,12 +214,16 @@ update (time, delta) {
             //Increment wave number
             waveNumber += 1;
             waveText.setText("Wave: " + waveNumber);
+            //Increment wave size
+            this.waveSize += 4; 
+            //Increment spawn delay
+            if(this.spawnDelay>100){
+                this.spawnDelay -= 100;
+            }
         }
     }
 
-
-
-    this.scrapcount.setText("Scraps: " + scraps);
+    scrapText.setText("Scraps: " + scraps);
 
     var cursors = this.input.keyboard.createCursorKeys();
     var speed = 6
