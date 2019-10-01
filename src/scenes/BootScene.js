@@ -23,6 +23,8 @@
     var waveText;
     var waveNumber;
     var scrapText;
+    var lifecount; 
+    var lifecountText;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -55,11 +57,10 @@ export default class BootScene extends Phaser.Scene {
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
-  /* var graphics = this.add.graphics();
-    drawLines(graphics);
-    */
+    //Add sounds
+    gunfire = this.sound.add('gunshot');
 
-    //create the path
+    //Create the path
     path = this.add.path(160, 0);
     path.lineTo(160, 416);
     path.lineTo(416, 416);
@@ -69,42 +70,62 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-    //Add sound
-    gunfire = this.sound.add('gunshot');
+//Draw grid lines    
+    // var graphics = this.add.graphics();
+    // drawLines(graphics);
+    // for path planning
+    // graphics.lineStyle(3, 0xffffff, 1);
+    // path.draw(graphics);
 
-    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
-    scrapText.setVisible(false);
-    //for path planning
-    //graphics.lineStyle(3, 0xffffff, 1);
-    //path.draw(graphics);
 
-    reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
-    fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
-    turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+//Create enemies/towers/player groups
 
-    this.nextEnemy = 0;
-
-    this.physics.add.overlap(reg_enemies, bullets, damageEnemy);
-    this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
-
-    this.input.on('pointerdown', placeTurret);
-    
-
-    //player stuff
+    //Player
     player = this.physics.add.sprite(864, 32, 'player');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){addBullet(player.x,player.y,Math.PI)});
+    lifecount = 10;
 
-    //Declare wave size and spawned variable
+
+    //Enemies
+    reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
+    fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
+   
+    // Declare variables
+    this.nextEnemy = 0;
     this.waveSize = 6;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
     waveNumber = 1;
     this.spawnDelay = 400;
+
+
+    // Turrets
+    turrets = this.add.group({ classType: Turret, runChildUpdate: true });
+
+
+    // Bullets
+    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+
+
+//Create game functions
+
+    //class overlaps
+    this.physics.add.overlap(reg_enemies, bullets, damageEnemy);
+    this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
+
+    //place turrets
+    this.input.on('pointerdown', placeTurret);
+
+
+//Create game texts
+
+    //Add scrap text
+    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText.setVisible(false);
 
     //Create wave text
     waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold'});
@@ -118,6 +139,11 @@ export default class BootScene extends Phaser.Scene {
     this.enemiesRemainingText = this.add.text(25, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     this.enemiesRemainingText.setVisible(false);
 
+    //Create health text
+    lifecountText = this.add.text(650, 600, "Lifecount: " + lifecount, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    lifecountText.setVisible(false);
+
+//Start the game
     //Prompt player to start game
     startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
 
@@ -134,12 +160,15 @@ export default class BootScene extends Phaser.Scene {
         waveText.setVisible(true);  
         //Enable scrap text
         scrapText.setVisible(true);
+        //Enable lifecount text
+        lifecountText.setVisible(true);
     });
 
     
   } //End create
 
   update (time, delta) {
+
     //During build phase
     if (buildPhase == true){
 
@@ -162,10 +191,11 @@ export default class BootScene extends Phaser.Scene {
             //Add text
             this.enemiesRemainingText.setVisible(true);
         }
-    }
+    } //Build phase ends
 
     //During wave phase
     if (buildPhase == false && startGame == true){
+
         //Set timer 
         gameTime += delta;
 
@@ -174,12 +204,9 @@ export default class BootScene extends Phaser.Scene {
 
         //Spawn in enemies
         if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
-
             var fast = fast_enemies.get();
             var regular = reg_enemies.get();
-
-            if (regular)
-            {
+            if (regular){
                 regular.setActive(true);
                 regular.setVisible(true);
                 regular.startOnPath(100);
@@ -188,8 +215,7 @@ export default class BootScene extends Phaser.Scene {
                 this.spawned+=1
             }
 
-            if (fast)
-            {
+            if (fast){
                 fast.setActive(true);
                 fast.setVisible(true);
                 fast.startOnPath(50);
@@ -197,7 +223,7 @@ export default class BootScene extends Phaser.Scene {
                 this.nextEnemy = gameTime + this.spawnDelay+100;
                 this.spawned+=1
             }
-        }
+        } //All enemies spawned 
 
         //All enemies despawned
         if (enemiesRemaining == 0){
@@ -221,10 +247,15 @@ export default class BootScene extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
         }
-    }
+    } //End wave phase
 
+    //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
 
+    //Adjust lifecount text
+    lifecountText.setText("Lifecount: " + lifecount);
+
+//Player movement
     var cursors = this.input.keyboard.createCursorKeys();
     var speed = 6
 
@@ -234,8 +265,11 @@ export default class BootScene extends Phaser.Scene {
       player.y += speed;
     } else {
     }
-  }
-}
+
+
+  } //End update()
+
+}//End class export
 
 var Regular = new Phaser.Class({
 
@@ -271,7 +305,7 @@ var Regular = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
-                enemiesRemaining -= 1;
+                enemiesRemaining -= 1;;
             }
         },
         update: function (time, delta)
@@ -286,6 +320,7 @@ var Regular = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 1;
+                lifecount -= 1
             }
         }
 
@@ -340,6 +375,7 @@ var Fast = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 1;
+                lifecount -= 1
             }
         }
 
@@ -474,8 +510,8 @@ function canPlaceTurret(i, j) {
 }
 
 function placeTurret(pointer) {
-    if (scraps >= 2){
-        scraps -=2;
+    if (scraps >= 5){
+        scraps -=5;
         var i = Math.floor(pointer.y/64);
         var j = Math.floor(pointer.x/64);
         if(canPlaceTurret(i, j)) {
