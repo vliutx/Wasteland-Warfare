@@ -23,6 +23,8 @@
     var waveText;
     var waveNumber;
     var scrapText;
+    var lifecount; 
+    var lifecountText;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -45,6 +47,11 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('player', './assets/MainPlayer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
+    // !!!! ADD ASSETS FOR CANNON CLASS !!!!
+    this.load.image('cannon', 'assets/cannon.png');
+    this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
+    this.load.image('shell', 'assets/shell.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -55,11 +62,10 @@ export default class BootScene extends Phaser.Scene {
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
-  /* var graphics = this.add.graphics();
-    drawLines(graphics);
-    */
+    //Add sounds
+    //gunfire = this.sound.add('gunshot');
 
-    //create the path
+    //Create the path
     path = this.add.path(160, 0);
     path.lineTo(160, 416);
     path.lineTo(416, 416);
@@ -69,42 +75,67 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-    //Add sound
-    gunfire = this.sound.add('gunshot');
+//Draw grid lines    
+    // var graphics = this.add.graphics();
+    // drawLines(graphics);
+    // for path planning
+    // graphics.lineStyle(3, 0xffffff, 1);
+    // path.draw(graphics);
 
-    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
-    scrapText.setVisible(false);
-    //for path planning
-    //graphics.lineStyle(3, 0xffffff, 1);
-    //path.draw(graphics);
 
-    reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
-    fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
-    turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+//Create enemies/towers/player groups
 
-    this.nextEnemy = 0;
-
-    this.physics.add.overlap(reg_enemies, bullets, damageEnemy);
-    this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
-
-    this.input.on('pointerdown', placeTurret);
-    
-
-    //player stuff
+    //Player
     player = this.physics.add.sprite(864, 32, 'player');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){addBullet(player.x,player.y,Math.PI)});
+    lifecount = 10;
 
-    //Declare wave size and spawned variable
+
+    //Enemies
+    reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
+    fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
+   
+    // Declare variables
+    this.nextEnemy = 0;
     this.waveSize = 6;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
     waveNumber = 1;
     this.spawnDelay = 400;
+
+
+    // Turrets
+    turrets = this.add.group({ classType: Turret, runChildUpdate: true });
+    cannons = this.add.group({classType: Cannon, runChildUpdate: true})
+
+    // Bullets
+    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
+
+//Physics overlaps 
+
+    //Bullets overlap for turrets/player
+    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet);
+    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet);
+
+    //Shells overlap for cannon
+    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell);
+    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell);
+
+    //place turrets (ADD FOR CANNONS)
+    //this.input.on('pointerdown', placeTurret);
+    this.input.on('pointerdown', placeCannon);
+
+
+//Create game texts
+
+    //Add scrap text
+    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText.setVisible(false);
 
     //Create wave text
     waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold'});
@@ -118,6 +149,11 @@ export default class BootScene extends Phaser.Scene {
     this.enemiesRemainingText = this.add.text(25, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     this.enemiesRemainingText.setVisible(false);
 
+    //Create health text
+    lifecountText = this.add.text(650, 600, "Lifecount: " + lifecount, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    lifecountText.setVisible(false);
+
+//Start the game
     //Prompt player to start game
     startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
 
@@ -134,12 +170,15 @@ export default class BootScene extends Phaser.Scene {
         waveText.setVisible(true);  
         //Enable scrap text
         scrapText.setVisible(true);
+        //Enable lifecount text
+        lifecountText.setVisible(true);
     });
 
     
   } //End create
 
   update (time, delta) {
+
     //During build phase
     if (buildPhase == true){
 
@@ -162,10 +201,11 @@ export default class BootScene extends Phaser.Scene {
             //Add text
             this.enemiesRemainingText.setVisible(true);
         }
-    }
+    } //Build phase ends
 
     //During wave phase
     if (buildPhase == false && startGame == true){
+
         //Set timer 
         gameTime += delta;
 
@@ -174,12 +214,9 @@ export default class BootScene extends Phaser.Scene {
 
         //Spawn in enemies
         if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
-
             var fast = fast_enemies.get();
             var regular = reg_enemies.get();
-
-            if (regular)
-            {
+            if (regular){
                 regular.setActive(true);
                 regular.setVisible(true);
                 regular.startOnPath(100);
@@ -188,8 +225,7 @@ export default class BootScene extends Phaser.Scene {
                 this.spawned+=1
             }
 
-            if (fast)
-            {
+            if (fast){
                 fast.setActive(true);
                 fast.setVisible(true);
                 fast.startOnPath(50);
@@ -197,7 +233,7 @@ export default class BootScene extends Phaser.Scene {
                 this.nextEnemy = gameTime + this.spawnDelay+100;
                 this.spawned+=1
             }
-        }
+        } //All enemies spawned 
 
         //All enemies despawned
         if (enemiesRemaining == 0){
@@ -221,10 +257,15 @@ export default class BootScene extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
         }
-    }
+    } //End wave phase
 
+    //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
 
+    //Adjust lifecount text
+    lifecountText.setText("Lifecount: " + lifecount);
+
+//Player movement
     var cursors = this.input.keyboard.createCursorKeys();
     var speed = 6
 
@@ -234,8 +275,11 @@ export default class BootScene extends Phaser.Scene {
       player.y += speed;
     } else {
     }
-  }
-}
+
+
+  } //End update()
+
+}//End class export
 
 var Regular = new Phaser.Class({
 
@@ -265,14 +309,13 @@ var Regular = new Phaser.Class({
         },
         receiveDamage: function(damage) {
             this.hp -= damage;
-            //this.setTint(0xffffff);
-            //this.clearTint();
+
             // if hp drops below 0 we deactivate this enemy
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
-                enemiesRemaining -= 1;
+                enemiesRemaining -= 1;;
             }
         },
         update: function (time, delta)
@@ -287,10 +330,12 @@ var Regular = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 1;
+                lifecount -= 1
             }
         }
 
 });
+
 
 var Fast = new Phaser.Class({
 
@@ -341,10 +386,180 @@ var Fast = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 1;
+                lifecount -= 1
             }
         }
 
 });
+
+
+var Turret = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Turret (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
+        this.nextTic = 0;
+    },
+    place: function(i, j) {
+
+        this.y = i * 64 + 64/2;
+        this.x = j * 64 + 64/2;
+        map[i][j] = 1;
+    },
+    fire: function() {
+        var enemy = getEnemy(this.x, this.y, 200);
+        if(enemy) {
+            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+            addShell(this.x, this.y, angle);
+            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+        }
+    },
+    update: function (time, delta)
+    {
+        if(time > this.nextTic) {
+            this.fire();
+            this.nextTic = time + 1000;
+        }
+    }
+});
+
+var Cannon = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Turret (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
+        this.nextTic = 0;
+    },
+    place: function(i, j) {
+
+        this.y = i * 64 + 64/2;
+        this.x = j * 64 + 64/2;
+        map[i][j] = 1;
+    },
+    fire: function() {
+        var enemy = getEnemy(this.x, this.y, 200);
+        if(enemy) {
+            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+            addShell(this.x, this.y, angle);
+            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+        }
+    },
+    update: function (time, delta)
+    {
+        if(time > this.nextTic) {
+            this.fire();
+            this.nextTic = time + 1000;
+        }
+    }
+});
+
+var Shell = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Shell (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'shell');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(500, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
+
+
+var Bullet = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Bullet (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(5000, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
+
 
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
@@ -360,92 +575,9 @@ function getEnemy(x, y, distance) {
     return false;
 }
 
-var Turret = new Phaser.Class({
 
-        Extends: Phaser.GameObjects.Image,
-
-        initialize:
-
-        function Turret (scene)
-        {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
-            this.nextTic = 0;
-        },
-        place: function(i, j) {
-
-            this.y = i * 64 + 64/2;
-            this.x = j * 64 + 64/2;
-            map[i][j] = 1;
-        },
-        fire: function() {
-            var enemy = getEnemy(this.x, this.y, 200);
-            if(enemy) {
-                var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-                addBullet(this.x, this.y, angle);
-                this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
-            }
-        },
-        update: function (time, delta)
-        {
-            if(time > this.nextTic) {
-                this.fire();
-                this.nextTic = time + 1000;
-            }
-        }
-});
-
-var Bullet = new Phaser.Class({
-
-        Extends: Phaser.GameObjects.Image,
-
-        initialize:
-
-        function Bullet (scene)
-        {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
-
-            this.incX = 0;
-            this.incY = 0;
-            this.lifespan = 0;
-
-            this.speed = Phaser.Math.GetSpeed(5000, 1);
-        },
-
-        fire: function (x, y, angle)
-        {
-            this.setActive(true);
-            this.setVisible(true);
-            //  Bullets fire from the middle of the screen to the given x/y
-            this.setPosition(x, y);
-
-        //  we don't need to rotate the bullets as they are round
-        //    this.setRotation(angle);
-
-            this.dx = Math.cos(angle);
-            this.dy = Math.sin(angle);
-
-            this.lifespan = 1000;
-        },
-
-        update: function (time, delta)
-        {
-            this.lifespan -= delta;
-
-            this.x += this.dx * (this.speed * delta);
-            this.y += this.dy * (this.speed * delta);
-
-            if (this.lifespan <= 0)
-            {
-                this.setActive(false);
-                this.setVisible(false);
-            }
-        }
-
-    });
-
-
-function damageEnemy(enemy, bullet) {
-    // only if both enemy and bullet are alive
+function damageEnemyBullet(enemy, bullet) {
+    // Shot by turret
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
         bullet.setActive(false);
@@ -453,11 +585,22 @@ function damageEnemy(enemy, bullet) {
 
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
-        //enemy.setTint(0x000000);
-        //Phaser.scene.time.addEvent({ delay: 0.5, callback: enemy.clearTint, callbackScope: this, loop: false });
-        //enemy.clearTint();
     }
 }
+
+
+function damageEnemyShell(enemy, shell) {
+    // Shot by turret
+    if (enemy.active === true && shell.active === true) {
+        // we remove the bullet right away
+        shell.setActive(false);
+        shell.setVisible(false);
+
+        // decrease the enemy hp with BULLET_DAMAGE
+        enemy.receiveDamage(SHELL_DAMAGE);
+    }
+}
+
 
 function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
@@ -477,9 +620,10 @@ function canPlaceTurret(i, j) {
     return map[i][j] === 0;
 }
 
+
 function placeTurret(pointer) {
-    if (scraps >= 2){
-        scraps -=2;
+    if (scraps >= 5){
+        scraps -=5;
         var i = Math.floor(pointer.y/64);
         var j = Math.floor(pointer.x/64);
         if(canPlaceTurret(i, j)) {
@@ -493,11 +637,38 @@ function placeTurret(pointer) {
     }
 }
 
+function placeCannon(pointer) {
+    if (scraps >= 0){
+        scraps -= 0;
+        var i = Math.floor(pointer.y/64);
+        var j = Math.floor(pointer.x/64);
+        if(canPlaceTurret(i, j)) {
+            var cannon = cannons.get();
+            if (cannon){
+                cannon.setActive(true);
+                cannon.setVisible(true);
+                cannon.place(i, j);
+            }
+        }
+    }
+}
+
+
+
 function addBullet(x, y, angle) {
     var bullet = bullets.get();
     if (bullet)
     {
         bullet.fire(x, y, angle);
-        gunfire.play()
+        //gunfire.play()
+    }
+}
+
+function addShell(x, y, angle) {
+    var shell = shells.get();
+    if (shell)
+    {
+        shell.fire(x, y, angle);
+        //gunfire.play() !!!!!ADD IN SOUND!!!!
     }
 }
