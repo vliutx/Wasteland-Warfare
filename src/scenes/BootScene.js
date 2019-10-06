@@ -265,7 +265,8 @@ var Regular = new Phaser.Class({
         },
         receiveDamage: function(damage) {
             this.hp -= damage;
-
+            //this.setTint(0xffffff);
+            //this.clearTint();
             // if hp drops below 0 we deactivate this enemy
             if(this.hp <= 0) {
                 this.setActive(false);
@@ -452,6 +453,9 @@ function damageEnemy(enemy, bullet) {
 
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
+        //enemy.setTint(0x000000);
+        //Phaser.scene.time.addEvent({ delay: 0.5, callback: enemy.clearTint, callbackScope: this, loop: false });
+        //enemy.clearTint();
     }
 }
 
