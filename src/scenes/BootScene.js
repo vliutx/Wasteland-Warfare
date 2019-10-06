@@ -31,6 +31,7 @@
     var restartText;
     var path;
     var restart = false;
+    var cannonshot;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -53,7 +54,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('player', './assets/MainPlayer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
-    // !!!! ADD ASSETS FOR CANNON CLASS !!!!
+    // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
     this.load.image('shell', 'assets/Cannonball.png');
@@ -74,6 +75,7 @@ export default class BootScene extends Phaser.Scene {
 
     //Add sounds
     gunfire = this.sound.add('gunshot');
+    cannonshot = this.sound.add('cannonshot');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -120,7 +122,7 @@ export default class BootScene extends Phaser.Scene {
         addBullet(player.x,player.y,Math.PI)
         }
     });
-    lifecount = 4;
+    lifecount = 10;
 
 
     //Enemies
@@ -171,10 +173,10 @@ export default class BootScene extends Phaser.Scene {
     
     //Create timer variable and display text
     this.buildTime = 5;
-    timeText = this.add.text(25, 600, timeRemaining, {fontSize: 26, color: '#000000', fontStyle: 'bold'});
+    timeText = this.add.text(165, 600, timeRemaining, {fontSize: 30, color: '#000000', fontStyle: 'bold'});
 
     //Add enemies remaining text
-    this.enemiesRemainingText = this.add.text(25, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     this.enemiesRemainingText.setVisible(false);
 
     //Create health text
@@ -772,6 +774,6 @@ function addShell(x, y, angle) {
     if (shell)
     {
         shell.fire(x, y, angle);
-        //gunfire.play() !!!!!ADD IN SOUND!!!!
+        cannonshot.play();
     }
 }
