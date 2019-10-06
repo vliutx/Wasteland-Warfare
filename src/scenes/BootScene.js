@@ -47,6 +47,11 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('player', './assets/MainPlayer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
+    // !!!! ADD ASSETS FOR CANNON CLASS !!!!
+    this.load.image('cannon', 'assets/cannon.png');
+    this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
+    this.load.image('shell', 'assets/shell.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -58,7 +63,7 @@ export default class BootScene extends Phaser.Scene {
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
     //Add sounds
-    gunfire = this.sound.add('gunshot');
+    //gunfire = this.sound.add('gunshot');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -105,20 +110,21 @@ export default class BootScene extends Phaser.Scene {
 
     // Turrets
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-
+    cannons = this.add.group({classType: Cannon, runChildUpdate: true})
 
     // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
-
+    shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
 //Create game functions
 
-    //class overlaps
+    //class overlaps (ADD FOR CANNONS)
     this.physics.add.overlap(reg_enemies, bullets, damageEnemy);
     this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
 
-    //place turrets
-    this.input.on('pointerdown', placeTurret);
+    //place turrets (ADD FOR CANNONS)
+    //this.input.on('pointerdown', placeTurret);
+    this.input.on('pointerdown', placeCannon);
 
 
 //Create game texts
@@ -326,6 +332,7 @@ var Regular = new Phaser.Class({
 
 });
 
+
 var Fast = new Phaser.Class({
 
         Extends: Phaser.GameObjects.Image,
@@ -381,6 +388,175 @@ var Fast = new Phaser.Class({
 
 });
 
+
+var Turret = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Turret (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
+        this.nextTic = 0;
+    },
+    place: function(i, j) {
+
+        this.y = i * 64 + 64/2;
+        this.x = j * 64 + 64/2;
+        map[i][j] = 1;
+    },
+    fire: function() {
+        var enemy = getEnemy(this.x, this.y, 200);
+        if(enemy) {
+            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+            addShell(this.x, this.y, angle);
+            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+        }
+    },
+    update: function (time, delta)
+    {
+        if(time > this.nextTic) {
+            this.fire();
+            this.nextTic = time + 1000;
+        }
+    }
+});
+
+var Cannon = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Turret (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
+        this.nextTic = 0;
+    },
+    place: function(i, j) {
+
+        this.y = i * 64 + 64/2;
+        this.x = j * 64 + 64/2;
+        map[i][j] = 1;
+    },
+    fire: function() {
+        var enemy = getEnemy(this.x, this.y, 200);
+        if(enemy) {
+            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+            addShell(this.x, this.y, angle);
+            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+        }
+    },
+    update: function (time, delta)
+    {
+        if(time > this.nextTic) {
+            this.fire();
+            this.nextTic = time + 1000;
+        }
+    }
+});
+
+var Shell = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Shell (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'shell');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(750, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
+
+
+var Bullet = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Bullet (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(5000, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
+
+
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
     var fastUnits = fast_enemies.getChildren();
@@ -395,89 +571,6 @@ function getEnemy(x, y, distance) {
     return false;
 }
 
-var Turret = new Phaser.Class({
-
-        Extends: Phaser.GameObjects.Image,
-
-        initialize:
-
-        function Turret (scene)
-        {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
-            this.nextTic = 0;
-        },
-        place: function(i, j) {
-
-            this.y = i * 64 + 64/2;
-            this.x = j * 64 + 64/2;
-            map[i][j] = 1;
-        },
-        fire: function() {
-            var enemy = getEnemy(this.x, this.y, 200);
-            if(enemy) {
-                var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-                addBullet(this.x, this.y, angle);
-                this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
-            }
-        },
-        update: function (time, delta)
-        {
-            if(time > this.nextTic) {
-                this.fire();
-                this.nextTic = time + 1000;
-            }
-        }
-});
-
-var Bullet = new Phaser.Class({
-
-        Extends: Phaser.GameObjects.Image,
-
-        initialize:
-
-        function Bullet (scene)
-        {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
-
-            this.incX = 0;
-            this.incY = 0;
-            this.lifespan = 0;
-
-            this.speed = Phaser.Math.GetSpeed(5000, 1);
-        },
-
-        fire: function (x, y, angle)
-        {
-            this.setActive(true);
-            this.setVisible(true);
-            //  Bullets fire from the middle of the screen to the given x/y
-            this.setPosition(x, y);
-
-        //  we don't need to rotate the bullets as they are round
-        //    this.setRotation(angle);
-
-            this.dx = Math.cos(angle);
-            this.dy = Math.sin(angle);
-
-            this.lifespan = 1000;
-        },
-
-        update: function (time, delta)
-        {
-            this.lifespan -= delta;
-
-            this.x += this.dx * (this.speed * delta);
-            this.y += this.dy * (this.speed * delta);
-
-            if (this.lifespan <= 0)
-            {
-                this.setActive(false);
-                this.setVisible(false);
-            }
-        }
-
-    });
-
 
 function damageEnemy(enemy, bullet) {
     // only if both enemy and bullet are alive
@@ -490,6 +583,7 @@ function damageEnemy(enemy, bullet) {
         enemy.receiveDamage(BULLET_DAMAGE);
     }
 }
+
 
 function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
@@ -509,6 +603,7 @@ function canPlaceTurret(i, j) {
     return map[i][j] === 0;
 }
 
+
 function placeTurret(pointer) {
     if (scraps >= 5){
         scraps -=5;
@@ -525,11 +620,38 @@ function placeTurret(pointer) {
     }
 }
 
+function placeCannon(pointer) {
+    if (scraps >= 0){
+        scraps -= 0;
+        var i = Math.floor(pointer.y/64);
+        var j = Math.floor(pointer.x/64);
+        if(canPlaceTurret(i, j)) {
+            var cannon = cannons.get();
+            if (cannon){
+                cannon.setActive(true);
+                cannon.setVisible(true);
+                cannon.place(i, j);
+            }
+        }
+    }
+}
+
+
+
 function addBullet(x, y, angle) {
     var bullet = bullets.get();
     if (bullet)
     {
         bullet.fire(x, y, angle);
-        gunfire.play()
+        //gunfire.play()
+    }
+}
+
+function addShell(x, y, angle) {
+    var shell = shells.get();
+    if (shell)
+    {
+        shell.fire(x, y, angle);
+        //gunfire.play() !!!!!ADD IN SOUND!!!!
     }
 }
