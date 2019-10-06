@@ -116,11 +116,15 @@ export default class BootScene extends Phaser.Scene {
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
-//Create game functions
+//Physics overlaps 
 
-    //class overlaps (ADD FOR CANNONS)
-    this.physics.add.overlap(reg_enemies, bullets, damageEnemy);
-    this.physics.add.overlap(fast_enemies, bullets, damageEnemy);
+    //Bullets overlap for turrets/player
+    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet);
+    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet);
+
+    //Shells overlap for cannon
+    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell);
+    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell);
 
     //place turrets (ADD FOR CANNONS)
     //this.input.on('pointerdown', placeTurret);
@@ -471,7 +475,7 @@ var Shell = new Phaser.Class({
         this.incY = 0;
         this.lifespan = 0;
 
-        this.speed = Phaser.Math.GetSpeed(750, 1);
+        this.speed = Phaser.Math.GetSpeed(500, 1);
     },
 
     fire: function (x, y, angle)
@@ -572,8 +576,8 @@ function getEnemy(x, y, distance) {
 }
 
 
-function damageEnemy(enemy, bullet) {
-    // only if both enemy and bullet are alive
+function damageEnemyBullet(enemy, bullet) {
+    // Shot by turret
     if (enemy.active === true && bullet.active === true) {
         // we remove the bullet right away
         bullet.setActive(false);
@@ -581,6 +585,19 @@ function damageEnemy(enemy, bullet) {
 
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
+    }
+}
+
+
+function damageEnemyShell(enemy, shell) {
+    // Shot by turret
+    if (enemy.active === true && shell.active === true) {
+        // we remove the bullet right away
+        shell.setActive(false);
+        shell.setVisible(false);
+
+        // decrease the enemy hp with BULLET_DAMAGE
+        enemy.receiveDamage(SHELL_DAMAGE);
     }
 }
 
