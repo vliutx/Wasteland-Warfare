@@ -23,8 +23,9 @@
     var waveText;
     var waveNumber;
     var scrapText;
-    var lifecount; 
+    var lifecount;
     var lifecountText;
+    var walking;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -37,11 +38,17 @@ export default class BootScene extends Phaser.Scene {
 
   preload () {
     // Preload assets
-    this.load.atlas('sprites', 'assets/spritesheet.png', 'assets/spritesheet.json');
+    this.load.spritesheet("regularenemy", "./assets/spriteSheets/RegularEnemy.png", {
+      frameHeight: 64,
+      frameWidth: 64
+    });
+    this.load.spritesheet("fastenemy", "./assets/spriteSheets/FastEnemy.png", {
+      frameHeight: 64,
+      frameWidth: 64
+    });
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/bullet.png');
-    this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('player', './assets/MainPlayer.png');
@@ -50,7 +57,7 @@ export default class BootScene extends Phaser.Scene {
     // !!!! ADD ASSETS FOR CANNON CLASS !!!!
     this.load.image('cannon', 'assets/cannon.png');
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
-    this.load.image('shell', 'assets/shell.png');
+    this.load.image('shell', 'assets/Cannonball.png');
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -58,6 +65,12 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+    walking = this.anims.create({
+      key: "walk",
+      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+});
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -75,7 +88,7 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-//Draw grid lines    
+//Draw grid lines
     // var graphics = this.add.graphics();
     // drawLines(graphics);
     // for path planning
@@ -98,7 +111,18 @@ export default class BootScene extends Phaser.Scene {
     //Enemies
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
-   
+
+    //enemy animations
+    this.anims.create({
+      key: "walk",
+      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1,
+
+});
+
+    reg_enemies.playAnimation('walk');
+
     // Declare variables
     this.nextEnemy = 0;
     this.waveSize = 6;
@@ -116,7 +140,7 @@ export default class BootScene extends Phaser.Scene {
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
-//Physics overlaps 
+//Physics overlaps
 
     //Bullets overlap for turrets/player
     this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet);
@@ -140,7 +164,7 @@ export default class BootScene extends Phaser.Scene {
     //Create wave text
     waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold'});
     waveText.setVisible(false);
-    
+
     //Create timer variable and display text
     this.buildTime = 5;
     timeText = this.add.text(25, 600, timeRemaining, {fontSize: 26, color: '#000000', fontStyle: 'bold'});
@@ -165,16 +189,16 @@ export default class BootScene extends Phaser.Scene {
         //begin build phase
         buildPhase = true;
         //disable start text
-        startText.setVisible(false);  
+        startText.setVisible(false);
         //Enable wave text
-        waveText.setVisible(true);  
+        waveText.setVisible(true);
         //Enable scrap text
         scrapText.setVisible(true);
         //Enable lifecount text
         lifecountText.setVisible(true);
     });
 
-    
+
   } //End create
 
   update (time, delta) {
@@ -186,12 +210,12 @@ export default class BootScene extends Phaser.Scene {
         gameTime += delta/1000;
         timeRemaining =  Math.floor(this.buildTime - gameTime);
         timeText.setText('Time before next wave: ' + timeRemaining);
-        
+
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
             //Build phase over
             buildPhase = false;
-            //Reset gameTime    
+            //Reset gameTime
             gameTime = 0;
             //Remove text
             timeText.setVisible(false);
@@ -206,7 +230,7 @@ export default class BootScene extends Phaser.Scene {
     //During wave phase
     if (buildPhase == false && startGame == true){
 
-        //Set timer 
+        //Set timer
         gameTime += delta;
 
         //Display # of enemies remaining
@@ -233,7 +257,7 @@ export default class BootScene extends Phaser.Scene {
                 this.nextEnemy = gameTime + this.spawnDelay+100;
                 this.spawned+=1
             }
-        } //All enemies spawned 
+        } //All enemies spawned
 
         //All enemies despawned
         if (enemiesRemaining == 0){
@@ -244,14 +268,14 @@ export default class BootScene extends Phaser.Scene {
             //reset game time
             gameTime = 0;
             //Enemy text disable
-            this.enemiesRemainingText.setVisible(false);    
+            this.enemiesRemainingText.setVisible(false);
             //reset this.nextEnemy
             this.nextEnemy = 0;
             //Increment wave number
             waveNumber += 1;
             waveText.setText("Wave: " + waveNumber);
             //Increment wave size
-            this.waveSize += 4; 
+            this.waveSize += 4;
             //Increment spawn delay
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
@@ -289,8 +313,7 @@ var Regular = new Phaser.Class({
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'enemy');
-
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'regularenemy');
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
