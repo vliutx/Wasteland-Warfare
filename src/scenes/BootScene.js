@@ -322,8 +322,11 @@ var Regular = new Phaser.Class({
         receiveDamage: function(damage) {
             this.hp -= damage;
 
+            this.setTint(0x000000);
+            //setTimeout(this.setTint, 500, 0xffffff);
             // if hp drops below 0 we deactivate this enemy
             if(this.hp <= 0) {
+                this.setTint(0xffffff);
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
@@ -339,10 +342,11 @@ var Regular = new Phaser.Class({
 
             if (this.follower.t >= 1)
             {
+                this.setTint(0xf00);
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 1;
-                lifecount -= 1
+                lifecount -= 1;
             }
         }
 
@@ -378,8 +382,11 @@ var Fast = new Phaser.Class({
         receiveDamage: function(damage) {
             this.hp -= damage;
 
+            this.setTint(0xf00);
+            //setTimeout(this.setTint, 500, 0xffffff);
             // if hp drops below 0 we deactivate this enemy
             if(this.hp <= 0) {
+                this.setTint(0xffffff);
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
@@ -395,6 +402,7 @@ var Fast = new Phaser.Class({
 
             if (this.follower.t >= 1)
             {
+                this.setTint(0xffffff);
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 1;
@@ -595,6 +603,8 @@ function damageEnemyBullet(enemy, bullet) {
         bullet.setActive(false);
         bullet.setVisible(false);
 
+        //make them turn black
+        enemy.setTint(0x000000);
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
     }
