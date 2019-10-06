@@ -13,3 +13,5 @@ var SHELL_DAMAGE = 150;
 
 var wavesRemaining = 2;
 var pause = true;
+var turret_selector = 1;
+
