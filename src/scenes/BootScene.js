@@ -25,6 +25,11 @@
     var scrapText;
     var lifecount; 
     var lifecountText;
+    var victoryText;
+    var continueText;
+    var defeatText;
+    var restartText;
+    var restart = false;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -91,8 +96,12 @@ export default class BootScene extends Phaser.Scene {
     player.setCollideWorldBounds(true);
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    spaceBar.on("down", function(){addBullet(player.x,player.y,Math.PI)});
-    lifecount = 10;
+    spaceBar.on("down", function(){
+        if (pause != true){
+        addBullet(player.x,player.y,Math.PI)
+        }
+    });
+    lifecount = 4;
 
 
     //Enemies
@@ -138,7 +147,7 @@ export default class BootScene extends Phaser.Scene {
     scrapText.setVisible(false);
 
     //Create wave text
-    waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold'});
+    waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     
     //Create timer variable and display text
@@ -153,6 +162,18 @@ export default class BootScene extends Phaser.Scene {
     lifecountText = this.add.text(650, 600, "Lifecount: " + lifecount, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     lifecountText.setVisible(false);
 
+    //Create Victory text
+    victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#32CD32', fontStyle: 'bold'});
+    victoryText.setVisible(false);
+    continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#32CD32', fontStyle: 'bold'});
+    continueText.setVisible(false);
+
+    //Defeat text
+    defeatText = this.add.text(250, 5, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
+    defeatText.setVisible(false);
+    restartText = this.add.text(195, 100, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    restartText.setVisible(false);
+
 //Start the game
     //Prompt player to start game
     startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
@@ -161,7 +182,7 @@ export default class BootScene extends Phaser.Scene {
     var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     startKey.on("down", function(){
         //start game
-        startGame = true;
+        pause = false
         //begin build phase
         buildPhase = true;
         //disable start text
@@ -179,8 +200,57 @@ export default class BootScene extends Phaser.Scene {
 
   update (time, delta) {
 
+    //Win Condition
+    if (wavesRemaining == 0){
+        //Psuedo pause the game
+        pause = true
+
+        //Display victory text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
+        victoryText.setVisible(true);
+
+        //Prompt user to continue
+        continueText.setVisible(true);
+        var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        continueKey.on("down", function(){
+            //Disable continue text
+            continueText.setVisible(false);
+            //Disable victory text
+            victoryText.setVisible(false);
+            //unpause game
+            pause = false;
+            //Enable wave text
+            waveText.setVisible(true);  
+            //Enable scrap text
+            scrapText.setVisible(true);
+            //Increment wavesRemaining so condition goes to false
+            wavesRemaining-= 1;
+        });
+    }
+
+    //Loss condition
+    if (lifecount == 0){
+        //pause game
+        pause = true;
+
+        //remove scrap and wave text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
+
+        //Display defeat text
+        defeatText.setVisible(true);
+        
+        //Prompt player to restart the game
+        restartText.setVisible(true);
+        var restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        restartKey.on("down", function(){
+            location.reload();
+        });
+    }
+
     //During build phase
-    if (buildPhase == true){
+    if (buildPhase == true && pause != true){
 
         //Add game timer
         gameTime += delta/1000;
@@ -204,7 +274,7 @@ export default class BootScene extends Phaser.Scene {
     } //Build phase ends
 
     //During wave phase
-    if (buildPhase == false && startGame == true){
+    if (buildPhase == false && pause != true){
 
         //Set timer 
         gameTime += delta;
@@ -247,9 +317,10 @@ export default class BootScene extends Phaser.Scene {
             this.enemiesRemainingText.setVisible(false);    
             //reset this.nextEnemy
             this.nextEnemy = 0;
-            //Increment wave number
+            //Increment wave number and remaining waves
             waveNumber += 1;
             waveText.setText("Wave: " + waveNumber);
+            wavesRemaining -= 1;
             //Increment wave size
             this.waveSize += 4; 
             //Increment spawn delay
@@ -265,15 +336,17 @@ export default class BootScene extends Phaser.Scene {
     //Adjust lifecount text
     lifecountText.setText("Lifecount: " + lifecount);
 
-//Player movement
-    var cursors = this.input.keyboard.createCursorKeys();
-    var speed = 6
+    //Player movement
+    if (pause != true) {
+        var cursors = this.input.keyboard.createCursorKeys();
+        var speed = 6
 
-    if (cursors.up.isDown) {
-      player.y -= speed;
-    } else if (cursors.down.isDown) {
-      player.y += speed;
-    } else {
+        if (cursors.up.isDown) {
+        player.y -= speed;
+        } else if (cursors.down.isDown) {
+        player.y += speed;
+        } else {
+        }
     }
 
 
@@ -320,17 +393,19 @@ var Regular = new Phaser.Class({
         },
         update: function (time, delta)
         {
-            this.follower.t += this.ENEMY_SPEED * delta;
-            path.getPoint(this.follower.t, this.follower.vec);
+            if (pause != true){
+                this.follower.t += this.ENEMY_SPEED * delta;
+                path.getPoint(this.follower.t, this.follower.vec);
 
-            this.setPosition(this.follower.vec.x, this.follower.vec.y);
+                this.setPosition(this.follower.vec.x, this.follower.vec.y);
 
-            if (this.follower.t >= 1)
-            {
-                this.setActive(false);
-                this.setVisible(false);
-                enemiesRemaining -= 1;
-                lifecount -= 1
+                if (this.follower.t >= 1)
+                {
+                    this.setActive(false);
+                    this.setVisible(false);
+                    enemiesRemaining -= 1;
+                    lifecount -= 1
+                }
             }
         }
 
@@ -376,17 +451,19 @@ var Fast = new Phaser.Class({
         },
         update: function (time, delta)
         {
-            this.follower.t += this.ENEMY_SPEED * delta;
-            path.getPoint(this.follower.t, this.follower.vec);
+            if (pause != true){
+                this.follower.t += this.ENEMY_SPEED * delta;
+                path.getPoint(this.follower.t, this.follower.vec);
 
-            this.setPosition(this.follower.vec.x, this.follower.vec.y);
+                this.setPosition(this.follower.vec.x, this.follower.vec.y);
 
-            if (this.follower.t >= 1)
-            {
-                this.setActive(false);
-                this.setVisible(false);
-                enemiesRemaining -= 1;
-                lifecount -= 1
+                if (this.follower.t >= 1)
+                {
+                    this.setActive(false);
+                    this.setVisible(false);
+                    enemiesRemaining -= 1;
+                    lifecount -= 1
+                }
             }
         }
 
@@ -456,7 +533,7 @@ var Cannon = new Phaser.Class({
     {
         if(time > this.nextTic) {
             this.fire();
-            this.nextTic = time + 1000;
+            this.nextTic = time + 2000;
         }
     }
 });
@@ -617,7 +694,7 @@ function drawLines(graphics) {
 
 
 function canPlaceTurret(i, j) {
-    return map[i][j] === 0;
+    return map[i][j] === 0 && pause != true;
 }
 
 
