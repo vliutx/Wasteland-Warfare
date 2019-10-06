@@ -46,6 +46,8 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
       frameWidth: 64
     });
+    this.load.image('temp_fast', 'assets/Temp-fast.png')
+    this.load.image('temp_reg', 'assets/Temp-Regular.png')
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/bullet.png');
@@ -313,7 +315,7 @@ var Regular = new Phaser.Class({
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'regularenemy');
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'temp_reg');
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
@@ -348,6 +350,19 @@ var Regular = new Phaser.Class({
 
             this.setPosition(this.follower.vec.x, this.follower.vec.y);
 
+            //IN PROGRESS
+            if (this.follower.vec.x > 0 && this.follower.vec.y > 0) {
+              this.rotation = Math.PI;
+              console.log(this.follower.vec.x)
+              console.log(this.follower.vec.y)
+            } else if (this.follower.vec.x > 0 && this.follower.vec.y < 0) {
+              this.rotation = Math.PI / 2
+            } else if (this.follower.vec.x < 0 && this.follower.vec.y > 0) {
+              this.rotation = 3 * Math.PI / 2;
+            } else if (this.follower.vec.x < 0 && this.follower.vec.y < 0) {
+              this.rotation = 2 * Math.PI;
+            };
+
             if (this.follower.t >= 1)
             {
                 this.setActive(false);
@@ -368,7 +383,7 @@ var Fast = new Phaser.Class({
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fastenemy');
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'temp_fast');
 
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
