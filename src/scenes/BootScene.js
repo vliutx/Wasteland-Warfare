@@ -29,6 +29,7 @@
     var continueText;
     var defeatText;
     var restartText;
+    var path;
     var restart = false;
 
 export default class BootScene extends Phaser.Scene {
@@ -55,7 +56,7 @@ export default class BootScene extends Phaser.Scene {
     // !!!! ADD ASSETS FOR CANNON CLASS !!!!
     this.load.image('cannon', 'assets/cannon.png');
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
-    this.load.image('shell', 'assets/shell.png');
+    this.load.image('shell', 'assets/Cannonball.png');
 
     // turret selector
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
@@ -72,7 +73,7 @@ export default class BootScene extends Phaser.Scene {
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
     //Add sounds
-    //gunfire = this.sound.add('gunshot');
+    gunfire = this.sound.add('gunshot');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -154,8 +155,8 @@ export default class BootScene extends Phaser.Scene {
     this.physics.add.overlap(fast_enemies, shells, damageEnemyShell);
 
     //place turrets (ADD FOR CANNONS)
-    //this.input.on('pointerdown', placeTurret);
-    this.input.on('pointerdown', placeCannon);
+    this.input.on('pointerdown', placeTower);
+
 
 
 //Create game texts
@@ -509,7 +510,7 @@ var Turret = new Phaser.Class({
         var enemy = getEnemy(this.x, this.y, 200);
         if(enemy) {
             var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-            addShell(this.x, this.y, angle);
+            addBullet(this.x, this.y, angle);
             this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
         }
     },
@@ -757,14 +758,12 @@ function placeCannon(pointer) {
     }
 }
 
-
-
 function addBullet(x, y, angle) {
     var bullet = bullets.get();
     if (bullet)
     {
         bullet.fire(x, y, angle);
-        //gunfire.play()
+        gunfire.play()
     }
 }
 
