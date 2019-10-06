@@ -44,11 +44,17 @@ export default class BootScene extends Phaser.Scene {
 
   preload () {
     // Preload assets
-    this.load.atlas('sprites', 'assets/spritesheet.png', 'assets/spritesheet.json');
+    this.load.spritesheet("regularenemy", "./assets/spriteSheets/RegularEnemy.png", {
+      frameHeight: 64,
+      frameWidth: 64
+    });
+    this.load.spritesheet("fastenemy", "./assets/spriteSheets/FastEnemy.png", {
+      frameHeight: 64,
+      frameWidth: 64
+    });
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/bullet.png');
-    this.load.image('fastenemy', './assets/FastEnemy.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('player', './assets/MainPlayer.png');
@@ -69,6 +75,12 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+    walking = this.anims.create({
+      key: "walk",
+      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+});
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -128,6 +140,16 @@ export default class BootScene extends Phaser.Scene {
     //Enemies
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
+
+    //enemy animations
+    this.anims.create({
+        key: "walk",
+        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1,
+    });
+      
+    reg_enemies.playAnimation('walk');
    
     // Declare variables
     this.nextEnemy = 0;
@@ -383,8 +405,7 @@ var Regular = new Phaser.Class({
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'sprites', 'enemy');
-
+            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'regularenemy');
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
@@ -760,12 +781,23 @@ function placeCannon(pointer) {
     }
 }
 
+
+
 function addBullet(x, y, angle) {
     var bullet = bullets.get();
     if (bullet)
     {
         bullet.fire(x, y, angle);
-        gunfire.play()
+        //gunfire.play()
+    }
+}
+
+function addShell(x, y, angle) {
+    var shell = shells.get();
+    if (shell)
+    {
+        shell.fire(x, y, angle);
+        //gunfire.play() !!!!!ADD IN SOUND!!!!
     }
 }
 
