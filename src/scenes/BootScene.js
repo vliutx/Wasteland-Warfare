@@ -10,7 +10,7 @@
                     [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
+                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
     var gunfire;
     var timeText;
@@ -52,6 +52,10 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
     this.load.image('shell', 'assets/shell.png');
 
+    // turret selector
+    this.load.image('turreticon', 'assets/Turret1-Icon.png');
+    this.load.image('cannonicon', 'assets/Cannon-Icon.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -75,13 +79,20 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-//Draw grid lines    
-    // var graphics = this.add.graphics();
-    // drawLines(graphics);
-    // for path planning
-    // graphics.lineStyle(3, 0xffffff, 1);
-    // path.draw(graphics);
-
+    //creates buttons to change between the turrets
+    var button1 = this.add.sprite(40, 600, 'turreticon', 0).setInteractive();
+    button1.on('pointerup', function(){
+        turret_selector = 0;
+        button1.alpha = 0.5;
+        button2.alpha = 1;
+    });
+    var button2 = this.add.sprite(110, 600, 'cannonicon', 0).setInteractive();
+    button2.on('pointerup', function(){
+        turret_selector = 1;
+        button2.alpha = 0.5;
+        button1.alpha = 1;
+    })
+    button1.alpha = 0.5; //initially on button 1 already.
 
 //Create enemies/towers/player groups
 
@@ -128,7 +139,8 @@ export default class BootScene extends Phaser.Scene {
 
     //place turrets (ADD FOR CANNONS)
     //this.input.on('pointerdown', placeTurret);
-    this.input.on('pointerdown', placeCannon);
+    //this.input.on('pointerdown', placeCannon);
+    this.input.on('pointerdown', placeTower);    
 
 
 //Create game texts
@@ -222,7 +234,7 @@ export default class BootScene extends Phaser.Scene {
                 regular.startOnPath(100);
 
                 this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
+                this.spawned += 1;
             }
 
             if (fast){
@@ -231,7 +243,7 @@ export default class BootScene extends Phaser.Scene {
                 fast.startOnPath(50);
 
                 this.nextEnemy = gameTime + this.spawnDelay+100;
-                this.spawned+=1
+                this.spawned += 1;
             }
         } //All enemies spawned 
 
@@ -621,12 +633,12 @@ function canPlaceTurret(i, j) {
 }
 
 
-function placeTurret(pointer) {
-    if (scraps >= 5){
-        scraps -=5;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
+function placeTower(pointer) {
+    var i = Math.floor(pointer.y/64);
+    var j = Math.floor(pointer.x/64);
+    if(canPlaceTurret(i, j)) {
+        if (turret_selector == 0 && scraps >= 5){
+            scraps -= 5;
             var turret = turrets.get();
             if (turret){
                 turret.setActive(true);
@@ -634,15 +646,8 @@ function placeTurret(pointer) {
                 turret.place(i, j);
             }
         }
-    }
-}
-
-function placeCannon(pointer) {
-    if (scraps >= 0){
-        scraps -= 0;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
+        else if (turret_selector == 1 && scraps >= 10){
+            scraps -= 10;
             var cannon = cannons.get();
             if (cannon){
                 cannon.setActive(true);
@@ -652,7 +657,6 @@ function placeCannon(pointer) {
         }
     }
 }
-
 
 
 function addBullet(x, y, angle) {
