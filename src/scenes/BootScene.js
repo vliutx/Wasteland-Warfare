@@ -163,9 +163,9 @@ export default class BootScene extends Phaser.Scene {
     lifecountText.setVisible(false);
 
     //Create Victory text
-    victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#32CD32', fontStyle: 'bold'});
+    victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
-    continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#32CD32', fontStyle: 'bold'});
+    continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
 
     //Defeat text
