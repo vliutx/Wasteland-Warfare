@@ -92,7 +92,7 @@ export default class BootScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1
-});
+    });
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -230,6 +230,7 @@ export default class BootScene extends Phaser.Scene {
     restartText.setVisible(false);
 
 //Start the game
+
     //Prompt player to start game
     startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
 
@@ -304,7 +305,7 @@ export default class BootScene extends Phaser.Scene {
         });
     }
 
-    //During build phase
+    //Build phase
     if (buildPhase == true && pause != true){
 
         //Add game timer
@@ -328,7 +329,7 @@ export default class BootScene extends Phaser.Scene {
         }
     } //Build phase ends
 
-    //During wave phase
+    //Combat phase
     if (buildPhase == false && pause != true){
 
         //Set timer
@@ -383,7 +384,7 @@ export default class BootScene extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
         }
-    } //End wave phase
+    } //End combat phase
 
     //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
@@ -408,6 +409,7 @@ export default class BootScene extends Phaser.Scene {
   } //End update()
 
 }//End class export
+
 
 var Regular = new Phaser.Class({
 
@@ -591,6 +593,7 @@ var Turret = new Phaser.Class({
     }
 });
 
+
 var Cannon = new Phaser.Class({
 
     Extends: Phaser.GameObjects.Image,
@@ -624,6 +627,7 @@ var Cannon = new Phaser.Class({
         }
     }
 });
+
 
 var Shell = new Phaser.Class({
 
@@ -756,11 +760,11 @@ function damageEnemyBullet(enemy, bullet) {
 function damageEnemyShell(enemy, shell) {
     // Shot by turret
     if (enemy.active === true && shell.active === true) {
-        // we remove the bullet right away
+        // we remove the shell right away
         shell.setActive(false);
         shell.setVisible(false);
 
-        // decrease the enemy hp with BULLET_DAMAGE
+        // decrease the enemy hp with SHELL_DAMAGE
         enemy.receiveDamage(SHELL_DAMAGE);
     }
 }
@@ -810,6 +814,7 @@ function placeTower(pointer) {
     }
 }
 
+
 function placeCannon(pointer) {
     if (scraps >= 0){
         scraps -= 0;
@@ -825,7 +830,6 @@ function placeCannon(pointer) {
         }
     }
 }
-
 
 
 function addBullet(x, y, angle) {
