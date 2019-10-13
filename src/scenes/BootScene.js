@@ -349,7 +349,6 @@ export default class BootScene extends Phaser.Scene {
       reloadTime += delta/1000;
 
       if (Math.floor(reloadTime) == 1){
-        console.log('RELOAD');
         ammoCount = 6;
         reloadTime = 0;
         reloading = false;
