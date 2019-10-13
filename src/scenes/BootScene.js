@@ -19,6 +19,7 @@
     var startGame = false;
     var startText;
     var gameTime = 0;
+    var reloadTime = 0;
     var enemiesRemaining;
     var waveText;
     var waveNumber;
@@ -35,6 +36,10 @@
     var walking;
     var wind;
     var tick;
+    var ammoCount;
+    var ammoCountText;
+    var reloading = false;
+
     //NAME THESE BETTER/DON'T PUT THEM HERE
     var movetext;
     var firetext;
@@ -95,6 +100,10 @@ export default class BootScene extends Phaser.Scene {
     wind.play();
     tick = this.sound.add('tick');
 
+    //Initialize gun ammo
+    ammoCount = 6;
+
+    //DOES NOT WORK CURRENTLY
     walking = this.anims.create({
       key: "walk",
       frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
@@ -130,16 +139,16 @@ export default class BootScene extends Phaser.Scene {
     var button1 = this.add.sprite(40, 600, 'turreticon', 0).setInteractive();
     button1.on('pointerup', function(){
         turret_selector = 0;
-        button1.alpha = 0.5;
-        button2.alpha = 1;
+        button1.alpha = 1;
+        button2.alpha = 0.5;
     });
     var button2 = this.add.sprite(110, 600, 'cannonicon', 0).setInteractive();
     button2.on('pointerup', function(){
         turret_selector = 1;
-        button2.alpha = 0.5;
-        button1.alpha = 1;
+        button2.alpha = 1;
+        button1.alpha = 0.5;
     })
-    button1.alpha = 0.5; //initially on button 1 already.
+    button2.alpha = 0.5; //initially on button 1 already.
 
 //Create enemies/towers/player groups
 
@@ -150,8 +159,9 @@ export default class BootScene extends Phaser.Scene {
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
-        if (pause != true){
+        if (pause != true && reloading == false){
         addBullet(player.x,player.y,Math.PI)
+        ammoCount -= 1
         }
     });
     lifecount = 10;
@@ -222,8 +232,12 @@ export default class BootScene extends Phaser.Scene {
     this.enemiesRemainingText.setVisible(false);
 
     //Create health text
-    lifecountText = this.add.text(650, 600, "Lifecount: " + lifecount, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
     lifecountText.setVisible(false);
+
+    //ammoCount
+    ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    ammoCountText.setVisible(false);
 
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
@@ -272,6 +286,7 @@ export default class BootScene extends Phaser.Scene {
         scrapText.setVisible(true);
         //Enable lifecount text
         lifecountText.setVisible(true);
+        ammoCountText.setVisible(true);
     });
 
 
@@ -326,6 +341,19 @@ export default class BootScene extends Phaser.Scene {
         restartKey.on("down", function(){
             location.reload();
         });
+    }
+
+    //out of bullets. Reload
+    if (ammoCount == 0){
+      reloading = true;
+      reloadTime += delta/1000;
+
+      if (Math.floor(reloadTime) == 1){
+        console.log('RELOAD');
+        ammoCount = 6;
+        reloadTime = 0;
+        reloading = false;
+      }
     }
 
     //Build phase
@@ -440,6 +468,9 @@ export default class BootScene extends Phaser.Scene {
 
     //Adjust lifecount text
     lifecountText.setText("Lifecount: " + lifecount);
+
+    //adjust bullets
+    ammoCountText.setText("Ammo: " + ammoCount);
 
     //Player movement
     if (pause != true) {
