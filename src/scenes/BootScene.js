@@ -35,6 +35,13 @@
     var walking;
     var wind;
     var tick;
+    //NAME THESE BETTER/DON'T PUT THEM HERE
+    var movetext;
+    var firetext;
+    var pointer;
+    var pointer2;
+    var selecttext;
+    var placetext;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -58,10 +65,11 @@ export default class BootScene extends Phaser.Scene {
 
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
-    this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('bullet', 'assets/Bullet.png');
     this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('player', './assets/MainPlayer.png');
+    this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
@@ -92,7 +100,7 @@ export default class BootScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1
-});
+    });
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -206,7 +214,7 @@ export default class BootScene extends Phaser.Scene {
     waveText.setVisible(false);
 
     //Create timer variable and display text
-    this.buildTime = 5;
+    this.buildTime = 10;
     timeText = this.add.text(165, 600, timeRemaining, {fontSize: 30, color: '#000000', fontStyle: 'bold'});
 
     //Add enemies remaining text
@@ -229,7 +237,23 @@ export default class BootScene extends Phaser.Scene {
     restartText = this.add.text(195, 100, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
 
+    //various tutorial texts
+    movetext = this.add.text(250, 80, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    movetext.setVisible(false);
+    firetext = this.add.text(340, 130, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    firetext.setVisible(false);
+    pointer = this.add.image(800, 30, 'pointer');
+    pointer.setVisible(false);
+    selecttext = this.add.text(170, 80, "Select towers by clicking the tower.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    selecttext.setVisible(false);
+    placetext = this.add.text(220, 130, "Click a space to place a tower", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    placetext.setVisible(false);
+    pointer2 = this.add.image(40, 530, 'pointer').setRotation(Math.PI/2);
+    pointer2.setVisible(false);
+
+
 //Start the game
+
     //Prompt player to start game
     startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
 
@@ -304,7 +328,7 @@ export default class BootScene extends Phaser.Scene {
         });
     }
 
-    //During build phase
+    //Build phase
     if (buildPhase == true && pause != true){
 
         //Add game timer
@@ -328,7 +352,33 @@ export default class BootScene extends Phaser.Scene {
         }
     } //Build phase ends
 
-    //During wave phase
+    //tutorial text number 1
+    if (buildPhase == true && waveNumber == 1){
+      movetext.setVisible(true);
+      firetext.setVisible(true);
+      pointer.setVisible(true);
+    }
+
+    if (buildPhase == false && waveNumber == 1){
+      movetext.setVisible(false);
+      firetext.setVisible(false);
+      pointer.setVisible(false);
+    }
+
+    //tutorial text number 2
+    if (buildPhase == true && waveNumber == 2){
+      selecttext.setVisible(true);
+      placetext.setVisible(true);
+      pointer2.setVisible(true);
+    }
+
+    if (buildPhase == false && waveNumber == 2){
+      selecttext.setVisible(false);
+      placetext.setVisible(false);
+      pointer2.setVisible(false);
+    }
+
+    //Combat phase
     if (buildPhase == false && pause != true){
 
         //Set timer
@@ -383,7 +433,7 @@ export default class BootScene extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
         }
-    } //End wave phase
+    } //End combat phase
 
     //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
@@ -408,6 +458,7 @@ export default class BootScene extends Phaser.Scene {
   } //End update()
 
 }//End class export
+
 
 var Regular = new Phaser.Class({
 
@@ -591,6 +642,7 @@ var Turret = new Phaser.Class({
     }
 });
 
+
 var Cannon = new Phaser.Class({
 
     Extends: Phaser.GameObjects.Image,
@@ -624,6 +676,7 @@ var Cannon = new Phaser.Class({
         }
     }
 });
+
 
 var Shell = new Phaser.Class({
 
@@ -689,7 +742,7 @@ var Bullet = new Phaser.Class({
         this.incY = 0;
         this.lifespan = 0;
 
-        this.speed = Phaser.Math.GetSpeed(5000, 1);
+        this.speed = Phaser.Math.GetSpeed(4000, 1);
     },
 
     fire: function (x, y, angle)
@@ -756,11 +809,11 @@ function damageEnemyBullet(enemy, bullet) {
 function damageEnemyShell(enemy, shell) {
     // Shot by turret
     if (enemy.active === true && shell.active === true) {
-        // we remove the bullet right away
+        // we remove the shell right away
         shell.setActive(false);
         shell.setVisible(false);
 
-        // decrease the enemy hp with BULLET_DAMAGE
+        // decrease the enemy hp with SHELL_DAMAGE
         enemy.receiveDamage(SHELL_DAMAGE);
     }
 }
@@ -810,6 +863,7 @@ function placeTower(pointer) {
     }
 }
 
+
 function placeCannon(pointer) {
     if (scraps >= 0){
         scraps -= 0;
@@ -825,7 +879,6 @@ function placeCannon(pointer) {
         }
     }
 }
-
 
 
 function addBullet(x, y, angle) {
