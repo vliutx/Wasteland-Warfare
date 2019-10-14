@@ -457,13 +457,14 @@ export default class BootScene extends Phaser.Scene {
             var fast = fast_enemies.get();
             var regular = reg_enemies.get();
 
-            if (waveNumber >= 3 && count < waveNumber-1){
+            if (waveNumber >= 3 && count < 2*(waveNumber-2)){
                 var tough = tough_enemies.get();
                 count += 1;
             }
 
             if (wavesRemaining == 1 && BC != 0){
                 var boss = boss_enemies.get();
+                enemiesRemaining+=1;
                 BC -= 1;
             }
 
@@ -472,7 +473,7 @@ export default class BootScene extends Phaser.Scene {
                 boss.setVisible(true);
                 boss.startOnPath(100);
                 this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=2
+                this.spawned+=1
             }
 
             if (tough){
@@ -736,7 +737,7 @@ var Boss = new Phaser.Class({
             this.setActive(false);
             this.setVisible(false);
             scraps += 10;
-            enemiesRemaining -= 3;;
+            enemiesRemaining -= 1;;
         }
     },
     update: function (time, delta)
