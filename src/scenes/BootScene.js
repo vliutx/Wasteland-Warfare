@@ -174,7 +174,6 @@ export default class BootScene extends Phaser.Scene {
     });
 
 
-
     // Declare variables
     this.nextEnemy = 0;
     this.waveSize = 6;
@@ -206,35 +205,28 @@ export default class BootScene extends Phaser.Scene {
     this.input.on('pointerdown', placeTower);
 
 
-
 //Create game texts
 
     //Add scrap text
     scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
-
     //Create wave text
     waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
-
     //Create timer variable and display text
     this.buildTime = 5;
     timeText = this.add.text(165, 600, timeRemaining, {fontSize: 30, color: '#000000', fontStyle: 'bold'});
-
     //Add enemies remaining text
     this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     this.enemiesRemainingText.setVisible(false);
-
     //Create health text
     lifecountText = this.add.text(650, 600, "Lifecount: " + lifecount, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     lifecountText.setVisible(false);
-
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
-
     //Defeat text
     defeatText = this.add.text(250, 5, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
@@ -580,10 +572,12 @@ var Turret = new Phaser.Class({
     function Turret (scene)
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
+        this.setInteractive();
+        this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
+        this.fireRate = 1000;
     },
     place: function(i, j) {
-
         this.y = i * 64 + 64/2;
         this.x = j * 64 + 64/2;
         map[i][j] = 1;
@@ -600,8 +594,20 @@ var Turret = new Phaser.Class({
     {
         if(time > this.nextTic) {
             this.fire();
-            this.nextTic = time + 1000;
+            this.nextTic = time + this.fireRate;
         }
+    },
+    upgrade: function (scene)
+    {
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (scraps >= 10 && map[i][j] == 1) {
+            scraps -= 10;
+            map[i][j] = 2;
+            this.fireRate /= 2;
+            this.setTint(0x0000ff);
+        }
+        
     }
 });
 
@@ -800,6 +806,9 @@ function canPlaceTurret(i, j) {
     return map[i][j] === 0 && pause != true;
 }
 
+function canUpgradeTurret(i, j) {
+    return map[i][j] === 1 && pause != true;
+}
 
 function placeTower(pointer) {
     var i = Math.floor(pointer.y/64);
@@ -824,24 +833,17 @@ function placeTower(pointer) {
             }
         }
     }
-}
-
-
-function placeCannon(pointer) {
-    if (scraps >= 0){
-        scraps -= 0;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
-            var cannon = cannons.get();
-            if (cannon){
-                cannon.setActive(true);
-                cannon.setVisible(true);
-                cannon.place(i, j);
-            }
+    /*else if(canUpgradeTurret(i, j)) {
+        if (scraps >= 10){
+            scraps -=10;
+            var turret = turrets.get();
+            turret.upgrade(i,j);
+            turret.setTint(0x00ff00);
         }
-    }
+    }*/
 }
+
+
 
 
 function addBullet(x, y, angle) {
