@@ -128,13 +128,6 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-//Draw grid lines
-    // var graphics = this.add.graphics();
-    // drawLines(graphics);
-    // for path planning
-    // graphics.lineStyle(3, 0xffffff, 1);
-    // path.draw(graphics);
-
     //creates buttons to change between the turrets
     var button1 = this.add.sprite(40, 600, 'turreticon', 0).setInteractive();
     button1.on('pointerup', function(){
@@ -181,6 +174,24 @@ export default class BootScene extends Phaser.Scene {
 
     reg_enemies.playAnimation('walk');
 
+
+    //enemy blink
+    let c1 = Phaser.Display.Color.HexStringToColor('#ffffff'﻿); // From no tint
+    let c2 = Phaser.Display.Color.HexStringToColor('#ff0000'﻿); // To RED
+    this.tweenStep = 0;
+    let tween = this.tweens.add({
+        targets: this,
+        tweenStep: 100,
+        onUpdate: () => {
+            let col = Phaser.Display.Color.Interpolate.ColorWithColor(c1, c2, 100, this.tweenStep);
+            let colourInt = Phaser.Display.Color.GetColor(col.r, col.g, col.b);
+            player.setTint(colourInt); 
+        },
+        duration: 200,
+        yoyo: true
+    });
+
+
     // Declare variables
     this.nextEnemy = 0;
     this.waveSize = 6;
@@ -212,45 +223,36 @@ export default class BootScene extends Phaser.Scene {
     this.input.on('pointerdown', placeTower);
 
 
-
 //Create game texts
 
     //Add scrap text
     scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
-
     //Create wave text
     waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
-
     //Create timer variable and display text
     this.buildTime = 10;
     timeText = this.add.text(165, 600, timeRemaining, {fontSize: 30, color: '#000000', fontStyle: 'bold'});
-
     //Add enemies remaining text
     this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     this.enemiesRemainingText.setVisible(false);
-
     //Create health text
     lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
     lifecountText.setVisible(false);
-
     //ammoCount
     ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
     ammoCountText.setVisible(false);
-
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
-
     //Defeat text
     defeatText = this.add.text(250, 5, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
     restartText = this.add.text(195, 100, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
-
     //various tutorial texts
     movetext = this.add.text(250, 80, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     movetext.setVisible(false);
@@ -647,7 +649,10 @@ var Turret = new Phaser.Class({
     function Turret (scene)
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
+        this.setInteractive();
+        this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
+        this.fireRate = 1000;
     },
     place: function(i, j) {
 
@@ -667,7 +672,18 @@ var Turret = new Phaser.Class({
     {
         if(time > this.nextTic) {
             this.fire();
-            this.nextTic = time + 1000;
+            this.nextTic = time + this.fireRate;
+        }
+    },
+    upgrade: function ()
+    {
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (scraps >= 10 && map[i][j] == 1){
+            scraps -= 10;
+            map[i][j] = 2;
+            this.fireRate /= 2;
+            this.setTint(0x0000ff);
         }
     }
 });
