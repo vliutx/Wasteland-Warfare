@@ -68,7 +68,7 @@
     var boss_enemies;
     var BOSS_SPEED = 1/20000;
     var BOSS_HEALTH = 1000;
-    
+
 
     // Damgage
     var BULLET_DAMAGE = 50;
@@ -93,13 +93,16 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
       frameWidth: 64
     });
+    this.load.spritesheet("toughenemy", "./assets/spriteSheets/ToughEnemy.png", {
+      frameHeight: 64,
+      frameWidth: 64
+    });
 
-    this.load.image('bossenemy', 'assets/BossEnemy.png');
+    this.load.image('bossenemy', 'assets/TankBoss.png');
 
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
-    this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
@@ -215,7 +218,7 @@ export default class BootScene extends Phaser.Scene {
         onUpdate: () => {
             let col = Phaser.Display.Color.Interpolate.ColorWithColor(c1, c2, 100, this.tweenStep);
             let colourInt = Phaser.Display.Color.GetColor(col.r, col.g, col.b);
-            player.setTint(colourInt); 
+            player.setTint(colourInt);
         },
         duration: 200,
         yoyo: true
@@ -259,7 +262,7 @@ export default class BootScene extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(400, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
     waveText = this.add.text(400, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
