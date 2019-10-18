@@ -600,7 +600,7 @@ var Regular = new Phaser.Class({
 
             this.setPosition(this.follower.vec.x, this.follower.vec.y);
         },
-        receiveDamage: function(damage) {
+        receiveDamage: function(damage) {  
 
             this.hp -= damage;
 
