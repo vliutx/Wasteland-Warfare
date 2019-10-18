@@ -601,6 +601,7 @@ var Regular = new Phaser.Class({
             this.setPosition(this.follower.vec.x, this.follower.vec.y);
         },
         receiveDamage: function(damage) {
+
             this.hp -= damage;
 
             // if hp drops below 0 we deactivate this enemy
@@ -1010,8 +1011,10 @@ var Lightning = new Phaser.Class({
     },
     fire: function() {
         var enemies = getEnemies(this.x, this.y, 128);
+
         for(var i=0; i < enemies.length; i++){
             enemies[i].receiveDamage(LIGHTNING_DAMAGE);
+
         }
     },
     update: function (time, delta)
@@ -1187,8 +1190,6 @@ function getEnemies(x, y, distance) {
     }
     
 }
-
-
 
 function damageEnemyBullet(enemy, bullet) {
     // Shot by turret
