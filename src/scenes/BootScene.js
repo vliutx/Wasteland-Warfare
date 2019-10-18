@@ -74,6 +74,8 @@
     var BULLET_DAMAGE = 25;
     var SHELL_DAMAGE = 150;
 
+    console.log(Phaser.GameObjects.Image.call);
+
 export default class BootScene extends Phaser.Scene {
   constructor () {
     super('Boot');
@@ -118,6 +120,10 @@ export default class BootScene extends Phaser.Scene {
     // turret selector
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
+
+    // upgrades
+    this.load.image('checkmark', 'assets/checkmark.png');
+    this.load.image('xmark', 'assets/xmark.png');
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -170,7 +176,7 @@ export default class BootScene extends Phaser.Scene {
         turret_selector = 1;
         button2.alpha = 1;
         button1.alpha = 0.5;
-    })
+    });
     button2.alpha = 0.5; //initially on button 1 already.
 
 //Create enemies/towers/player groups
@@ -201,10 +207,10 @@ export default class BootScene extends Phaser.Scene {
         key: "walk",
         frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
         frameRate: 10,
-        repeat: -1,
+        repeat: -1
     });
 
-    reg_enemies.playAnimation('walk');
+    reg_enemies.playAnimation('walk', true);
 
 
 
@@ -429,13 +435,10 @@ export default class BootScene extends Phaser.Scene {
 
     //Combat phase
     if (buildPhase == false && pause != true){
-
         //Set timer
         gameTime += delta;
-
         //Display # of enemies remaining
         this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
-
         //Spawn in enemies
         if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
             var fast = fast_enemies.get();
@@ -535,7 +538,6 @@ export default class BootScene extends Phaser.Scene {
         }
     }
 
-
   } //End update()
 
 }//End class export
@@ -543,13 +545,14 @@ export default class BootScene extends Phaser.Scene {
 
 var Regular = new Phaser.Class({
 
-        Extends: Phaser.GameObjects.Image,
+        Extends: Phaser.GameObjects.Sprite,
 
         initialize:
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'regularenemy');
+            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'regularenemy');
+            this.play("walk", this);
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
@@ -849,9 +852,20 @@ var Turret = new Phaser.Class({
         this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
         this.fireRate = 1000;
+        var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
+        //Phaser.GameObjects.Image.call(button1, scene, -32, 0, 'checkmark');//.setInteractive();
+        //button1.on('pointerup', this.upgrade2);
+        //var button2;
+        //Phaser.GameObjects.Image.call(button2, scene, 32, 0, 'xmark');
+        //button2.setInteractive();
+        //this.button2.on('pointerup', this.upgrade3);
+        /*
+        this.button1.setActive(false);
+        this.button1.setVisible(false);
+        this.button2.setActive(false);
+        this.button2.setVisible(false);*/
     },
     place: function(i, j) {
-
         this.y = i * 64 + 64/2;
         this.x = j * 64 + 64/2;
         map[i][j] = 1;
@@ -873,15 +887,29 @@ var Turret = new Phaser.Class({
     },
     upgrade: function ()
     {
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
+        this.button1.setActive(true);
+        this.button1.setVisible(true);
+        this.button2.setActive(true);
+        this.button2.setVisible(true);
+    },
+    upgrade2: function ()
+    {
+    var i = (this.y - 32) / 64;
+    var j = (this.x - 32) / 64;
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
         }
-    }
+    },
+    upgrade3: function ()
+    {
+        this.button1.setActive(false);
+        this.button1.setVisible(false);
+        this.button2.setActive(false);
+        this.button2.setVisible(false);
+    },
 });
 
 
