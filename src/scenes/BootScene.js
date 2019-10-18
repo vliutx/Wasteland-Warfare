@@ -47,6 +47,34 @@
     var pointer2;
     var selecttext;
     var placetext;
+    var count = 0;
+    var BC = 1;
+    var wavesRemaining = 5;
+    var totalWaves = wavesRemaining;
+
+    // Enemies
+    var FAST_SPEED = 1/12500;
+    var FAST_HEALTH = 50;
+    var fast_enemies;
+
+    var REG_SPEED = 1/15000;
+    var REG_HEALTH = 100;
+    var reg_enemies;
+
+    var tough_enemies;
+    var TOUGH_SPEED = 1/17500;
+    var TOUGH_HEALTH = 300;
+
+    var boss_enemies;
+    var BOSS_SPEED = 1/20000;
+    var BOSS_HEALTH = 1000;
+
+
+    // Damgage
+    var BULLET_DAMAGE = 25;
+    var SHELL_DAMAGE = 150;
+
+    console.log(Phaser.GameObjects.Image.call);
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -67,11 +95,16 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
       frameWidth: 64
     });
+    this.load.spritesheet("toughenemy", "./assets/spriteSheets/ToughEnemy.png", {
+      frameHeight: 64,
+      frameWidth: 64
+    });
+
+    this.load.image('bossenemy', 'assets/TankBoss.png');
 
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
-    this.load.image('toughenemy', './assets/ToughEnemy.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
@@ -88,12 +121,31 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
 
+    // upgrades
+    this.load.image('checkmark', 'assets/checkmark.png');
+    this.load.image('xmark', 'assets/xmark.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
   }
 
   create() {
+    //ambient wind and ticking
+    wind = this.sound.add('wind', {loop: true});
+    wind.play();
+    tick = this.sound.add('tick');
+
+    //Initialize gun ammo
+    ammoCount = 6;
+
+    //DOES NOT WORK CURRENTLY
+    walking = this.anims.create({
+      key: "walk",
+      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true});
@@ -140,7 +192,7 @@ export default class BootScene extends Phaser.Scene {
         turret_selector = 1;
         button2.alpha = 1;
         button1.alpha = 0.5;
-    })
+    });
     button2.alpha = 0.5; //initially on button 1 already.
 
 //Create enemies/towers/player groups
@@ -163,33 +215,20 @@ export default class BootScene extends Phaser.Scene {
     //Enemies
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
+    tough_enemies = this.physics.add.group({ classType: Tough, runChildUpdate: true });
+    boss_enemies = this.physics.add.group({ classType: Boss, runChildUpdate: true });
 
     //enemy animations
     this.anims.create({
         key: "walk",
         frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
         frameRate: 10,
-        repeat: -1,
+        repeat: -1
     });
 
-    reg_enemies.playAnimation('walk');
+    reg_enemies.playAnimation('walk', true);
 
 
-    //enemy blink
-    let c1 = Phaser.Display.Color.HexStringToColor('#ffffff'﻿); // From no tint
-    let c2 = Phaser.Display.Color.HexStringToColor('#ff0000'﻿); // To RED
-    this.tweenStep = 0;
-    let tween = this.tweens.add({
-        targets: this,
-        tweenStep: 100,
-        onUpdate: () => {
-            let col = Phaser.Display.Color.Interpolate.ColorWithColor(c1, c2, 100, this.tweenStep);
-            let colourInt = Phaser.Display.Color.GetColor(col.r, col.g, col.b);
-            player.setTint(colourInt); 
-        },
-        duration: 200,
-        yoyo: true
-    });
 
 
     // Declare variables
@@ -212,12 +251,15 @@ export default class BootScene extends Phaser.Scene {
 //Physics overlaps
 
     //Bullets overlap for turrets/player
-    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet);
-    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet);
-
+    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
     //Shells overlap for cannon
-    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell);
-    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell);
+    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
 
     //place turrets (ADD FOR CANNONS)
     this.input.on('pointerdown', placeTower);
@@ -226,10 +268,10 @@ export default class BootScene extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(365, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(400, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
-    waveText = this.add.text(400, 5, "Wave: " + waveNumber, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
+    waveText = this.add.text(400, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
     this.buildTime = 10;
@@ -326,7 +368,7 @@ export default class BootScene extends Phaser.Scene {
     }
 
     //Loss condition
-    if (lifecount == 0){
+    if (lifecount <= 0){
         //pause game
         pause = true;
 
@@ -413,13 +455,44 @@ export default class BootScene extends Phaser.Scene {
         //Set timer
         gameTime += delta;
 
+    //Combat phase
+    if (buildPhase == false && pause != true){
+        //Set timer
+        gameTime += delta;
         //Display # of enemies remaining
         this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
-
         //Spawn in enemies
         if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
             var fast = fast_enemies.get();
             var regular = reg_enemies.get();
+
+            if (waveNumber >= 3 && count < 2*(waveNumber-2)){
+                var tough = tough_enemies.get();
+                count += 1;
+            }
+
+            if (wavesRemaining == 1 && BC != 0){
+                var boss = boss_enemies.get();
+                enemiesRemaining+=1;
+                BC -= 1;
+            }
+
+            if (boss){
+                boss.setActive(true);
+                boss.setVisible(true);
+                boss.startOnPath(100);
+                this.nextEnemy = gameTime + this.spawnDelay;
+                this.spawned+=1
+            }
+
+            if (tough){
+                tough.setActive(true);
+                tough.setVisible(true);
+                tough.startOnPath(100);
+                this.nextEnemy = gameTime + this.spawnDelay;
+                this.spawned+=1
+            }
+
             if (regular){
                 regular.setActive(true);
                 regular.setVisible(true);
@@ -440,7 +513,7 @@ export default class BootScene extends Phaser.Scene {
         } //All enemies spawned
 
         //All enemies despawned
-        if (enemiesRemaining == 0){
+        if (enemiesRemaining <= 0){
             //begin build phase
             buildPhase = true;
             //Enable time remaining text
@@ -453,7 +526,7 @@ export default class BootScene extends Phaser.Scene {
             this.nextEnemy = 0;
             //Increment wave number and remaining waves
             waveNumber += 1;
-            waveText.setText("Wave: " + waveNumber);
+            waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
             wavesRemaining -= 1;
             //Increment wave size
             this.waveSize += 4;
@@ -461,6 +534,7 @@ export default class BootScene extends Phaser.Scene {
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
+            count = 0;
         }
     } //End combat phase
 
@@ -486,7 +560,6 @@ export default class BootScene extends Phaser.Scene {
         }
     }
 
-
   } //End update()
 
 }//End class export
@@ -494,24 +567,25 @@ export default class BootScene extends Phaser.Scene {
 
 var Regular = new Phaser.Class({
 
-        Extends: Phaser.GameObjects.Image,
+        Extends: Phaser.GameObjects.Sprite,
 
         initialize:
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'regularenemy');
+            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'regularenemy');
+            this.play("walk", this);
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
 
         //Set speed
-        ENEMY_SPEED: 1/10000,
+        ENEMY_SPEED: REG_SPEED,
 
         startOnPath: function (i)
         {
             this.follower.t = 0;
-            this.hp = i;
+            this.hp = REG_HEALTH;
 
             path.getPoint(this.follower.t, this.follower.vec);
 
@@ -566,6 +640,155 @@ var Regular = new Phaser.Class({
 });
 
 
+var Tough = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Enemy (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'toughenemy');
+        this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        this.hp = 0;
+    },
+
+    //Set speed
+    ENEMY_SPEED: TOUGH_SPEED,
+
+    startOnPath: function (i)
+    {
+        this.follower.t = 0;
+        this.hp = TOUGH_HEALTH;
+
+        path.getPoint(this.follower.t, this.follower.vec);
+
+        this.setPosition(this.follower.vec.x, this.follower.vec.y);
+    },
+    receiveDamage: function(damage) {
+        this.hp -= damage;
+
+        // if hp drops below 0 we deactivate this enemy
+        if(this.hp <= 0) {
+            this.setActive(false);
+            this.setVisible(false);
+            scraps += 2;
+            enemiesRemaining -= 1;
+        }
+    },
+    update: function (time, delta)
+    {
+        //VERY MAKESHIFT ROTATION
+        if (this.follower.vec.x == 160) {
+          this.rotation = Math.PI;
+        } else if (this.follower.vec.x > 160 && this.follower.vec.x < 416 ) {
+          this.rotation = Math.PI/2;
+        } else if (this.follower.vec.x == 416) {
+          this.rotation = 0;
+        } else if (this.follower.vec.x > 416 && this.follower.vec.x < 544 ) {
+          this.rotation = Math.PI/2;
+        } else if (this.follower.vec.x == 544) {
+          this.rotation = Math.PI;
+        } else if (this.follower.vec.x > 544 && this.follower.vec.x < 800 ) {
+          this.rotation = Math.PI/2;
+        } else if (this.follower.vec.x == 800) {
+          this.rotation = 0;
+        }
+
+        if (pause != true){
+            this.follower.t += this.ENEMY_SPEED * delta;
+            path.getPoint(this.follower.t, this.follower.vec);
+
+            if (pause != true){
+                this.follower.t += this.ENEMY_SPEED * delta;
+                path.getPoint(this.follower.t, this.follower.vec);
+
+            if (this.follower.t >= 1)
+            {
+                this.setActive(false);
+                this.setVisible(false);
+                enemiesRemaining -= 1;
+                lifecount -= 3
+            }
+        }
+    }
+
+});
+
+var Boss = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Enemy (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bossenemy');
+        this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        this.hp = 0;
+    },
+
+    //Set speed
+    ENEMY_SPEED: BOSS_SPEED,
+
+    startOnPath: function (i)
+    {
+        this.follower.t = 0;
+        this.hp = BOSS_HEALTH;
+
+        path.getPoint(this.follower.t, this.follower.vec);
+
+        this.setPosition(this.follower.vec.x, this.follower.vec.y);
+    },
+    receiveDamage: function(damage) {
+        this.hp -= damage;
+
+        // if hp drops below 0 we deactivate this enemy
+        if(this.hp <= 0) {
+            this.setActive(false);
+            this.setVisible(false);
+            scraps += 10;
+            enemiesRemaining -= 1;;
+        }
+    },
+    update: function (time, delta)
+    {
+        //VERY MAKESHIFT ROTATION
+        if (this.follower.vec.x == 160) {
+          this.rotation = Math.PI;
+        } else if (this.follower.vec.x > 160 && this.follower.vec.x < 416 ) {
+          this.rotation = Math.PI/2;
+        } else if (this.follower.vec.x == 416) {
+          this.rotation = 0;
+        } else if (this.follower.vec.x > 416 && this.follower.vec.x < 544 ) {
+          this.rotation = Math.PI/2;
+        } else if (this.follower.vec.x == 544) {
+          this.rotation = Math.PI;
+        } else if (this.follower.vec.x > 544 && this.follower.vec.x < 800 ) {
+          this.rotation = Math.PI/2;
+        } else if (this.follower.vec.x == 800) {
+          this.rotation = 0;
+        }
+
+        if (pause != true){
+            this.follower.t += this.ENEMY_SPEED * delta;
+            path.getPoint(this.follower.t, this.follower.vec);
+
+            this.setPosition(this.follower.vec.x, this.follower.vec.y);
+
+            if (this.follower.t >= 1)
+            {
+                this.setActive(false);
+                this.setVisible(false);
+                enemiesRemaining -= 3;
+                lifecount -= 10
+            }
+        }
+    }
+
+});
+
+
 var Fast = new Phaser.Class({
 
         Extends: Phaser.GameObjects.Image,
@@ -581,12 +804,12 @@ var Fast = new Phaser.Class({
         },
 
         //Set speed
-        ENEMY_SPEED: 1/7500,
+        ENEMY_SPEED: FAST_SPEED,
 
         startOnPath: function (i)
         {
             this.follower.t = 0;
-            this.hp = i;
+            this.hp = FAST_HEALTH;
 
             path.getPoint(this.follower.t, this.follower.vec);
 
@@ -653,9 +876,20 @@ var Turret = new Phaser.Class({
         this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
         this.fireRate = 1000;
+        var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
+        //Phaser.GameObjects.Image.call(button1, scene, -32, 0, 'checkmark');//.setInteractive();
+        //button1.on('pointerup', this.upgrade2);
+        //var button2;
+        //Phaser.GameObjects.Image.call(button2, scene, 32, 0, 'xmark');
+        //button2.setInteractive();
+        //this.button2.on('pointerup', this.upgrade3);
+        /*
+        this.button1.setActive(false);
+        this.button1.setVisible(false);
+        this.button2.setActive(false);
+        this.button2.setVisible(false);*/
     },
     place: function(i, j) {
-
         this.y = i * 64 + 64/2;
         this.x = j * 64 + 64/2;
         map[i][j] = 1;
@@ -685,7 +919,32 @@ var Turret = new Phaser.Class({
             this.fireRate /= 2;
             this.setTint(0x0000ff);
         }
-    }
+    },
+    upgrade: function ()
+    {
+        this.button1.setActive(true);
+        this.button1.setVisible(true);
+        this.button2.setActive(true);
+        this.button2.setVisible(true);
+    },
+    upgrade2: function ()
+    {
+    var i = (this.y - 32) / 64;
+    var j = (this.x - 32) / 64;
+        if (scraps >= 10 && map[i][j] == 1){
+            scraps -= 10;
+            map[i][j] = 2;
+            this.fireRate /= 2;
+            this.setTint(0x0000ff);
+        }
+    },
+    upgrade3: function ()
+    {
+        this.button1.setActive(false);
+        this.button1.setVisible(false);
+        this.button2.setActive(false);
+        this.button2.setVisible(false);
+    },
 });
 
 
@@ -699,6 +958,7 @@ var Cannon = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
         this.nextTic = 0;
+        this.fireRate = 1500;
     },
     place: function(i, j) {
 
@@ -718,7 +978,7 @@ var Cannon = new Phaser.Class({
     {
         if(time > this.nextTic) {
             this.fire();
-            this.nextTic = time + 2000;
+            this.nextTic = time + this.fireRate;
         }
     }
 });
@@ -827,6 +1087,8 @@ var Bullet = new Phaser.Class({
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
     var fastUnits = fast_enemies.getChildren();
+    var toughUnits = tough_enemies.getChildren();
+    var bossUnits = boss_enemies.getChildren();
     for(var i = 0; i < regularUnits.length; i++) {
         if(regularUnits[i].active && Phaser.Math.Distance.Between(x, y, regularUnits[i].x, regularUnits[i].y) < distance)
             return regularUnits[i];
@@ -834,6 +1096,14 @@ function getEnemy(x, y, distance) {
     for(var i = 0; i < fastUnits.length; i++) {
         if(fastUnits[i].active && Phaser.Math.Distance.Between(x, y, fastUnits[i].x, fastUnits[i].y) < distance)
             return fastUnits[i];
+    }
+    for(var i = 0; i < toughUnits.length; i++) {
+        if(toughUnits[i].active && Phaser.Math.Distance.Between(x, y, toughUnits[i].x, toughUnits[i].y) < distance)
+            return toughUnits[i];
+    }
+    for(var i = 0; i < bossUnits.length; i++) {
+        if(bossUnits[i].active && Phaser.Math.Distance.Between(x, y, bossUnits[i].x, bossUnits[i].y) < distance)
+            return bossUnits[i];
     }
     return false;
 }
@@ -848,6 +1118,18 @@ function damageEnemyBullet(enemy, bullet) {
 
         // decrease the enemy hp with BULLET_DAMAGE
         enemy.receiveDamage(BULLET_DAMAGE);
+
+     //enemy blink
+     this.tweens.addCounter({
+            from: 0,
+            to: 255,
+            duration: 500,
+            onUpdate: function (tween)
+            {
+                var value = Math.floor(tween.getValue());
+                enemy.setTint(Phaser.Display.Color.GetColor(255, value,  value));
+            }
+        });
     }
 }
 
@@ -861,6 +1143,18 @@ function damageEnemyShell(enemy, shell) {
 
         // decrease the enemy hp with SHELL_DAMAGE
         enemy.receiveDamage(SHELL_DAMAGE);
+
+    //enemy blink
+     this.tweens.addCounter({
+            from: 0,
+            to: 255,
+            duration: 500,
+            onUpdate: function (tween)
+            {
+                var value = Math.floor(tween.getValue());
+                enemy.setTint(Phaser.Display.Color.GetColor(255, value,  value));
+            }
+        });
     }
 }
 
