@@ -1,6 +1,4 @@
 var path;
-var turrets;
-var cannons;
 
 var bullets;
 var player;
@@ -10,5 +8,5 @@ var shells;
 
 
 var pause = true;
-var turret_selector = 0;
+var turret_selector = 2;
 

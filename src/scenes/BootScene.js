@@ -69,10 +69,16 @@
     var BOSS_SPEED = 1/20000;
     var BOSS_HEALTH = 1000;
 
+    // Towers
+    var turrets;
+    var cannons;
+    var lightnings;
+
 
     // Damgage
     var BULLET_DAMAGE = 50;
     var SHELL_DAMAGE = 150;
+    var LIGHTNING_DAMAGE = 5;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -99,7 +105,6 @@ export default class BootScene extends Phaser.Scene {
     });
 
     this.load.image('bossenemy', 'assets/TankBoss.png');
-
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -109,6 +114,9 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
+
+    // Assets for lightning turret
+    this.load.image('lightning', 'assets/Lightning.png');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -236,7 +244,8 @@ export default class BootScene extends Phaser.Scene {
 
     // Turrets
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-    cannons = this.add.group({classType: Cannon, runChildUpdate: true})
+    cannons = this.add.group({classType: Cannon, runChildUpdate: true});
+    lightnings = this.add.group({classType: Lightning, runChildUpdate: true});
 
     // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -920,11 +929,9 @@ var Cannon = new Phaser.Class({
         map[i][j] = 1;
     },
     fire: function() {
-        var enemy = getEnemy(this.x, this.y, 200);
+        var enemy = getEnemy(this.x, this.y, 70);
         if(enemy) {
-            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
-            addShell(this.x, this.y, angle);
-            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
+            enemy.receiveDamage()
         }
     },
     update: function (time, delta)
@@ -936,6 +943,51 @@ var Cannon = new Phaser.Class({
     }
 });
 
+var Lightning = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Turret (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'lightning');
+        this.setInteractive();
+        this.on('pointerdown', this.upgrade);
+        this.nextTic = 0;
+        this.fireRate = 200;
+    },
+    place: function(i, j) {
+
+        this.y = i * 64 + 64/2;
+        this.x = j * 64 + 64/2;
+        map[i][j] = 1;
+    },
+    fire: function() {
+        var enemies = getEnemies(this.x, this.y, 128);
+        for(var i=0; i < enemies.length; i++){
+            enemies[i].receiveDamage(LIGHTNING_DAMAGE);
+        }
+    },
+    update: function (time, delta)
+    {
+        if(time > this.nextTic) {
+            this.fire();
+            this.nextTic = time + this.fireRate;
+        }
+    },
+    upgrade: function ()
+    {
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (scraps >= 0 && map[i][j] == 1){
+            scraps -= 0;
+            map[i][j] = 2;
+            this.fireRate /= 2;
+            this.setTint(0x0000ff);
+        }
+    }
+});
 
 var Shell = new Phaser.Class({
 
@@ -1061,6 +1113,37 @@ function getEnemy(x, y, distance) {
     return false;
 }
 
+function getEnemies(x, y, distance) {
+    var regularUnits = reg_enemies.getChildren();
+    var fastUnits = fast_enemies.getChildren();
+    var toughUnits = tough_enemies.getChildren();
+    var bossUnits = boss_enemies.getChildren();
+    var enemies = [];
+    for(var i = 0; i < regularUnits.length; i++) {
+        if(regularUnits[i].active && Phaser.Math.Distance.Between(x, y, regularUnits[i].x, regularUnits[i].y) < distance)
+            enemies.push(regularUnits[i]);
+    }
+    for(var i = 0; i < fastUnits.length; i++) {
+        if(fastUnits[i].active && Phaser.Math.Distance.Between(x, y, fastUnits[i].x, fastUnits[i].y) < distance)
+            enemies.push(fastUnits[i]);
+    }
+    for(var i = 0; i < toughUnits.length; i++) {
+        if(toughUnits[i].active && Phaser.Math.Distance.Between(x, y, toughUnits[i].x, toughUnits[i].y) < distance)
+            enemies.push(toughUnits[i]);
+    }
+    for(var i = 0; i < bossUnits.length; i++) {
+        if(bossUnits[i].active && Phaser.Math.Distance.Between(x, y, bossUnits[i].x, bossUnits[i].y) < distance)
+            enemies.push(bossUnits[i]);
+    }
+    if (enemies.length > 0){
+        return enemies
+    }else{
+        return false
+    }
+    
+}
+
+
 
 function damageEnemyBullet(enemy, bullet) {
     // Shot by turret
@@ -1127,6 +1210,15 @@ function placeTower(pointer) {
                 cannon.setActive(true);
                 cannon.setVisible(true);
                 cannon.place(i, j);
+            }
+        }
+        else if (turret_selector == 2 && scraps >= 0){
+            scraps -= 0;
+            var lightning = lightnings.get();
+            if (lightning){
+                lightning.setActive(true);
+                lightning.setVisible(true);
+                lightning.place(i, j);
             }
         }
     }
