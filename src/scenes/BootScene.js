@@ -41,6 +41,48 @@
     // Misc
     var path;
     var walking;
+    var wind;
+    var tick;
+    var death;
+    var ammoCount;
+    var ammoCountText;
+    var reloading = false;
+
+    //NAME THESE BETTER/DON'T PUT THEM HERE
+    var movetext;
+    var firetext;
+    var pointer;
+    var pointer2;
+    var selecttext;
+    var placetext;
+    var count = 0;
+    var BC = 1;
+    var wavesRemaining = 5;
+    var totalWaves = wavesRemaining;
+
+
+
+    // Enemies
+    var FAST_SPEED = 1/12500;
+    var FAST_HEALTH = 50;
+    var fast_enemies;
+
+    var REG_SPEED = 1/15000;
+    var REG_HEALTH = 100;
+    var reg_enemies;
+
+    var tough_enemies;
+    var TOUGH_SPEED = 1/17500;
+    var TOUGH_HEALTH = 300;
+
+    var boss_enemies;
+    var BOSS_SPEED = 1/20000;
+    var BOSS_HEALTH = 1000;
+
+
+    // Damgage
+    var BULLET_DAMAGE = 25;
+    var SHELL_DAMAGE = 150;
 
     // Sounds
     var cannonshot;
@@ -118,11 +160,14 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
-    this.load.audio('wind', 'assets/sounds/Wind.mp3');
-    this.load.audio('tick', 'assets/sounds/Tick.mp3');
+
 
     // Assets for lightning turret
     this.load.image('lightning', 'assets/Lightning.png');
+
+    this.load.audio('death', 'assets/sounds/death.mp3');
+    this.load.audio('wind', 'assets/sounds/Wind.mp3');
+    this.load.audio('tick', 'assets/sounds/Tick.mp3');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -144,7 +189,7 @@ export default class BootScene extends Phaser.Scene {
 
   create() {
     //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true});
+    wind = this.sound.add('wind', {loop: true, volume: 0.1});
     wind.play();
     tick = this.sound.add('tick');
 
@@ -181,6 +226,7 @@ export default class BootScene extends Phaser.Scene {
     //Add sounds
     gunfire = this.sound.add('gunshot');
     cannonshot = this.sound.add('cannonshot');
+    death = this.sound.add('death');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -221,7 +267,6 @@ export default class BootScene extends Phaser.Scene {
         ammoCount -= 1
         }
     });
-
 
 
     //Enemies
@@ -1037,6 +1082,7 @@ var Lightning = new Phaser.Class({
     }
 });
 
+
 var Shell = new Phaser.Class({
 
     Extends: Phaser.GameObjects.Image,
@@ -1240,7 +1286,7 @@ function damageEnemyShell(enemy, shell) {
     }
 }
 
-
+/*
 function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
     for(var i = 0; i < 10; i++) {
@@ -1253,7 +1299,7 @@ function drawLines(graphics) {
     }
     graphics.strokePath();
 }
-
+*/
 
 function canPlaceTurret(i, j) {
     return map[i][j] === 0 && pause != true;
