@@ -48,6 +48,8 @@
     var pointer2;
     var selecttext;
     var placetext;
+    var upgradetext;
+    var costText;
     var count = 0;
     var BC = 1;
     var wavesRemaining = 5;
@@ -280,6 +282,10 @@ export default class BootScene extends Phaser.Scene {
     placetext.setVisible(false);
     pointer2 = this.add.image(40, 530, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
+    upgradetext = this.add.text(210, 80, "Upgrade a turret by clicking it", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    upgradetext.setVisible(false);
+    costText = this.add.text(240, 130, "(turret upgrade = 10 scrap)", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    costText.setVisible(false);
 
 
 //Start the game
@@ -419,6 +425,17 @@ export default class BootScene extends Phaser.Scene {
       selecttext.setVisible(false);
       placetext.setVisible(false);
       pointer2.setVisible(false);
+    }
+
+    //tutorial text number 3
+    if (buildPhase == true && waveNumber == 3){
+      upgradetext.setVisible(true);
+      costText.setVisible(true);
+    }
+
+    if (buildPhase == false && waveNumber == 3){
+      upgradetext.setVisible(false);
+      costText.setVisible(false);
     }
 
     //Combat phase
