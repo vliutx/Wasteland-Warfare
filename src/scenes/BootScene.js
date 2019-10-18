@@ -36,6 +36,7 @@
     var walking;
     var wind;
     var tick;
+    var death;
     var ammoCount;
     var ammoCountText;
     var reloading = false;
@@ -51,6 +52,8 @@
     var BC = 1;
     var wavesRemaining = 5;
     var totalWaves = wavesRemaining;
+
+
 
     // Enemies
     var FAST_SPEED = 1/12500;
@@ -107,6 +110,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
+    this.load.audio('death', 'assets/sounds/death.mp3');
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
 
@@ -126,20 +130,12 @@ export default class BootScene extends Phaser.Scene {
 
   create() {
     //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true});
+    wind = this.sound.add('wind', {loop: true, volume: 0.1});
     wind.play();
     tick = this.sound.add('tick');
 
     //Initialize gun ammo
     ammoCount = 6;
-
-    //DOES NOT WORK CURRENTLY
-    walking = this.anims.create({
-      key: "walk",
-      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    });
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -147,6 +143,7 @@ export default class BootScene extends Phaser.Scene {
     //Add sounds
     gunfire = this.sound.add('gunshot');
     cannonshot = this.sound.add('cannonshot');
+    death = this.sound.add('death');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -197,17 +194,14 @@ export default class BootScene extends Phaser.Scene {
     boss_enemies = this.physics.add.group({ classType: Boss, runChildUpdate: true });
 
     //enemy animations
-    this.anims.create({
-        key: "walk",
-        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1,
-    });
 
-    reg_enemies.playAnimation('walk');
-
-
-
+    var config = {
+      key: 'walk',
+      frames: this.anims.generateFrameNumbers('reg_enemies'),
+      frameRate: 10,
+      yoyo: true,
+      repeat: -1
+  };
 
     // Declare variables
     this.nextEnemy = 0;
@@ -1095,7 +1089,7 @@ function damageEnemyShell(enemy, shell) {
     }
 }
 
-
+/*
 function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
     for(var i = 0; i < 10; i++) {
@@ -1108,7 +1102,7 @@ function drawLines(graphics) {
     }
     graphics.strokePath();
 }
-
+*/
 
 function canPlaceTurret(i, j) {
     return map[i][j] === 0 && pause != true;
