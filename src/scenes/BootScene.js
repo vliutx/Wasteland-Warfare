@@ -449,11 +449,6 @@ export default class BootScene extends Phaser.Scene {
       pointer2.setVisible(false);
     }
 
-    //Combat phase
-    if (buildPhase == false && pause != true){
-
-        //Set timer
-        gameTime += delta;
 
     //Combat phase
     if (buildPhase == false && pause != true){
@@ -558,6 +553,7 @@ export default class BootScene extends Phaser.Scene {
         player.y += speed;
         } else {
         }
+
     }
 
   } //End update()
@@ -702,7 +698,7 @@ var Tough = new Phaser.Class({
             if (pause != true){
                 this.follower.t += this.ENEMY_SPEED * delta;
                 path.getPoint(this.follower.t, this.follower.vec);
-
+            }
             if (this.follower.t >= 1)
             {
                 this.setActive(false);
