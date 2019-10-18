@@ -12,33 +12,40 @@
                     [ 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
                     [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
-    var gunfire;
-    var timeText;
-    var timeRemaining;
-    var buildPhase = false;
-    var startGame = false;
-    var startText;
+
+
+    // Counters
+    var scraps = 0;
+    var lifecount = 10;
+    var wavesRemaining = 3;
+    var gameTime = 0;
+    var turret_selector = 2;
     var gameTime = 0;
     var reloadTime = 0;
-    var enemiesRemaining;
-    var waveText;
-    var waveNumber;
-    var scrapText;
-    var lifecount;
-    var lifecountText;
-    var victoryText;
-    var continueText;
-    var defeatText;
-    var restartText;
-    var path;
+
+
+    // Booleans
+    var pause = true;
+    var buildPhase = false;
+    var startGame = false;
     var restart = false;
-    var cannonshot;
+    var reloading = false;
+
+
+    // Counters
+    var enemiesRemaining;
+    var waveNumber;
+    var lifecount;
+    var ammoCount;
+
+    // Misc
+    var path;
     var walking;
+
+    // Sounds
+    var cannonshot;
     var wind;
     var tick;
-    var ammoCount;
-    var ammoCountText;
-    var reloading = false;
 
     //NAME THESE BETTER/DON'T PUT THEM HERE
     var movetext;
@@ -73,7 +80,6 @@
     var turrets;
     var cannons;
     var lightnings;
-
 
     // Damgage
     var BULLET_DAMAGE = 50;
@@ -196,7 +202,7 @@ export default class BootScene extends Phaser.Scene {
         ammoCount -= 1
         }
     });
-    lifecount = 10;
+
 
 
     //Enemies
@@ -496,7 +502,7 @@ export default class BootScene extends Phaser.Scene {
             if (regular){
                 regular.setActive(true);
                 regular.setVisible(true);
-                regular.startOnPath(100);
+                regular.startOnPath(REG_HEALTH);
 
                 this.nextEnemy = gameTime + this.spawnDelay;
                 this.spawned+=1
@@ -505,7 +511,7 @@ export default class BootScene extends Phaser.Scene {
             if (fast){
                 fast.setActive(true);
                 fast.setVisible(true);
-                fast.startOnPath(50);
+                fast.startOnPath(FAST_HEALTH);
 
                 this.nextEnemy = gameTime + this.spawnDelay+100;
                 this.spawned+=1
