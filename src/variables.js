@@ -1,17 +1,33 @@
+// Objects
 var path;
-var turrets;
-var cannons;
-var reg_enemies;
-var fast_enemies;
+
 var bullets;
 var player;
-var scraps = 0;
 var shells;
 
-var BULLET_DAMAGE = 50;
-var SHELL_DAMAGE = 150;
+// Sounds
+var gunfire;
+var cannonshot;
+var wind;
 
-var wavesRemaining = 3;
-var pause = true;
-var turret_selector = 0;
+// Texts
+var timeText;
+var startText;
+var waveText;
+var scrapText;
+var lifecountText;
+var victoryText;
+var continueText;
+var defeatText;
+var restartText;
+var ammoCountText;
+
+// Trackers
+
+var timeRemaining;
+var enemiesRemaining;
+var waveNumber;
+
+
+
 
