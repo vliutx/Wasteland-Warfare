@@ -163,7 +163,10 @@ export default class BootScene extends Phaser.Scene {
 
 
     // Assets for lightning turret
-    this.load.image('lightning', 'assets/Lightning.png');
+    this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
+        frameHeight: 96,
+        frameWidth: 96
+      });
 
     this.load.audio('death', 'assets/sounds/death.mp3');
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
@@ -219,6 +222,14 @@ export default class BootScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1
     });
+
+    this.anims.create({
+        key: "lightning",
+        frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: 0,
+      });
+      
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -929,7 +940,7 @@ var Turret = new Phaser.Class({
         this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
         this.fireRate = 1000;
-        var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
+        //var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
         //Phaser.GameObjects.Image.call(button1, scene, -32, 0, 'checkmark');//.setInteractive();
         //button1.on('pointerup', this.upgrade2);
         //var button2;
@@ -1019,12 +1030,16 @@ var Cannon = new Phaser.Class({
         this.x = j * 64 + 64/2;
         map[i][j] = 1;
     },
+
     fire: function() {
-        var enemy = getEnemy(this.x, this.y, 70);
+        var enemy = getEnemy(this.x, this.y, 200);
         if(enemy) {
-            enemy.receiveDamage()
+            var angle = Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
+            addShell(this.x, this.y, angle);
+            this.angle = (angle + Math.PI/2) * Phaser.Math.RAD_TO_DEG;
         }
     },
+
     update: function (time, delta)
     {
         if(time > this.nextTic) {
@@ -1036,17 +1051,18 @@ var Cannon = new Phaser.Class({
 
 var Lightning = new Phaser.Class({
 
-    Extends: Phaser.GameObjects.Image,
+    Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
     function Turret (scene)
     {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'lightning');
+        Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'lightning');
         this.setInteractive();
         this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
         this.fireRate = 200;
+
     },
     place: function(i, j) {
 
@@ -1059,8 +1075,9 @@ var Lightning = new Phaser.Class({
 
         for(var i=0; i < enemies.length; i++){
             enemies[i].receiveDamage(LIGHTNING_DAMAGE);
-
+            this.play("lightning", this);
         }
+        
     },
     update: function (time, delta)
     {
