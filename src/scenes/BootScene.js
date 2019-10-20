@@ -120,6 +120,7 @@ export default class BootScene extends Phaser.Scene {
     // turret selector
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
+    this.load.image('lightningicon', 'assets/Tesla-Icon.png')
 
     // upgrades
     this.load.image('checkmark', 'assets/checkmark.png');
@@ -170,14 +171,25 @@ export default class BootScene extends Phaser.Scene {
         turret_selector = 0;
         button1.alpha = 1;
         button2.alpha = 0.5;
+        button3.alpha = 0.5;
     });
     var button2 = this.add.sprite(110, 600, 'cannonicon', 0).setInteractive();
     button2.on('pointerup', function(){
         turret_selector = 1;
         button2.alpha = 1;
         button1.alpha = 0.5;
+        button3.alpha = 0.5;
     });
-    button2.alpha = 0.5; //initially on button 1 already.
+    var button3 = this.add.sprite(40, 550, 'lightningicon', 0).setInteractive();
+    button2.on('pointerup', function(){
+        turret_selector = 2;
+        button3.alpha = 1;
+        button1.alpha = 0.5;
+        button2.alpha = 0.5;
+    });
+    button1.alpha = 0.5; // all deselected? trying it idk
+    button2.alpha = 0.5;
+    button3.alpha = 0.5; 
 
 //Create enemies/towers/player groups
 
@@ -1164,6 +1176,10 @@ function placeTower(pointer) {
                 cannon.setVisible(true);
                 cannon.place(i, j);
             }
+        }
+        else if (turret_selector == 2 && scraps >= 15){
+            scraps -= 15;
+            var 
         }
     }
 }
