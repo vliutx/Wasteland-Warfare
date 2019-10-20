@@ -9,7 +9,7 @@
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
                     [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
@@ -19,7 +19,7 @@
     var lifecount = 10;
     var wavesRemaining = 3;
     var gameTime = 0;
-    var turret_selector = 2;
+    var turret_selector = -1;
     var gameTime = 0;
     var reloadTime = 0;
 
@@ -180,6 +180,7 @@ export default class BootScene extends Phaser.Scene {
     // turret selector
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
+    this.load.image('lightningicon', 'assets/Tesla-Icon.png');
 
     // upgrades
     this.load.image('checkmark', 'assets/checkmark.png');
@@ -250,19 +251,30 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, -50);
 
     //creates buttons to change between the turrets
-    var button1 = this.add.sprite(40, 600, 'turreticon', 0).setInteractive();
+    var button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
     button1.on('pointerup', function(){
         turret_selector = 0;
         button1.alpha = 1;
         button2.alpha = 0.5;
+        button3.alpha = 0.5;
     });
-    var button2 = this.add.sprite(110, 600, 'cannonicon', 0).setInteractive();
+    var button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
     button2.on('pointerup', function(){
         turret_selector = 1;
         button2.alpha = 1;
         button1.alpha = 0.5;
+        button3.alpha = 0.5;
     });
-    button2.alpha = 0.5; //initially on button 1 already.
+    var button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
+    button3.on('pointerup', function(){
+        turret_selector = 2;
+        button3.alpha = 1;
+        button1.alpha = 0.5;
+        button2.alpha = 0.5;
+    });
+    button1.alpha = 0.5; // all deselected? trying it idk
+    button2.alpha = 0.5;
+    button3.alpha = 0.5;
 
 //Create enemies/towers/player groups
 
@@ -375,7 +387,7 @@ export default class BootScene extends Phaser.Scene {
     selecttext.setVisible(false);
     placetext = this.add.text(220, 130, "Click a space to place a tower", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     placetext.setVisible(false);
-    pointer2 = this.add.image(40, 530, 'pointer').setRotation(Math.PI/2);
+    pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
 
 
@@ -1090,8 +1102,8 @@ var Lightning = new Phaser.Class({
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 0 && map[i][j] == 1){
-            scraps -= 0;
+        if (scraps >= 15 && map[i][j] == 1){
+            scraps -= 15;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1303,20 +1315,6 @@ function damageEnemyShell(enemy, shell) {
     }
 }
 
-/*
-function drawLines(graphics) {
-    graphics.lineStyle(1, 0x0000ff, 0.8);
-    for(var i = 0; i < 10; i++) {
-        graphics.moveTo(0, i * 64);
-        graphics.lineTo(896, i * 64);
-    }
-    for(var j = 0; j < 14; j++) {
-        graphics.moveTo(j * 64, 0);
-        graphics.lineTo(j * 64, 640);
-    }
-    graphics.strokePath();
-}
-*/
 
 function canPlaceTurret(i, j) {
     return map[i][j] === 0 && pause != true;
@@ -1345,8 +1343,8 @@ function placeTower(pointer) {
                 cannon.place(i, j);
             }
         }
-        else if (turret_selector == 2 && scraps >= 0){
-            scraps -= 0;
+        else if (turret_selector == 2 && scraps >= 15){
+            scraps -= 15;
             var lightning = lightnings.get();
             if (lightning){
                 lightning.setActive(true);
@@ -1357,22 +1355,6 @@ function placeTower(pointer) {
     }
 }
 
-
-function placeCannon(pointer) {
-    if (scraps >= 0){
-        scraps -= 0;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
-            var cannon = cannons.get();
-            if (cannon){
-                cannon.setActive(true);
-                cannon.setVisible(true);
-                cannon.place(i, j);
-            }
-        }
-    }
-}
 
 
 function addBullet(x, y, angle) {
