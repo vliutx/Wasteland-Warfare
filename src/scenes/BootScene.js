@@ -15,7 +15,7 @@
 
 
     // Counters
-    var scraps = 15;
+    var scraps = 0;
     var lifecount = 10;
     var wavesRemaining = 3;
     var gameTime = 0;
@@ -86,16 +86,16 @@
 
     // Enemies
     var FAST_SPEED = 1/12500;
-    var FAST_HEALTH = 50;
+    var FAST_HEALTH = 80;
     var fast_enemies;
 
     var REG_SPEED = 1/15000;
-    var REG_HEALTH = 100;
+    var REG_HEALTH = 120;
     var reg_enemies;
 
     var tough_enemies;
     var TOUGH_SPEED = 1/17500;
-    var TOUGH_HEALTH = 200;
+    var TOUGH_HEALTH = 160;
 
     var boss_enemies;
     var BOSS_SPEED = 1/20000;
@@ -108,7 +108,7 @@
 
     // Damage
     var BULLET_DAMAGE = 40;
-    var SHELL_DAMAGE = 150;
+    var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
 
 export default class BootScene extends Phaser.Scene {
@@ -191,7 +191,6 @@ export default class BootScene extends Phaser.Scene {
     explode = this.sound.add('explosion', {volume: 0.7});
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
-    electric.duration = 0.5
 
     //play Sounds
     theme.play();
@@ -488,6 +487,7 @@ export default class BootScene extends Phaser.Scene {
 
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
+            ammoCount = 6
             //Build phase over
             buildPhase = false;
             //Reset gameTime
@@ -1031,6 +1031,8 @@ var Cannon = new Phaser.Class({
     function Turret (scene)
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
+        this.setInteractive();
+        this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
         this.fireRate = 1500;
     },
@@ -1065,7 +1067,7 @@ var Cannon = new Phaser.Class({
             scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
-            this.setTint(0x0000ff);
+            this.setTint(0xff00ff);
         }
     }
 });
