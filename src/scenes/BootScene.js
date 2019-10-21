@@ -37,6 +37,7 @@
     var waveNumber;
     var lifecount;
     var ammoCount;
+    var tickTimer = 3
 
     // Misc
     var path;
@@ -58,35 +59,13 @@
     var wavesRemaining = 5;
     var totalWaves = wavesRemaining;
 
-
-
-    // Enemies
-    var FAST_SPEED = 1/12500;
-    var FAST_HEALTH = 50;
-    var fast_enemies;
-
-    var REG_SPEED = 1/15000;
-    var REG_HEALTH = 100;
-    var reg_enemies;
-
-    var tough_enemies;
-    var TOUGH_SPEED = 1/17500;
-    var TOUGH_HEALTH = 300;
-
-    var boss_enemies;
-    var BOSS_SPEED = 1/20000;
-    var BOSS_HEALTH = 1000;
-
-
-    // Damgage
-    var BULLET_DAMAGE = 25;
-    var SHELL_DAMAGE = 150;
-
     // Sounds
     var cannonshot;
     var wind;
     var tick;
     var theme;
+    var tank;
+    var explode;
 
     //NAME THESE BETTER/DON'T PUT THEM HERE
     var movetext;
@@ -113,7 +92,7 @@
 
     var tough_enemies;
     var TOUGH_SPEED = 1/17500;
-    var TOUGH_HEALTH = 300;
+    var TOUGH_HEALTH = 200;
 
     var boss_enemies;
     var BOSS_SPEED = 1/20000;
@@ -124,8 +103,8 @@
     var cannons;
     var lightnings;
 
-    // Damgage
-    var BULLET_DAMAGE = 25;
+    // Damage
+    var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 150;
     var LIGHTNING_DAMAGE = 5;
 
@@ -173,6 +152,8 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
+    this.load.audio('explosion', 'assets/sounds/Explode.mp3');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -198,10 +179,13 @@ export default class BootScene extends Phaser.Scene {
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
     tick = this.sound.add('tick');
     theme = this.sound.add('theme', {loop: true, volume: 0.5});
+
     //Add sounds
     gunfire = this.sound.add('gunshot', {volume: 0.20});
     cannonshot = this.sound.add('cannonshot');
     death = this.sound.add('death');
+    explode = this.sound.add('explosion', {volume: 0.7});
+    tank = this.sound.add('tankSounds', {loop: true});
 
     //play Sounds
     theme.play();
@@ -423,6 +407,7 @@ export default class BootScene extends Phaser.Scene {
         scrapText.setVisible(false);
         waveText.setVisible(false);
         victoryText.setVisible(true);
+        theme.stop();
 
         //Prompt user to continue
         continueText.setVisible(true);
@@ -454,6 +439,7 @@ export default class BootScene extends Phaser.Scene {
 
         //Display defeat text
         defeatText.setVisible(true);
+        theme.stop();
 
         //Prompt player to restart the game
         restartText.setVisible(true);
@@ -483,6 +469,13 @@ export default class BootScene extends Phaser.Scene {
         timeRemaining =  Math.floor(this.buildTime - gameTime);
         timeText.setText('Time before next wave: ' + timeRemaining);
 
+        //ticking sound
+
+        if (timeRemaining == tickTimer){
+          tick.play();
+          tickTimer -= 1;
+        }
+
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
             //Build phase over
@@ -491,6 +484,8 @@ export default class BootScene extends Phaser.Scene {
             gameTime = 0;
             //Remove text
             timeText.setVisible(false);
+            //reset tickTimer
+            tickTimer = 3;
             //reset enemies remaining
             enemiesRemaining = this.waveSize;
             this.spawned = 0;
@@ -807,6 +802,7 @@ var Boss = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bossenemy');
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        tank.play();
         this.hp = 0;
     },
 
@@ -829,6 +825,8 @@ var Boss = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
+            tank.stop();
+            explode.play()
             scraps += 10;
             enemiesRemaining -= 1;;
         }
@@ -863,6 +861,7 @@ var Boss = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 3;
+                tank.stop();
                 lifecount -= 10
             }
         }
