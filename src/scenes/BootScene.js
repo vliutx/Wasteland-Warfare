@@ -15,7 +15,7 @@
 
 
     // Counters
-    var scraps = 0;
+    var scraps = 15;
     var lifecount = 10;
     var wavesRemaining = 3;
     var gameTime = 0;
@@ -68,6 +68,7 @@
     var theme;
     var tank;
     var explode;
+    var electric;
 
     //NAME THESE BETTER/DON'T PUT THEM HERE
     var movetext;
@@ -156,6 +157,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
     this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
+    this.load.audio('electricity', 'assets/sounds/Electric.mp3');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -188,6 +190,8 @@ export default class BootScene extends Phaser.Scene {
     death = this.sound.add('death', {volume: 0.1});
     explode = this.sound.add('explosion', {volume: 0.7});
     tank = this.sound.add('tankSounds', {loop: true});
+    electric = this.sound.add('electricity',{volume: 0.1, loop: false});
+    electric.duration = 0.5
 
     //play Sounds
     theme.play();
@@ -1057,7 +1061,7 @@ var Cannon = new Phaser.Class({
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 0 && map[i][j] == 1){
+        if (scraps >= 20 && map[i][j] == 1){
             scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
@@ -1093,6 +1097,7 @@ var Lightning = new Phaser.Class({
         for(var i=0; i < enemies.length; i++){
             enemies[i].receiveDamage(LIGHTNING_DAMAGE);
             this.play("lightning", this);
+            electric.play();
         }
 
     },
