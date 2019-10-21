@@ -52,6 +52,8 @@
     var firetext;
     var pointer;
     var pointer2;
+    var pointer3;
+    var ammoText;
     var selecttext;
     var placetext;
     var count = 0;
@@ -183,7 +185,7 @@ export default class BootScene extends Phaser.Scene {
     //Add sounds
     gunfire = this.sound.add('gunshot', {volume: 0.20});
     cannonshot = this.sound.add('cannonshot');
-    death = this.sound.add('death');
+    death = this.sound.add('death', {volume: 0.1});
     explode = this.sound.add('explosion', {volume: 0.7});
     tank = this.sound.add('tankSounds', {loop: true});
 
@@ -358,6 +360,10 @@ export default class BootScene extends Phaser.Scene {
     firetext.setVisible(false);
     pointer = this.add.image(800, 30, 'pointer');
     pointer.setVisible(false);
+    ammoText = this.add.text(777, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    ammoText.setVisible(false);
+    pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
+    pointer3.setVisible(false);
     selecttext = this.add.text(170, 80, "Select towers by clicking the tower.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     selecttext.setVisible(false);
     placetext = this.add.text(220, 130, "Click a space to place a tower", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
@@ -499,12 +505,16 @@ export default class BootScene extends Phaser.Scene {
       movetext.setVisible(true);
       firetext.setVisible(true);
       pointer.setVisible(true);
+      ammoText.setVisible(true);
+      pointer3.setVisible(true);
     }
 
     if (buildPhase == false && waveNumber == 1){
       movetext.setVisible(false);
       firetext.setVisible(false);
       pointer.setVisible(false);
+      ammoText.setVisible(false);
+      pointer3.setVisible(false);
     }
 
     //tutorial text number 2
@@ -677,7 +687,8 @@ var Regular = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
-                enemiesRemaining -= 1;;
+                enemiesRemaining -= 1;
+                death.play();
             }
         },
         update: function (time, delta)
@@ -752,6 +763,7 @@ var Tough = new Phaser.Class({
             this.setActive(false);
             this.setVisible(false);
             scraps += 2;
+            death.play();
             enemiesRemaining -= 1;
         }
     },
@@ -905,6 +917,7 @@ var Fast = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
+                death.play();
                 enemiesRemaining -= 1;
             }
         },
@@ -1044,8 +1057,8 @@ var Cannon = new Phaser.Class({
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 20 && map[i][j] == 1){
-            scraps -= 10;
+        if (scraps >= 0 && map[i][j] == 1){
+            scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1095,7 +1108,7 @@ var Lightning = new Phaser.Class({
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
         if (scraps >= 30 && map[i][j] == 1){
-            scraps -= 15;
+            scraps -= 30;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1324,6 +1337,7 @@ function placeTower(pointer) {
                 turret.setActive(true);
                 turret.setVisible(true);
                 turret.place(i, j);
+                tick.play();
             }
         }
         else if (turret_selector == 1 && scraps >= 10){
@@ -1333,6 +1347,7 @@ function placeTower(pointer) {
                 cannon.setActive(true);
                 cannon.setVisible(true);
                 cannon.place(i, j);
+                tick.play();
             }
         }
         else if (turret_selector == 2 && scraps >= 15){
@@ -1342,6 +1357,7 @@ function placeTower(pointer) {
                 lightning.setActive(true);
                 lightning.setVisible(true);
                 lightning.place(i, j);
+                tick.play();
             }
         }
     }
