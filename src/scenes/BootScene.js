@@ -36,7 +36,6 @@
     var walking;
     var wind;
     var tick;
-    var death;
     var ammoCount;
     var ammoCountText;
     var reloading = false;
@@ -48,14 +47,10 @@
     var pointer2;
     var selecttext;
     var placetext;
-    var upgradetext;
-    var costText;
     var count = 0;
     var BC = 1;
     var wavesRemaining = 5;
     var totalWaves = wavesRemaining;
-
-
 
     // Enemies
     var FAST_SPEED = 1/12500;
@@ -78,6 +73,8 @@
     // Damgage
     var BULLET_DAMAGE = 25;
     var SHELL_DAMAGE = 150;
+
+    console.log(Phaser.GameObjects.Image.call);
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -112,7 +109,6 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
-    this.load.audio('death', 'assets/sounds/death.mp3');
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
 
@@ -124,6 +120,11 @@ export default class BootScene extends Phaser.Scene {
     // turret selector
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
+    this.load.image('lightningicon', 'assets/Tesla-Icon.png')
+
+    // upgrades
+    this.load.image('checkmark', 'assets/checkmark.png');
+    this.load.image('xmark', 'assets/xmark.png');
 
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
@@ -132,12 +133,20 @@ export default class BootScene extends Phaser.Scene {
 
   create() {
     //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true, volume: 0.1});
+    wind = this.sound.add('wind', {loop: true});
     wind.play();
     tick = this.sound.add('tick');
 
     //Initialize gun ammo
     ammoCount = 6;
+
+    //DOES NOT WORK CURRENTLY
+    walking = this.anims.create({
+      key: "walk",
+      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -145,7 +154,6 @@ export default class BootScene extends Phaser.Scene {
     //Add sounds
     gunfire = this.sound.add('gunshot');
     cannonshot = this.sound.add('cannonshot');
-    death = this.sound.add('death');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -163,14 +171,25 @@ export default class BootScene extends Phaser.Scene {
         turret_selector = 0;
         button1.alpha = 1;
         button2.alpha = 0.5;
+        button3.alpha = 0.5;
     });
     var button2 = this.add.sprite(110, 600, 'cannonicon', 0).setInteractive();
     button2.on('pointerup', function(){
         turret_selector = 1;
         button2.alpha = 1;
         button1.alpha = 0.5;
-    })
-    button2.alpha = 0.5; //initially on button 1 already.
+        button3.alpha = 0.5;
+    });
+    var button3 = this.add.sprite(40, 550, 'lightningicon', 0).setInteractive();
+    button2.on('pointerup', function(){
+        turret_selector = 2;
+        button3.alpha = 1;
+        button1.alpha = 0.5;
+        button2.alpha = 0.5;
+    });
+    button1.alpha = 0.5; // all deselected? trying it idk
+    button2.alpha = 0.5;
+    button3.alpha = 0.5; 
 
 //Create enemies/towers/player groups
 
@@ -196,14 +215,17 @@ export default class BootScene extends Phaser.Scene {
     boss_enemies = this.physics.add.group({ classType: Boss, runChildUpdate: true });
 
     //enemy animations
+    this.anims.create({
+        key: "walk",
+        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
 
-    var config = {
-      key: 'walk',
-      frames: this.anims.generateFrameNumbers('reg_enemies'),
-      frameRate: 10,
-      yoyo: true,
-      repeat: -1
-  };
+    reg_enemies.playAnimation('walk', true);
+
+
+
 
     // Declare variables
     this.nextEnemy = 0;
@@ -282,10 +304,6 @@ export default class BootScene extends Phaser.Scene {
     placetext.setVisible(false);
     pointer2 = this.add.image(40, 530, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
-    upgradetext = this.add.text(210, 80, "Upgrade a turret by clicking it", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    upgradetext.setVisible(false);
-    costText = this.add.text(240, 130, "(turret upgrade = 10 scrap)", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    costText.setVisible(false);
 
 
 //Start the game
@@ -427,26 +445,12 @@ export default class BootScene extends Phaser.Scene {
       pointer2.setVisible(false);
     }
 
-    //tutorial text number 3
-    if (buildPhase == true && waveNumber == 3){
-      upgradetext.setVisible(true);
-      costText.setVisible(true);
-    }
-
-    if (buildPhase == false && waveNumber == 3){
-      upgradetext.setVisible(false);
-      costText.setVisible(false);
-    }
-
     //Combat phase
     if (buildPhase == false && pause != true){
-
         //Set timer
         gameTime += delta;
-
         //Display # of enemies remaining
         this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
-
         //Spawn in enemies
         if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
             var fast = fast_enemies.get();
@@ -546,7 +550,6 @@ export default class BootScene extends Phaser.Scene {
         }
     }
 
-
   } //End update()
 
 }//End class export
@@ -554,13 +557,14 @@ export default class BootScene extends Phaser.Scene {
 
 var Regular = new Phaser.Class({
 
-        Extends: Phaser.GameObjects.Image,
+        Extends: Phaser.GameObjects.Sprite,
 
         initialize:
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'regularenemy');
+            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'regularenemy');
+            this.play("walk", this);
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
@@ -860,9 +864,20 @@ var Turret = new Phaser.Class({
         this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
         this.fireRate = 1000;
+        var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
+        //Phaser.GameObjects.Image.call(button1, scene, -32, 0, 'checkmark');//.setInteractive();
+        //button1.on('pointerup', this.upgrade2);
+        //var button2;
+        //Phaser.GameObjects.Image.call(button2, scene, 32, 0, 'xmark');
+        //button2.setInteractive();
+        //this.button2.on('pointerup', this.upgrade3);
+        /*
+        this.button1.setActive(false);
+        this.button1.setVisible(false);
+        this.button2.setActive(false);
+        this.button2.setVisible(false);*/
     },
     place: function(i, j) {
-
         this.y = i * 64 + 64/2;
         this.x = j * 64 + 64/2;
         map[i][j] = 1;
@@ -884,15 +899,29 @@ var Turret = new Phaser.Class({
     },
     upgrade: function ()
     {
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
+        this.button1.setActive(true);
+        this.button1.setVisible(true);
+        this.button2.setActive(true);
+        this.button2.setVisible(true);
+    },
+    upgrade2: function ()
+    {
+    var i = (this.y - 32) / 64;
+    var j = (this.x - 32) / 64;
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
         }
-    }
+    },
+    upgrade3: function ()
+    {
+        this.button1.setActive(false);
+        this.button1.setVisible(false);
+        this.button2.setActive(false);
+        this.button2.setVisible(false);
+    },
 });
 
 
@@ -1106,7 +1135,7 @@ function damageEnemyShell(enemy, shell) {
     }
 }
 
-/*
+
 function drawLines(graphics) {
     graphics.lineStyle(1, 0x0000ff, 0.8);
     for(var i = 0; i < 10; i++) {
@@ -1119,7 +1148,7 @@ function drawLines(graphics) {
     }
     graphics.strokePath();
 }
-*/
+
 
 function canPlaceTurret(i, j) {
     return map[i][j] === 0 && pause != true;
@@ -1147,6 +1176,10 @@ function placeTower(pointer) {
                 cannon.setVisible(true);
                 cannon.place(i, j);
             }
+        }
+        else if (turret_selector == 2 && scraps >= 15){
+            scraps -= 15;
+            var 
         }
     }
 }
