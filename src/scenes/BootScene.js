@@ -111,6 +111,10 @@
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
 
+    // redsquare
+    var redSquare
+    var graphics
+
 export default class BootScene extends Phaser.Scene {
   constructor () {
     super('Boot');
@@ -245,6 +249,31 @@ export default class BootScene extends Phaser.Scene {
     button1.alpha = 0.5; // all deselected? trying it idk
     button2.alpha = 0.5;
     button3.alpha = 0.5;
+    //Descriptions of turrets
+    var b1Text = this.add.text(90, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b1Text.setVisible(false);
+    var b2Text = this.add.text(154, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b2Text.setVisible(false);
+    var b3Text = this.add.text(90, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b3Text.setVisible(false);
+    button1.on('pointerover', function(){
+        b1Text.setVisible(true);
+    });
+    button1.on('pointerout', function(){
+        b1Text.setVisible(false);
+    });
+    button2.on('pointerover', function(){
+        b2Text.setVisible(true);
+    });
+    button2.on('pointerout', function(){
+        b2Text.setVisible(false);
+    });
+    button3.on('pointerover', function(){
+        b3Text.setVisible(true);
+    });
+    button3.on('pointerout', function(){
+        b3Text.setVisible(false);
+    });
 
 //Create enemies/towers/player groups
 
@@ -323,6 +352,35 @@ export default class BootScene extends Phaser.Scene {
 
     //place turrets (ADD FOR CANNONS)
     this.input.on('pointerdown', placeTower);
+    //display where the turrets can be placed
+    
+    graphics = this.add.graphics();
+    redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);
+    var q, w;
+    this.input.on('pointermove', function(pointer) {
+        q = Math.floor(pointer.x/64);
+        w = Math.floor(pointer.y/64);
+        if (pause == true){
+            graphics.clear();
+        } else {
+            if (canPlaceTurret(w, q)) {
+                console.log('can');
+                graphics.clear();
+                graphics.lineStyle(2, 0x00FF00, 1);
+                graphics.strokeRectShape(redSquare);
+                redSquare.x = q * 64;
+                redSquare.y = w * 64;
+            } else {
+                console.log('no');
+                graphics.clear();
+                graphics.lineStyle(2, 0xFF0000, 1);
+                graphics.strokeRectShape(redSquare);
+                redSquare.x = q * 64;
+                redSquare.y = w * 64;
+            }
+        }
+    });
+    
 
 
 //Create game texts
@@ -406,7 +464,6 @@ export default class BootScene extends Phaser.Scene {
   } //End create
 
   update (time, delta) {
-
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
