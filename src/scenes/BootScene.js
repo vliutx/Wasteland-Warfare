@@ -30,7 +30,7 @@
     var startGame = false;
     var restart = false;
     var reloading = false;
-
+    var spacedown = false;
 
     // Counters
     var enemiesRemaining;
@@ -284,12 +284,12 @@ export default class BootScene extends Phaser.Scene {
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
-        if (pause != true && reloading == false){
-        addBullet(player.x,player.y,Math.PI)
-        ammoCount -= 1
-        }
+        spacedown = true;
     });
-
+    spaceBar.on("up", function(){
+        spacedown = false;
+    })
+    
 
     //Enemies
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
@@ -358,20 +358,17 @@ export default class BootScene extends Phaser.Scene {
     redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);
     var q, w;
     this.input.on('pointermove', function(pointer) {
-        q = Math.floor(pointer.x/64);
-        w = Math.floor(pointer.y/64);
         if (pause == true){
-            graphics.clear();
         } else {
+            q = Math.floor(pointer.x/64);
+            w = Math.floor(pointer.y/64);
             if (canPlaceTurret(w, q)) {
-                console.log('can');
                 graphics.clear();
                 graphics.lineStyle(2, 0x00FF00, 1);
                 graphics.strokeRectShape(redSquare);
                 redSquare.x = q * 64;
                 redSquare.y = w * 64;
             } else {
-                console.log('no');
                 graphics.clear();
                 graphics.lineStyle(2, 0xFF0000, 1);
                 graphics.strokeRectShape(redSquare);
@@ -464,6 +461,11 @@ export default class BootScene extends Phaser.Scene {
   } //End create
 
   update (time, delta) {
+    //shoot
+    if (spacedown == true && pause != true && reloading == false){
+        addBullet(player.x,player.y,Math.PI)
+        ammoCount -= 1
+    }
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
