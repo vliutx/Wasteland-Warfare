@@ -115,6 +115,10 @@
     var redSquare
     var graphics
 
+    // time between fires
+    var delts = 0;
+    var frplayer = 500;
+
 export default class BootScene extends Phaser.Scene {
   constructor () {
     super('Boot');
@@ -462,10 +466,14 @@ export default class BootScene extends Phaser.Scene {
 
   update (time, delta) {
     //shoot
-    if (spacedown == true && pause != true && reloading == false){
-        addBullet(player.x,player.y,Math.PI)
-        ammoCount -= 1
+    if (spacedown == true){
+        if (time - delts > frplayer && pause != true && reloading == false) {
+            delts = time
+            addBullet(player.x,player.y,Math.PI)
+            ammoCount -= 1
+        }
     }
+        
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
