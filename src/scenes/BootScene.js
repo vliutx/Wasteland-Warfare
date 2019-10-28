@@ -285,7 +285,7 @@ export default class BootScene extends Phaser.Scene {
         button3.alpha = 0.5;
     });
     var button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
-    button1.alpha = 0.5; 
+    button2.alpha = 0.5; 
     button2.on('pointerup', function(){
         turret_selector = 1;
         selected = true;
