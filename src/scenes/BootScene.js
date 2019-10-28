@@ -16,7 +16,7 @@
 
     // Counters
     var scraps = 0;
-    var lifecount = 15;
+    var lifecount = 10;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
@@ -34,7 +34,6 @@
     var restart = false;
     var reloading = false;
     var spacedown = false;
-    var reloading = false;
     var singleShot = true;
 
     // Counters
@@ -51,6 +50,7 @@
     var pointer;
     var pointer2;
     var pointer3;
+    var played = false;
 
     // Sounds
     var cannonshot;
@@ -60,6 +60,7 @@
     var tank;
     var explode;
     var electric;
+    var reload;
 
     // Sounds
     var cannonshot;
@@ -77,7 +78,7 @@
 
     var tough_enemies;
     var TOUGH_SPEED = 1/20000;
-    var TOUGH_HEALTH = 160;
+    var TOUGH_HEALTH = 200;
 
     var boss_enemies;
     var BOSS_SPEED = 1/20500;
@@ -130,7 +131,10 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
       frameWidth: 64
     });
-
+    this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
+        frameHeight: 48,
+        frameWidth: 48
+      });
     this.load.image('bossenemy', 'assets/TankBoss.png');
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
@@ -154,6 +158,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
+    this.load.audio('reload', 'assets/sounds/reloading.mp3');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -196,6 +201,7 @@ export default class BootScene extends Phaser.Scene {
     explode = this.sound.add('explosion', {volume: 0.7});
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
+    reload = this.sound.add('reload', {volume: .40});
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
@@ -210,7 +216,7 @@ export default class BootScene extends Phaser.Scene {
 
 //Player
 
-    player = this.physics.add.sprite(864, 32, 'player');
+    player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
@@ -316,9 +322,6 @@ export default class BootScene extends Phaser.Scene {
         button2.alpha = 0.5;
     });
 
- 
-
-
     //Display where turrets can be placed
     graphics = this.add.graphics();
     redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);
@@ -385,14 +388,14 @@ export default class BootScene extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(400, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(215, 5, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
-    waveText = this.add.text(400, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
+    waveText = this.add.text(420, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 5;
-    timeText = this.add.text(165, 600, timeRemaining, {fontSize: 30, color: '#000000', fontStyle: 'bold'});
+    this.buildTime = 15;
+    timeText = this.add.text(620, 5, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     //this.enemiesRemainingText.setVisible(false);
@@ -414,9 +417,9 @@ export default class BootScene extends Phaser.Scene {
     restartText.setVisible(false);
 
     //various tutorial texts
-    movetext = this.add.text(250, 80, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    movetext = this.add.text(250, 40, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     movetext.setVisible(false);
-    firetext = this.add.text(340, 130, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    firetext = this.add.text(340, 80, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     firetext.setVisible(false);
     pointer = this.add.image(800, 30, 'pointer');
     pointer.setVisible(false);
@@ -424,15 +427,15 @@ export default class BootScene extends Phaser.Scene {
     ammoText.setVisible(false);
     pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
     pointer3.setVisible(false);
-    selecttext = this.add.text(170, 80, "Select towers by clicking the tower.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    selecttext = this.add.text(200, 40, "Select towers by clicking the tower.", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     selecttext.setVisible(false);
-    placetext = this.add.text(220, 130, "Click a space to place a tower", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    placetext = this.add.text(240, 80, "Click a space to place a tower", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     placetext.setVisible(false);
     pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
-    upgradetext = this.add.text(210, 80, "Upgrade a turret by clicking it", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    upgradetext = this.add.text(235, 42, "Upgrade a turret by clicking it", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     upgradetext.setVisible(false);
-    costText = this.add.text(160, 130, "(turret upgrade = 2x cost of turret)", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    costText = this.add.text(205, 80, "(turret upgrade = 2x cost of turret)", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     costText.setVisible(false);
 
 
@@ -482,6 +485,7 @@ export default class BootScene extends Phaser.Scene {
         scrapText.setVisible(false);
         waveText.setVisible(false);
         victoryText.setVisible(true);
+        timeText.setVisible(false);
         theme.stop();
 
         //Prompt user to continue
@@ -499,6 +503,7 @@ export default class BootScene extends Phaser.Scene {
             //Enable scrap text
             scrapText.setVisible(true);
             //Increment wavesRemaining so condition goes to false
+            timeText.setVisible(true);
             wavesRemaining-= 1;
         });
     }
@@ -528,11 +533,16 @@ export default class BootScene extends Phaser.Scene {
     if (ammoCount == 0){
       reloading = true;
       reloadTime += delta/1000;
+      if (played == false) {
+          reload.play();
+          played = true;
+      }
 
       if (Math.floor(reloadTime) >= 1){
         ammoCount = 6;
         reloadTime = 0;
         reloading = false;
+        played = false;
       }
     }
 
@@ -542,14 +552,18 @@ export default class BootScene extends Phaser.Scene {
         //Add game timer
         gameTime += delta/1000;
         timeRemaining =  Math.floor(this.buildTime - gameTime);
-        timeText.setText('Time before next wave: ' + timeRemaining);
+        timeText.setText('Time: ' + timeRemaining);
+        timeText.setColor('#FFFFFF');
+        if (timeRemaining <= 5) {
+            timeText.setColor('#FF0000');
+        };
 
         //ticking sound
 
         if (timeRemaining == tickTimer){
           tick.play();
           tickTimer -= 1;
-        }
+        };
 
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
@@ -648,13 +662,13 @@ export default class BootScene extends Phaser.Scene {
             waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
             wavesRemaining -= 1;
             //Increment wave size
-            this.waveSize += 6;
+            this.waveSize += 4;
             //Increment spawn delay
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
             count = 0;
-            scraps += 3+waveNumber-1;
+            scraps += (3 + waveNumber-1);
         }
     } //End combat phase
 
