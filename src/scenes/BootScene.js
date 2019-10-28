@@ -134,13 +134,15 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
       frameWidth: 64
     });
+    this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+      frameHeight: 96,
+      frameWidth: 96
+    });
 
-    this.load.image('bossenemy', 'assets/TankBoss.png');
     this.load.image('turret', 'assets/Turret1.png');
-    this.load.image('player', 'assets/MainPlayer.png');
+    this.load.image('player', 'assets/MainPlayer2.png');
     this.load.image('bullet', 'assets/Bullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
-    this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
@@ -271,21 +273,28 @@ export default class BootScene extends Phaser.Scene {
     //enemy animations
     this.anims.create({
         key: "reg_walk",
-        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "tough_walk",
-        frames: this.anims.generateFrameNumbers("toughenemy", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("toughenemy", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "fast_walk",
-        frames: this.anims.generateFrameNumbers("fastenemy", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("fastenemy", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "tank_move",
+        frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
         frameRate: 10,
         repeat: -1
     });
@@ -810,14 +819,15 @@ var Tough = new Phaser.Class({
 
 var Boss = new Phaser.Class({
 
-    Extends: Phaser.GameObjects.Image,
+    Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
     function Enemy (scene)
     {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bossenemy');
+        Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'bossenemy');
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        this.play("tank_move", this);
         tank.play();
         this.hp = 0;
     },
