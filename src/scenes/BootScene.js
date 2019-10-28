@@ -39,9 +39,8 @@
     var enemiesRemaining;
     var waveNumber;
     var lifecount;
-    var ammoCount;
-    var tickTimer = 3
-    var ammoCount;
+    var ammoCount = 6;
+    var tickTimer = 3;
 
     // Misc
     var path;
@@ -276,10 +275,8 @@ export default class BootScene extends Phaser.Scene {
 
     //Turrent selection
     selected = false; 
-    button1.alpha = 0.5; 
-    button2.alpha = 0.5;
-    button3.alpha = 0.5;
     var button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
+    button1.alpha = 0.5; 
     button1.on('pointerup', function(){
         turret_selector = 0;
         selected = true;
@@ -288,6 +285,7 @@ export default class BootScene extends Phaser.Scene {
         button3.alpha = 0.5;
     });
     var button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
+    button1.alpha = 0.5; 
     button2.on('pointerup', function(){
         turret_selector = 1;
         selected = true;
@@ -296,6 +294,7 @@ export default class BootScene extends Phaser.Scene {
         button3.alpha = 0.5;
     });
     var button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
+    button3.alpha = 0.5;
     button3.on('pointerup', function(){
         turret_selector = 2;
         selected = true;
@@ -303,6 +302,9 @@ export default class BootScene extends Phaser.Scene {
         button1.alpha = 0.5;
         button2.alpha = 0.5;
     });
+
+ 
+
 
     //Display where turrets can be placed
     graphics = this.add.graphics();
