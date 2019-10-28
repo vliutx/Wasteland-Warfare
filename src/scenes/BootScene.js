@@ -15,14 +15,16 @@
 
 
     // Counters
-    var scraps = 0;
-    var lifecount = 10;
+    var scraps = 50;
+    var lifecount = 500;
     var wavesRemaining = 3;
+    var totalWaves = wavesRemaining;
     var gameTime = 0;
     var turret_selector = -1;
     var gameTime = 0;
     var reloadTime = 0;
-
+    var count = 0;
+    var BC = 1;
 
     // Booleans
     var pause = true;
@@ -31,6 +33,7 @@
     var restart = false;
     var reloading = false;
     var spacedown = false;
+    var reloading = false;
 
     // Counters
     var enemiesRemaining;
@@ -38,28 +41,15 @@
     var lifecount;
     var ammoCount;
     var tickTimer = 3
+    var ammoCount;
 
     // Misc
     var path;
     var tick;
     var death;
-    var ammoCount;
-    var ammoCountText;
-    var reloading = false;
-
-    //NAME THESE BETTER/DON'T PUT THEM HERE
-    var movetext;
-    var firetext;
     var pointer;
     var pointer2;
     var pointer3;
-    var ammoText;
-    var selecttext;
-    var placetext;
-    var count = 0;
-    var BC = 1;
-    var wavesRemaining = 5;
-    var totalWaves = wavesRemaining;
 
     // Sounds
     var cannonshot;
@@ -70,45 +60,19 @@
     var explode;
     var electric;
 
-    //NAME THESE BETTER/DON'T PUT THEM HERE
-    var movetext;
-    var firetext;
-    var pointer;
-    var pointer2;
-    var selecttext;
-    var placetext;
-    var upgradetext;
-    var costText;
-    var count = 0;
-    var BC = 1;
-    var wavesRemaining = 5;
-    var totalWaves = wavesRemaining;
-
     // Sounds
     var cannonshot;
     var wind;
     var tick;
 
-    //NAME THESE BETTER/DON'T PUT THEM HERE
-    var movetext;
-    var firetext;
-    var pointer;
-    var pointer2;
-    var selecttext;
-    var placetext;
-    var count = 0;
-    var BC = 1;
-    var wavesRemaining = 5;
-    var totalWaves = wavesRemaining;
-
     // Enemies
+    var fast_enemies;
     var FAST_SPEED = 1/12500;
     var FAST_HEALTH = 80;
-    var fast_enemies;
 
+    var reg_enemies;
     var REG_SPEED = 1/15000;
     var REG_HEALTH = 120;
-    var reg_enemies;
 
     var tough_enemies;
     var TOUGH_SPEED = 1/17500;
@@ -122,6 +86,7 @@
     var turrets;
     var cannons;
     var lightnings;
+    var selected;
 
     // Damage
     var BULLET_DAMAGE = 40;
@@ -204,49 +169,9 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
-    //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true, volume: 0.1});
-    tick = this.sound.add('tick');
-    theme = this.sound.add('theme', {loop: true, volume: 0.5});
-
-    //Add sounds
-    gunfire = this.sound.add('gunshot', {volume: 0.20});
-    cannonshot = this.sound.add('cannonshot');
-    death = this.sound.add('death', {volume: 0.1});
-    explode = this.sound.add('explosion', {volume: 0.7});
-    tank = this.sound.add('tankSounds', {loop: true});
-    electric = this.sound.add('electricity',{volume: 0.1, loop: false});
-
-    //play Sounds
-    theme.play();
-    wind.play();
-
-    //Initialize gun ammo
-    ammoCount = 6;
-
-    this.anims.create({
-        key: "lightning",
-        frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
-        frameRate: 10,
-        repeat: 0,
-      });
-
-
-    this.anims.create({
-        key: "lightning",
-        frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
-        frameRate: 10,
-        repeat: 0,
-      });
-      
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
-
-    //Add sounds
-    gunfire = this.sound.add('gunshot');
-    cannonshot = this.sound.add('cannonshot');
-    death = this.sound.add('death');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -258,60 +183,33 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-    //creates buttons to change between the turrets
-    var button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
-    button1.on('pointerup', function(){
-        turret_selector = 0;
-        button1.alpha = 1;
-        button2.alpha = 0.5;
-        button3.alpha = 0.5;
-    });
-    var button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
-    button2.on('pointerup', function(){
-        turret_selector = 1;
-        button2.alpha = 1;
-        button1.alpha = 0.5;
-        button3.alpha = 0.5;
-    });
-    var button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
-    button3.on('pointerup', function(){
-        turret_selector = 2;
-        button3.alpha = 1;
-        button1.alpha = 0.5;
-        button2.alpha = 0.5;
-    });
-    button1.alpha = 0.5; // all deselected? trying it idk
-    button2.alpha = 0.5;
-    button3.alpha = 0.5;
-    //Descriptions of turrets
-    var b1Text = this.add.text(90, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
-    b1Text.setVisible(false);
-    var b2Text = this.add.text(154, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
-    b2Text.setVisible(false);
-    var b3Text = this.add.text(90, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
-    b3Text.setVisible(false);
-    button1.on('pointerover', function(){
-        b1Text.setVisible(true);
-    });
-    button1.on('pointerout', function(){
-        b1Text.setVisible(false);
-    });
-    button2.on('pointerover', function(){
-        b2Text.setVisible(true);
-    });
-    button2.on('pointerout', function(){
-        b2Text.setVisible(false);
-    });
-    button3.on('pointerover', function(){
-        b3Text.setVisible(true);
-    });
-    button3.on('pointerout', function(){
-        b3Text.setVisible(false);
-    });
+    //Add sounds
+    gunfire = this.sound.add('gunshot', {volume: 0.20});
+    cannonshot = this.sound.add('cannonshot');
+    death = this.sound.add('death', {volume: 0.1});
+    explode = this.sound.add('explosion', {volume: 0.7});
+    tank = this.sound.add('tankSounds', {loop: true});
+    electric = this.sound.add('electricity',{volume: 0.1, loop: false});
+
+    //ambient wind and ticking
+    wind = this.sound.add('wind', {loop: true, volume: 0.1});
+    tick = this.sound.add('tick');
+    theme = this.sound.add('theme', {loop: true, volume: 0.5});
+
+    //play Sounds
+    theme.play();
+    wind.play();
+
+
+    //Create animations
+
+
+
 
 //Create enemies/towers/player groups
 
-    //Player
+//Player
+
     player = this.physics.add.sprite(864, 32, 'player');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
@@ -325,7 +223,8 @@ export default class BootScene extends Phaser.Scene {
     })
     
 
-    //Enemies
+//Enemies
+
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
     tough_enemies = this.physics.add.group({ classType: Tough, runChildUpdate: true });
@@ -362,37 +261,55 @@ export default class BootScene extends Phaser.Scene {
     this.spawnDelay = 400;
 
 
-    // Turrets
+// Turrets
+
+    //Create turrets
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
     cannons = this.add.group({classType: Cannon, runChildUpdate: true});
     lightnings = this.add.group({classType: Lightning, runChildUpdate: true});
+    this.anims.create({
+        key: "lightning",
+        frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: 0,
+      });
 
-    // Bullets
-    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
-    shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
+    //Turrent selection
+    selected = false; 
+    button1.alpha = 0.5; 
+    button2.alpha = 0.5;
+    button3.alpha = 0.5;
+    var button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
+    button1.on('pointerup', function(){
+        turret_selector = 0;
+        selected = true;
+        button1.alpha = 1;
+        button2.alpha = 0.5;
+        button3.alpha = 0.5;
+    });
+    var button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
+    button2.on('pointerup', function(){
+        turret_selector = 1;
+        selected = true;
+        button2.alpha = 1;
+        button1.alpha = 0.5;
+        button3.alpha = 0.5;
+    });
+    var button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
+    button3.on('pointerup', function(){
+        turret_selector = 2;
+        selected = true;
+        button3.alpha = 1;
+        button1.alpha = 0.5;
+        button2.alpha = 0.5;
+    });
 
-//Physics overlaps
-
-    //Bullets overlap for turrets/player
-    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet.bind(this));
-    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
-    this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
-    this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
-    //Shells overlap for cannon
-    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
-    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
-    this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
-    this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
-
-    //place turrets (ADD FOR CANNONS)
-    this.input.on('pointerdown', placeTower);
-    //display where the turrets can be placed
-    
+    //Display where turrets can be placed
     graphics = this.add.graphics();
     redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);
     var q, w;
     this.input.on('pointermove', function(pointer) {
-        if (pause == true){
+        if (pause == true || selected == false){
         } else {
             q = Math.floor(pointer.x/64);
             w = Math.floor(pointer.y/64);
@@ -411,7 +328,43 @@ export default class BootScene extends Phaser.Scene {
             }
         }
     });
-    
+
+    //Descriptions of turrets
+    var b1Text = this.add.text(90, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b1Text.setVisible(false);
+    var b2Text = this.add.text(154, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b2Text.setVisible(false);
+    var b3Text = this.add.text(90, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b3Text.setVisible(false);
+
+    //Display turret descriptions when hovering over icon
+    button1.on('pointerover', function(){b1Text.setVisible(true)});
+    button1.on('pointerout', function(){b1Text.setVisible(false)});
+    button2.on('pointerover', function(){b2Text.setVisible(true)});
+    button2.on('pointerout', function(){b2Text.setVisible(false)});
+    button3.on('pointerover', function(){b3Text.setVisible(true)});
+    button3.on('pointerout', function(){b3Text.setVisible(false)});
+
+
+// Bullets
+    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
+
+//Physics overlaps
+
+    //Bullets overlap for turrets/player
+    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
+    //Shells overlap for cannon
+    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
+
+    //place turrets
+    this.input.on('pointerdown', placeTower);
 
 
 //Create game texts
@@ -495,7 +448,8 @@ export default class BootScene extends Phaser.Scene {
   } //End create
 
   update (time, delta) {
-    //shoot
+
+    //Player shooting
     if (spacedown == true){
         if (time - delts > frplayer && pause != true && reloading == false) {
             delts = time
@@ -1462,6 +1416,8 @@ function placeTower(pointer) {
                 lightning.place(i, j);
             }
         }
+        selected = false;
+        graphics.clear();
     }
 }
 

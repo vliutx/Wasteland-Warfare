@@ -21,6 +21,13 @@ var continueText;
 var defeatText;
 var restartText;
 var ammoCountText;
+var upgradetext;
+var costText;
+var ammoCountText;
+var movetext;
+var firetext;
+var selecttext;
+var placetext;
 
 // Trackers
 
