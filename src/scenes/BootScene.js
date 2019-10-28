@@ -69,11 +69,11 @@
 
     // Enemies
     var fast_enemies;
-    var FAST_SPEED = 1/15000;
+    var FAST_SPEED = 1/12500;
     var FAST_HEALTH = 80;
 
     var reg_enemies;
-    var REG_SPEED = 1/20000;
+    var REG_SPEED = 1/17500;
     var REG_HEALTH = 120;
 
     var tough_enemies;
@@ -81,7 +81,7 @@
     var TOUGH_HEALTH = 200;
 
     var boss_enemies;
-    var BOSS_SPEED = 1/20500;
+    var BOSS_SPEED = 1/20000;
     var BOSS_HEALTH = 1000;
 
     // Towers
