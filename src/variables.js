@@ -32,7 +32,7 @@ var placetext;
 
 // Trackers
 
-var timeRemaining;
+
 var enemiesRemaining;
 var waveNumber;
 
