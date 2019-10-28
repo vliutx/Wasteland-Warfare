@@ -23,14 +23,12 @@
     var gameTime = 0;
     var reloadTime = 0;
 
-
     // Booleans
     var pause = true;
     var buildPhase = false;
     var startGame = false;
     var restart = false;
     var reloading = false;
-
 
     // Counters
     var enemiesRemaining;
@@ -59,30 +57,6 @@
     var BC = 1;
     var wavesRemaining = 5;
     var totalWaves = wavesRemaining;
-
-
-
-    // Enemies
-    var FAST_SPEED = 1/12500;
-    var FAST_HEALTH = 50;
-    var fast_enemies;
-
-    var REG_SPEED = 1/15000;
-    var REG_HEALTH = 100;
-    var reg_enemies;
-
-    var tough_enemies;
-    var TOUGH_SPEED = 1/17500;
-    var TOUGH_HEALTH = 300;
-
-    var boss_enemies;
-    var BOSS_SPEED = 1/20000;
-    var BOSS_HEALTH = 1000;
-
-
-    // Damgage
-    var BULLET_DAMAGE = 25;
-    var SHELL_DAMAGE = 150;
 
     // Sounds
     var cannonshot;
