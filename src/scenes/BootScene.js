@@ -46,6 +46,7 @@
     var ammoCount;
     var ammoCountText;
     var reloading = false;
+    var isWalking = false;
 
     //NAME THESE BETTER/DON'T PUT THEM HERE
     var movetext;
@@ -137,6 +138,10 @@ export default class BootScene extends Phaser.Scene {
     this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
       frameHeight: 96,
       frameWidth: 96
+    });
+    this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
+      frameHeight: 48,
+      frameWidth: 48
     });
 
     this.load.image('turret', 'assets/Turret1.png');
@@ -251,7 +256,7 @@ export default class BootScene extends Phaser.Scene {
 //Create enemies/towers/player groups
 
     //Player
-    player = this.physics.add.sprite(864, 32, 'player');
+    player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
@@ -295,6 +300,13 @@ export default class BootScene extends Phaser.Scene {
     this.anims.create({
         key: "tank_move",
         frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "player_move",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 1, end: 4 }),
         frameRate: 10,
         repeat: -1
     });
@@ -652,11 +664,15 @@ export default class BootScene extends Phaser.Scene {
         var speed = 6
 
         if (cursors.up.isDown) {
-        player.y -= speed;
+        player.y -= speed
+        //isWalking = true
+        //this.play("reg_walk", this);
         } else if (cursors.down.isDown) {
         player.y += speed;
+        //isWalking = true
+        //player.play("player_move");
         } else {
-        }
+      }
 
     }
 
