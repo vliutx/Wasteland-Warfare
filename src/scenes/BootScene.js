@@ -135,7 +135,10 @@ export default class BootScene extends Phaser.Scene {
         frameHeight: 48,
         frameWidth: 48
       });
-    this.load.image('bossenemy', 'assets/TankBoss.png');
+    this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -266,6 +269,13 @@ export default class BootScene extends Phaser.Scene {
     this.anims.create({
         key: "fast_walk",
         frames: this.anims.generateFrameNumbers("fastenemy", { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
+ 
+    this.anims.create({
+        key: "tank_walk",
+        frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
         frameRate: 10,
         repeat: -1
     });
@@ -604,7 +614,7 @@ export default class BootScene extends Phaser.Scene {
                 count += 1;
             }
 
-            if (wavesRemaining == 1 && BC != 0){
+            if (wavesRemaining >= 1 && BC != 0){
                 var boss = boss_enemies.get();
                 enemiesRemaining+=1;
                 BC -= 1;
@@ -901,9 +911,9 @@ var Boss = new Phaser.Class({
 
     function Enemy (scene)
     {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bossenemy');
+        Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'bossenemy');
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
-        tank.play();
+        this.play("tank_walk", this);
         this.hp = 0;
     },
 
