@@ -135,10 +135,10 @@ export default class BootScene extends Phaser.Scene {
         frameHeight: 48,
         frameWidth: 48
       });
-    this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+      this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
         frameHeight: 96,
         frameWidth: 96
-    });
+      });
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -254,27 +254,27 @@ export default class BootScene extends Phaser.Scene {
     //enemy animations
     this.anims.create({
         key: "reg_walk",
-        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "tough_walk",
-        frames: this.anims.generateFrameNumbers("toughenemy", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("toughenemy", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: "fast_walk",
-        frames: this.anims.generateFrameNumbers("fastenemy", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("fastenemy", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
  
     this.anims.create({
-        key: "tank_walk",
+        key: "tank_move",
         frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
         frameRate: 10,
         repeat: -1
@@ -404,7 +404,7 @@ export default class BootScene extends Phaser.Scene {
     waveText = this.add.text(420, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 15;
+    this.buildTime = 5;
     timeText = this.add.text(620, 5, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
@@ -614,7 +614,7 @@ export default class BootScene extends Phaser.Scene {
                 count += 1;
             }
 
-            if (wavesRemaining >= 1 && BC != 0){
+            if (wavesRemaining == 1 && BC != 0){
                 var boss = boss_enemies.get();
                 enemiesRemaining+=1;
                 BC -= 1;
@@ -909,11 +909,11 @@ var Boss = new Phaser.Class({
 
     initialize:
 
-    function Enemy (scene)
-    {
+    function Enemy (scene){
         Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'bossenemy');
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
-        this.play("tank_walk", this);
+        this.play("tank_move", this);
+        tank.play();
         this.hp = 0;
     },
 
