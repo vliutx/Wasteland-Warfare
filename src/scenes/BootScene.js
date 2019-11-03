@@ -134,7 +134,16 @@ export default class BootScene extends Phaser.Scene {
     this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
         frameHeight: 48,
         frameWidth: 48
-      });
+    });
+    this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
+        frameHeight: 80,
+        frameWidth: 80
+    });
+    this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
+
     this.load.image('bossenemy', 'assets/TankBoss.png');
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('player', 'assets/MainPlayer.png');
@@ -158,7 +167,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
-    this.load.audio('reload', 'assets/sounds/reloading.mp3');
+    //this.load.audio('reload', 'assets/sounds/reloading.mp3');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -201,7 +210,7 @@ export default class BootScene extends Phaser.Scene {
     explode = this.sound.add('explosion', {volume: 0.7});
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
-    reload = this.sound.add('reload', {volume: .40});
+    //reload = this.sound.add('reload', {volume: .40});
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
@@ -239,7 +248,11 @@ export default class BootScene extends Phaser.Scene {
         })
     }
 
+//info displays
 
+    waterHealth = this.add.sprite(850, 595, 'waterHealth');
+    waterHealth.setFrame(10);
+    bulletCount = this.add.sprite(760, 605, 'bulletCount');
 
 //Enemies
 
@@ -399,12 +412,6 @@ export default class BootScene extends Phaser.Scene {
     //Add enemies remaining text
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     //this.enemiesRemainingText.setVisible(false);
-    //Create health text
-    lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    lifecountText.setVisible(false);
-    //ammoCount
-    ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    ammoCountText.setVisible(false);
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
@@ -421,11 +428,11 @@ export default class BootScene extends Phaser.Scene {
     movetext.setVisible(false);
     firetext = this.add.text(340, 80, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     firetext.setVisible(false);
-    pointer = this.add.image(800, 30, 'pointer');
+    pointer = this.add.image(750, 30, 'pointer');
     pointer.setVisible(false);
-    ammoText = this.add.text(777, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    ammoText = this.add.text(735, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
     ammoText.setVisible(false);
-    pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
+    pointer3 = this.add.image(758, 540, 'pointer').setRotation(Math.PI/2);
     pointer3.setVisible(false);
     selecttext = this.add.text(200, 40, "Select towers by clicking the tower.", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     selecttext.setVisible(false);
@@ -457,9 +464,6 @@ export default class BootScene extends Phaser.Scene {
         waveText.setVisible(true);
         //Enable scrap text
         scrapText.setVisible(true);
-        //Enable lifecount text
-        lifecountText.setVisible(true);
-        ammoCountText.setVisible(true);
     });
 
 
@@ -475,6 +479,10 @@ export default class BootScene extends Phaser.Scene {
     //         ammoCount -= 1
     //     }
     // }
+
+    //Health and bullet updates
+    waterHealth.setFrame(lifecount);
+    bulletCount.setFrame(6 - ammoCount);
 
     //Win Condition
     if (wavesRemaining == 0){
@@ -534,7 +542,7 @@ export default class BootScene extends Phaser.Scene {
       reloading = true;
       reloadTime += delta/1000;
       if (played == false) {
-          reload.play();
+          //reload.play();
           played = true;
       }
 
@@ -674,12 +682,6 @@ export default class BootScene extends Phaser.Scene {
 
     //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
-
-    //Adjust lifecount text
-    lifecountText.setText("Lifecount: " + lifecount);
-
-    //adjust bullets
-    ammoCountText.setText("Ammo: " + ammoCount);
 
     //Player movement
     if (pause != true) {
