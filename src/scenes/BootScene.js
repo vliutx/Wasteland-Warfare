@@ -274,7 +274,7 @@ export default class BootScene extends Phaser.Scene {
     this.anims.create({
         key: "tank_move",
         frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
-        frameRate: 1,
+        frameRate: 8,
         repeat: -1
     });
 
