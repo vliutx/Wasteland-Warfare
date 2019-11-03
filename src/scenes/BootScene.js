@@ -50,6 +50,8 @@
     var pointer;
     var pointer2;
     var pointer3;
+    var healthpointer;
+    var healthtext;
     var played = false;
 
     // Sounds
@@ -428,12 +430,16 @@ export default class BootScene extends Phaser.Scene {
     movetext.setVisible(false);
     firetext = this.add.text(340, 80, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     firetext.setVisible(false);
-    pointer = this.add.image(750, 30, 'pointer');
+    pointer = this.add.image(800, 30, 'pointer');
     pointer.setVisible(false);
     ammoText = this.add.text(735, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
     ammoText.setVisible(false);
     pointer3 = this.add.image(758, 540, 'pointer').setRotation(Math.PI/2);
     pointer3.setVisible(false);
+    healthtext = this.add.text(810, 460, 'Health', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    healthtext.setVisible(false);
+    healthpointer = this.add.image(847, 520, 'pointer').setRotation(Math.PI/2);
+    healthpointer.setVisible(false);
     selecttext = this.add.text(200, 40, "Select towers by clicking the tower.", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     selecttext.setVisible(false);
     placetext = this.add.text(240, 80, "Click a space to place a tower", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
@@ -704,6 +710,8 @@ export default class BootScene extends Phaser.Scene {
         pointer.setVisible(true);
         ammoText.setVisible(true);
         pointer3.setVisible(true);
+        healthtext.setVisible(true);
+        healthpointer.setVisible(true);
       }
 
       if (buildPhase == false && waveNumber == 1){
@@ -712,6 +720,8 @@ export default class BootScene extends Phaser.Scene {
         pointer.setVisible(false);
         ammoText.setVisible(false);
         pointer3.setVisible(false);
+        healthtext.setVisible(false);
+        healthpointer.setVisible(false);
       }
 
       //tutorial text number 2
