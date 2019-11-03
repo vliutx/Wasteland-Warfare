@@ -1,7 +1,7 @@
 /*global Phaser*/
 export default class MenuScene extends Phaser.Scene {
   constructor () {
-    super('Menu');
+    super('MenuScene');
   }
 
   init (data) {
@@ -32,7 +32,7 @@ export default class MenuScene extends Phaser.Scene {
       this.setFrame(0);
     });
     button.on("pointerup", function(){
-      this.scene.start('GameScene');
+      this.scene.start('BootScene');
     }, this
     );
   }
