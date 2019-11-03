@@ -140,10 +140,8 @@ export default class BootScene extends Phaser.Scene {
         frameWidth: 96
       });
     this.load.image('turret', 'assets/Turret1.png');
-    this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
-    this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
@@ -276,7 +274,7 @@ export default class BootScene extends Phaser.Scene {
     this.anims.create({
         key: "tank_move",
         frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
-        frameRate: 10,
+        frameRate: 1,
         repeat: -1
     });
 
@@ -614,7 +612,7 @@ export default class BootScene extends Phaser.Scene {
                 count += 1;
             }
 
-            if (wavesRemaining == 1 && BC != 0){
+            if (wavesRemaining >= 1 && BC != 0){
                 var boss = boss_enemies.get();
                 enemiesRemaining+=1;
                 BC -= 1;
@@ -905,7 +903,7 @@ var Tough = new Phaser.Class({
 
 var Boss = new Phaser.Class({
 
-    Extends: Phaser.GameObjects.Image,
+    Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
@@ -924,9 +922,7 @@ var Boss = new Phaser.Class({
     {
         this.follower.t = 0;
         this.hp = BOSS_HEALTH;
-
         path.getPoint(this.follower.t, this.follower.vec);
-
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
     },
     receiveDamage: function(damage) {
