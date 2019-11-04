@@ -113,6 +113,18 @@
     var delts = 0;
     var frplayer = 200;
 
+    var nextEnemy = 0;
+    var waveSize = 6;
+    var spawned = 0;
+    enemiesRemaining = waveSize;
+    waveNumber = 1;
+    var spawnDelay = 400;
+
+    // Enemy Spawns
+    var enemies = [0,0,0,0];
+    var empty = [0,0,0,0];
+
+
 export default class BootScene extends Phaser.Scene {
   constructor () {
     super('BootScene');
@@ -301,14 +313,12 @@ export default class BootScene extends Phaser.Scene {
         repeat: -1
     });
 
-    // Declare variables
     this.nextEnemy = 0;
     this.waveSize = 6;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
     waveNumber = 1;
     this.spawnDelay = 400;
-
 
 // Turrets
 
@@ -730,7 +740,7 @@ export default class BootScene extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
             count = 0;
-            scraps += (3 + waveNumber-1);
+            scraps += (3 + waveNumber-2);
         }
     } //End combat phase
 
