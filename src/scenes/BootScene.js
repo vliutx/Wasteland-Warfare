@@ -707,19 +707,22 @@ export default class BootScene extends Phaser.Scene {
     //adjust bullets
     ammoCountText.setText("Ammo: " + ammoCount);
 
-    //Player movement
+    //Player movement can be w and S or up and down arros
     if (pause != true) {
         var cursors = this.input.keyboard.createCursorKeys();
         var speed = 6
+        var wKey = this.input.keyboard.addKey('W');
+        var sKey = this.input.keyboard.addKey('S');
 
-        if (cursors.up.isDown) {
+        if (cursors.up.isDown || wKey.isDown) {
         player.y -= speed;
-        } else if (cursors.down.isDown) {
+        } else if (cursors.down.isDown || sKey.isDown) {
         player.y += speed;
         } else {
         }
-
     }
+    //player movement but w and s
+
 
   } //End update()
 
