@@ -35,6 +35,8 @@
     var reloading = false;
     var spacedown = false;
     var singleShot = true;
+    var machineGun = false;
+    var machine = false;
 
     // Counters
     var enemiesRemaining;
@@ -96,6 +98,7 @@
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
+    var shots = 6;
 
     // redsquare
     var redSquare
@@ -108,7 +111,7 @@
 
     // time between fires
     var delts = 0;
-    var frplayer = 500;
+    var frplayer = 200;
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
@@ -151,7 +154,6 @@ export default class BootScene extends Phaser.Scene {
         frameWidth: 96
     });
 
-    this.load.image('bossenemy', 'assets/TankBoss.png');
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
@@ -243,15 +245,19 @@ export default class BootScene extends Phaser.Scene {
             ammoCount -= 1
             }
         });
-    } else {
-        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        spaceBar.on("down", function(){
-            spacedown = true;
-        });
-        spaceBar.on("up", function(){
-            spacedown = false;
-        })
-    }
+    } 
+
+    var buyMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    buyMachineGun.on("down", function(){
+        if (scraps>=15 && machine == false){
+            machineGun = true;
+            scraps -= 15;
+            console.log("Purchased machine gun");
+        }
+    });
+
+
+
 
 //info displays
 
@@ -471,7 +477,10 @@ export default class BootScene extends Phaser.Scene {
     upgradetext.setVisible(false);
     costText = this.add.text(205, 80, "(turret upgrade = 2x cost of turret)", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     costText.setVisible(false);
-
+    purchaseWeaponText = this.add.text(270, 42, "Purchase a machine gun ", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    purchaseWeaponText.setVisible(false);
+    purchaseWeaponText2 = this.add.text(350, 80, "by pressing \"2\"", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    purchaseWeaponText2.setVisible(false);
 
 //Start the game
 
@@ -490,17 +499,37 @@ export default class BootScene extends Phaser.Scene {
   update (time, delta) {
 
     //Player shooting
-    // if (spacedown == true){
-    //     if (time - delts > frplayer && pause != true && reloading == false) {
-    //         delts = time
-    //         addBullet(player.x,player.y,Math.PI)
-    //         ammoCount -= 1
-    //     }
-    // }
+    if (machineGun==true){
+        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        spaceBar.on("down", function(){
+            spacedown = true;
+        });
+        spaceBar.on("up", function(){
+            spacedown = false;
+        })
+        machine = true;
+        machineGun = false;
+        ammoCount = 12;
+    }
+    if (machine){
+        if (spacedown == true){
+            if (time - delts > frplayer && pause != true && reloading == false) {
+                delts = time
+                addBullet(player.x,player.y,Math.PI)
+                ammoCount -= 1
+            }
+        }
+    }
+
+
 
     //Health and bullet updates
     waterHealth.setFrame(lifecount);
-    bulletCount.setFrame(6 - ammoCount);
+    if (machine==false){
+        bulletCount.setFrame(6 - ammoCount);
+    }else{
+        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
+    }
 
     //Win Condition
     if (wavesRemaining == 0){
@@ -565,11 +594,18 @@ export default class BootScene extends Phaser.Scene {
       }
 
       if (Math.floor(reloadTime) >= 1){
-        ammoCount = 6;
-        reloadTime = 0;
-        reloading = false;
-        played = false;
-      }
+        if (machine == false){
+            ammoCount = 6;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+        } else {
+            ammoCount = 12;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+        }
+     }
     }
 
     //Build phase
@@ -593,7 +629,7 @@ export default class BootScene extends Phaser.Scene {
 
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
-            ammoCount = 6;
+            //ammoCount = 6;
             reloading = false;
             //Build phase over
             buildPhase = false;
@@ -630,7 +666,7 @@ export default class BootScene extends Phaser.Scene {
                 count += 1;
             }
 
-            if (wavesRemaining >= 1 && BC != 0){
+            if (wavesRemaining == 1 && BC != 0){
                 var boss = boss_enemies.get();
                 enemiesRemaining+=1;
                 BC -= 1;
@@ -726,37 +762,47 @@ export default class BootScene extends Phaser.Scene {
         healthpointer.setVisible(true);
       }
 
-      if (buildPhase == false && waveNumber == 1){
-        movetext.setVisible(false);
-        firetext.setVisible(false);
-        pointer.setVisible(false);
-        ammoText.setVisible(false);
-        pointer3.setVisible(false);
-        healthtext.setVisible(false);
-        healthpointer.setVisible(false);
-      }
+    if (buildPhase == false && waveNumber == 1){
+    movetext.setVisible(false);
+    firetext.setVisible(false);
+    pointer.setVisible(false);
+    ammoText.setVisible(false);
+    pointer3.setVisible(false);
+    healthtext.setVisible(false);
+    healthpointer.setVisible(false);
+    }
 
-      //tutorial text number 2
-      if (buildPhase == true && waveNumber == 2){
-        selecttext.setVisible(true);
-        placetext.setVisible(true);
-        pointer2.setVisible(true);
-      }
-  
-      if (buildPhase == false && waveNumber == 2){
-        selecttext.setVisible(false);
-        placetext.setVisible(false);
-        pointer2.setVisible(false);
-      }
-      //tutorial text number 3
-      if (buildPhase == true && waveNumber == 3){
-        upgradetext.setVisible(true);
-        costText.setVisible(true);
-      }
-      if (buildPhase == false && waveNumber == 3){
-        upgradetext.setVisible(false);
-        costText.setVisible(false);
-      }
+    //tutorial text number 2
+    if (buildPhase == true && waveNumber == 2){
+    selecttext.setVisible(true);
+    placetext.setVisible(true);
+    pointer2.setVisible(true);
+    }
+
+    if (buildPhase == false && waveNumber == 2){
+    selecttext.setVisible(false);
+    placetext.setVisible(false);
+    pointer2.setVisible(false);
+    }
+    //tutorial text number 3
+    if (buildPhase == true && waveNumber == 3){
+    upgradetext.setVisible(true);
+    costText.setVisible(true);
+    }
+    if (buildPhase == false && waveNumber == 3){
+    upgradetext.setVisible(false);
+    costText.setVisible(false);
+    }
+
+    //tutorial text number 4
+    if (buildPhase == true && waveNumber == 4){
+        purchaseWeaponText.setVisible(true);
+        purchaseWeaponText2.setVisible(true);
+    }
+    if (buildPhase == false && waveNumber == 4){
+        purchaseWeaponText.setVisible(false);
+        purchaseWeaponText2.setVisible(false);
+    }
 
   } //End update()
 
@@ -1176,6 +1222,7 @@ var Cannon = new Phaser.Class({
         }
     }
 });
+
 
 var Lightning = new Phaser.Class({
 

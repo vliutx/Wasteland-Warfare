@@ -32,6 +32,8 @@ var movetext;
 var firetext;
 var selecttext;
 var placetext;
+var purchaseWeaponText;
+var purchaseWeaponText2;
 
 // Trackers
 
