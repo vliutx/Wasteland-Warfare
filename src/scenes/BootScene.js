@@ -78,11 +78,11 @@
 
     var reg_enemies;
     var REG_SPEED = 1/17500;
-    var REG_HEALTH = 120;
+    var REG_HEALTH = 160;
 
     var tough_enemies;
     var TOUGH_SPEED = 1/20000;
-    var TOUGH_HEALTH = 200;
+    var TOUGH_HEALTH = 240;
 
     var boss_enemies;
     var BOSS_SPEED = 1/20000;
@@ -127,8 +127,9 @@
     var spawnDelay = 400;
 
     // Enemy Spawns
-    var enemies = [0,0,0,0];
+    var enemies = [4,2,0,0];
     var empty = [0,0,0,0];
+    var test = true;
 
 
 export default class BootScene extends Phaser.Scene {
@@ -455,7 +456,7 @@ export default class BootScene extends Phaser.Scene {
     waveText = this.add.text(420, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 5;
+    this.buildTime = 15;
     timeText = this.add.text(620, 5, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
@@ -528,7 +529,7 @@ export default class BootScene extends Phaser.Scene {
 
   update (time, delta) {
 
-    //Player shooting
+    //Weapon type
     if (machineGun==true){
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceBar.on("down", function(){
@@ -550,7 +551,6 @@ export default class BootScene extends Phaser.Scene {
             }
         }
     }
-
 
 
     //Health and bullet updates
@@ -670,7 +670,7 @@ export default class BootScene extends Phaser.Scene {
             //reset tickTimer
             tickTimer = 3;
             //reset enemies remaining
-            enemiesRemaining = this.waveSize;
+            enemiesRemaining = enemies.reduce((a, b) => a + b, 0);
             this.spawned = 0;
             //Add text
             //this.enemiesRemainingText.setVisible(true);
@@ -683,59 +683,52 @@ export default class BootScene extends Phaser.Scene {
         //Set timer
         gameTime += delta;
 
-        //Display # of enemies remaining
-        //this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
+        //Spawn in ememies
+        if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){ 
 
-        //Spawn in enemies
-        if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
-            var fast = fast_enemies.get();
-            var regular = reg_enemies.get();
+            //Spawn in each type of enemy consecutively
+            for(var i = 0; i<enemies.length; i++){
 
-            if (waveNumber >= 3 && count < 2*(waveNumber-2)){
-                var tough = tough_enemies.get();
-                count += 1;
-            }
+                if (i==0 && enemies[i] != 0){      // Reg enemies
+                    var regular = reg_enemies.get();
+                    enemies[0] -= 1
+                    regular.setActive(true);
+                    regular.setVisible(true);
+                    regular.startOnPath(REG_HEALTH);
+                    this.spawned+=1
 
-            if (wavesRemaining == 1 && BC != 0){
-                var boss = boss_enemies.get();
-                enemiesRemaining+=1;
-                BC -= 1;
-            }
+                }else if (i==1 && enemies[i] != 0){  // Fast enemies
+                    var fast = fast_enemies.get();
+                    enemies[1] -= 1
+                    fast.setActive(true);
+                    fast.setVisible(true);
+                    fast.startOnPath(FAST_HEALTH);
+                    this.spawned+=1
 
-            if (boss){
-                boss.setActive(true);
-                boss.setVisible(true);
-                boss.startOnPath(100);
+                }else if (i==2 && enemies[i] != 0){   // Tough enemies
+                    var tough = tough_enemies.get();
+                    enemies[2] -= 1
+                    tough.setActive(true);
+                    tough.setVisible(true);
+                    tough.startOnPath(100);
+                    this.spawned+=1
+
+                }else if (i==3 && enemies[i] != 0){   // Boss enemy
+                    var boss = boss_enemies.get();
+                    enemies[3] -= 1
+                    boss.setActive(true);
+                    boss.setVisible(true);
+                    boss.startOnPath(100);
+                    this.spawned+=1
+                }
+
+                // Include spawn delay
                 this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
+
             }
+        } // all enemies spawned
+    
 
-            if (tough){
-                tough.setActive(true);
-                tough.setVisible(true);
-                tough.startOnPath(100);
-                this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
-            }
-
-            if (regular){
-                regular.setActive(true);
-                regular.setVisible(true);
-                regular.startOnPath(REG_HEALTH);
-
-                this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
-            }
-
-            if (fast){
-                fast.setActive(true);
-                fast.setVisible(true);
-                fast.startOnPath(FAST_HEALTH);
-
-                this.nextEnemy = gameTime + this.spawnDelay+100;
-                this.spawned+=1
-            }
-        } //All enemies spawned
 
         //All enemies despawned
         if (enemiesRemaining <= 0){
@@ -745,8 +738,6 @@ export default class BootScene extends Phaser.Scene {
             timeText.setVisible(true);
             //reset game time
             gameTime = 0;
-            //Enemy text disable
-            //this.enemiesRemainingText.setVisible(false);
             //reset this.nextEnemy
             this.nextEnemy = 0;
             //Increment wave number and remaining waves
@@ -754,12 +745,27 @@ export default class BootScene extends Phaser.Scene {
             waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
             wavesRemaining -= 1;
             //Increment wave size
-            this.waveSize += 4;
+            if (waveNumber == 2){
+                enemies = [6,6,0,0];
+            } else if (waveNumber ==3){
+                enemies = [6,6,3,0];
+            } else if (waveNumber == 4){
+                enemies = [8,6,4,1];
+            } else {    // Endless survival
+                for(var i = 0; i<enemies.length; i++){
+                    if (waveNumber%3 != 0){
+                        if (i<3){
+                            enemies[i] += 3;
+                        } 
+                    } else {
+                        enemies[i] += 1;
+                    }
+                }
+            }
             //Increment spawn delay
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            count = 0;
             scraps += (3 + waveNumber-2);
         }
     } //End combat phase
