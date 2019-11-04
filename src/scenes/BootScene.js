@@ -100,9 +100,15 @@
     var LIGHTNING_DAMAGE = 5;
     var shots = 6;
 
-    // redsquare
+    // graphics stuff
     var redSquare
     var graphics
+    var turretIndicator
+    var turretRange
+    var cannonIndicator
+    var cannonRange
+    var teslaIndicator
+    var teslaRange
 
     // Buttons
     var button1;
@@ -425,6 +431,20 @@ export default class BootScene extends Phaser.Scene {
     //place turrets
     this.input.on('pointerdown', placeTower);
 
+    
+    //Add indicators for where turrets can be viewed
+    turretIndicator = this.add.graphics();
+    turretRange = new Phaser.Geom.Circle(0, 0, 132);
+    turretIndicator.lineStyle(2, 0xFF0000, 0.5);
+    turretIndicator.fillStyle(0xFF0000, 0.3);
+    cannonIndicator = this.add.graphics();
+    cannonRange = new Phaser.Geom.Circle(0, 0, 132);
+    cannonIndicator.lineStyle(2, 0xFF0000, 0.5);
+    cannonIndicator.fillStyle(0xFF0000, 0.3);
+    teslaIndicator = this.add.graphics();
+    teslaRange = new Phaser.Geom.Circle(0, 0, 96);
+    teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
+    teslaIndicator.fillStyle(0xFF0000, 0.3);
 
 //Create game texts
 
@@ -751,15 +771,18 @@ export default class BootScene extends Phaser.Scene {
     if (pause != true) {
         var cursors = this.input.keyboard.createCursorKeys();
         var speed = 6
+        var wKey = this.input.keyboard.addKey('W');
+        var sKey = this.input.keyboard.addKey('S');
 
-        if (cursors.up.isDown) {
+        if (cursors.up.isDown || wKey.isDown) {
         player.y -= speed;
-        } else if (cursors.down.isDown) {
+        } else if (cursors.down.isDown || sKey.isDown) {
         player.y += speed;
         } else {
         }
-
     }
+    //player movement but w and s
+
 
     //tutorial text number 1
     if (buildPhase == true && waveNumber == 1){
@@ -1505,6 +1528,15 @@ function placeTower(pointer) {
                 turret.setActive(true);
                 turret.setVisible(true);
                 turret.place(i, j);
+                turret.on('pointerover', function(){
+                    turretIndicator.clear();
+                    turretRange.x = turret.x;
+                    turretRange.y = turret.y;
+                    turretIndicator.fillCircleShape(turretRange);
+                });
+                turret.on('pointerout', function(){
+                    turretIndicator.clear();
+                });
                 tick.play();
             }
             button1.alpha = .5;
@@ -1516,6 +1548,15 @@ function placeTower(pointer) {
                 cannon.setActive(true);
                 cannon.setVisible(true);
                 cannon.place(i, j);
+                cannon.on('pointerover', function(){
+                    cannonIndicator.clear();
+                    cannonRange.x = cannon.x;
+                    cannonRange.y = cannon.y;
+                    cannonIndicator.fillCircleShape(cannonRange);
+                });
+                cannon.on('pointerout', function(){
+                    cannonIndicator.clear();
+                });
                 tick.play();
             }
             button2.alpha = .5;
@@ -1548,6 +1589,15 @@ function placeCannon(pointer) {
                 cannon.setActive(true);
                 cannon.setVisible(true);
                 cannon.place(i, j);
+                lightning.on('pointerover', function(){
+                    teslaIndicator.clear();
+                    teslaRange.x = lightning.x;
+                    teslaRange.y = lightning.y;
+                    teslaIndicator.fillCircleShape(teslaRange);
+                });
+                lightning.on('pointerout', function(){
+                    teslaIndicator.clear();
+                });
                 tick.play();
             }
         }
