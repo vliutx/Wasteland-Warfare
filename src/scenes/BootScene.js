@@ -454,13 +454,6 @@ export default class BootScene extends Phaser.Scene {
 
 //Start the game
 
-    //Prompt player to start game
-    startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
-
-    //Create key for player to start game
-    var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    startKey.on("down", function(){
-        //start game
         pause = false
         //begin build phase
         buildPhase = true;
@@ -470,8 +463,6 @@ export default class BootScene extends Phaser.Scene {
         waveText.setVisible(true);
         //Enable scrap text
         scrapText.setVisible(true);
-    });
-
 
   } //End create
 
