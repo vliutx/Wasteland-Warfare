@@ -23,7 +23,6 @@
     var gameTime = 0;
     var reloadTime = 0;
 
-
     // Booleans
     var pause = true;
     var buildPhase = false;
@@ -56,6 +55,8 @@
     var ammoText;
     var selecttext;
     var placetext;
+    var upgradetext;
+    var costText;
     var count = 0;
     var BC = 1;
     var wavesRemaining = 5;
@@ -69,20 +70,6 @@
     var tank;
     var explode;
     var electric;
-
-    //NAME THESE BETTER/DON'T PUT THEM HERE
-    var movetext;
-    var firetext;
-    var pointer;
-    var pointer2;
-    var selecttext;
-    var placetext;
-    var upgradetext;
-    var costText;
-    var count = 0;
-    var BC = 1;
-    var wavesRemaining = 5;
-    var totalWaves = wavesRemaining;
 
     // Enemies
     var FAST_SPEED = 1/12500;
@@ -111,9 +98,15 @@
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
 
-    // redsquare
+    // graphics stuff
     var redSquare
     var graphics
+    var turretIndicator
+    var turretRange
+    var cannonIndicator
+    var cannonRange
+    var teslaIndicator
+    var teslaRange
 
     // time between fires
     var delts = 0;
@@ -294,7 +287,6 @@ export default class BootScene extends Phaser.Scene {
         spacedown = false;
     })
     
-
     //Enemies
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
@@ -330,7 +322,6 @@ export default class BootScene extends Phaser.Scene {
     enemiesRemaining = this.waveSize;
     waveNumber = 1;
     this.spawnDelay = 400;
-
 
     // Turrets
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
@@ -382,7 +373,19 @@ export default class BootScene extends Phaser.Scene {
         }
     });
     
-
+    //Add indicators for where turrets can be viewed
+    turretIndicator = this.add.graphics();
+    turretRange = new Phaser.Geom.Circle(0, 0, 132);
+    turretIndicator.lineStyle(2, 0xFF0000, 0.5);
+    turretIndicator.fillStyle(0xFF0000, 0.3);
+    cannonIndicator = this.add.graphics();
+    cannonRange = new Phaser.Geom.Circle(0, 0, 132);
+    cannonIndicator.lineStyle(2, 0xFF0000, 0.5);
+    cannonIndicator.fillStyle(0xFF0000, 0.3);
+    teslaIndicator = this.add.graphics();
+    teslaRange = new Phaser.Geom.Circle(0, 0, 96);
+    teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
+    teslaIndicator.fillStyle(0xFF0000, 0.3);
 
 //Create game texts
 
@@ -1411,6 +1414,15 @@ function placeTower(pointer) {
                 turret.setActive(true);
                 turret.setVisible(true);
                 turret.place(i, j);
+                turret.on('pointerover', function(){
+                    turretIndicator.clear();
+                    turretRange.x = turret.x;
+                    turretRange.y = turret.y;
+                    turretIndicator.fillCircleShape(turretRange);
+                });
+                turret.on('pointerout', function(){
+                    turretIndicator.clear();
+                });
                 tick.play();
             }
         }
@@ -1421,6 +1433,15 @@ function placeTower(pointer) {
                 cannon.setActive(true);
                 cannon.setVisible(true);
                 cannon.place(i, j);
+                cannon.on('pointerover', function(){
+                    cannonIndicator.clear();
+                    cannonRange.x = cannon.x;
+                    cannonRange.y = cannon.y;
+                    cannonIndicator.fillCircleShape(cannonRange);
+                });
+                cannon.on('pointerout', function(){
+                    cannonIndicator.clear();
+                });
                 tick.play();
             }
         }
@@ -1431,6 +1452,15 @@ function placeTower(pointer) {
                 lightning.setActive(true);
                 lightning.setVisible(true);
                 lightning.place(i, j);
+                lightning.on('pointerover', function(){
+                    teslaIndicator.clear();
+                    teslaRange.x = lightning.x;
+                    teslaRange.y = lightning.y;
+                    teslaIndicator.fillCircleShape(teslaRange);
+                });
+                lightning.on('pointerout', function(){
+                    teslaIndicator.clear();
+                });
                 tick.play();
             }
         }
