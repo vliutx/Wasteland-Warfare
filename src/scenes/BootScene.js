@@ -50,6 +50,8 @@
     var pointer;
     var pointer2;
     var pointer3;
+    var healthpointer;
+    var healthtext;
     var played = false;
 
     // Sounds
@@ -110,7 +112,7 @@
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
-    super('Boot');
+    super('BootScene');
   }
 
   init (data) {
@@ -139,6 +141,17 @@ export default class BootScene extends Phaser.Scene {
         frameHeight: 96,
         frameWidth: 96
       });
+    
+    this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
+        frameHeight: 80,
+        frameWidth: 80
+    });
+    this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
+
+    this.load.image('bossenemy', 'assets/TankBoss.png');
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
@@ -240,7 +253,11 @@ export default class BootScene extends Phaser.Scene {
         })
     }
 
-    
+//info displays
+
+    waterHealth = this.add.sprite(850, 595, 'waterHealth');
+    waterHealth.setFrame(10);
+    bulletCount = this.add.sprite(760, 605, 'bulletCount');
 
 //Enemies
 
@@ -408,11 +425,12 @@ export default class BootScene extends Phaser.Scene {
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     //this.enemiesRemainingText.setVisible(false);
     //Create health text
-    lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    lifecountText.setVisible(false);
-    //ammoCount
-    ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    ammoCountText.setVisible(false);
+// Edited out
+    // lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    // lifecountText.setVisible(false);
+    // //ammoCount
+    // ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    // ammoCountText.setVisible(false);
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
@@ -431,10 +449,18 @@ export default class BootScene extends Phaser.Scene {
     firetext.setVisible(false);
     pointer = this.add.image(800, 30, 'pointer');
     pointer.setVisible(false);
-    ammoText = this.add.text(777, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    // ammoText = this.add.text(777, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    // ammoText.setVisible(false);
+    // pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
+    // pointer3.setVisible(false);
+    ammoText = this.add.text(735, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
     ammoText.setVisible(false);
-    pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
+    pointer3 = this.add.image(758, 540, 'pointer').setRotation(Math.PI/2);
     pointer3.setVisible(false);
+    healthtext = this.add.text(810, 460, 'Health', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    healthtext.setVisible(false);
+    healthpointer = this.add.image(847, 520, 'pointer').setRotation(Math.PI/2);
+    healthpointer.setVisible(false);
     selecttext = this.add.text(200, 40, "Select towers by clicking the tower.", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     selecttext.setVisible(false);
     placetext = this.add.text(240, 80, "Click a space to place a tower", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
@@ -449,13 +475,6 @@ export default class BootScene extends Phaser.Scene {
 
 //Start the game
 
-    //Prompt player to start game
-    startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
-
-    //Create key for player to start game
-    var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    startKey.on("down", function(){
-        //start game
         pause = false
         //begin build phase
         buildPhase = true;
@@ -465,11 +484,6 @@ export default class BootScene extends Phaser.Scene {
         waveText.setVisible(true);
         //Enable scrap text
         scrapText.setVisible(true);
-        //Enable lifecount text
-        lifecountText.setVisible(true);
-        ammoCountText.setVisible(true);
-    });
-
 
   } //End create
 
@@ -483,7 +497,11 @@ export default class BootScene extends Phaser.Scene {
     //         ammoCount -= 1
     //     }
     // }
-        
+
+    //Health and bullet updates
+    waterHealth.setFrame(lifecount);
+    bulletCount.setFrame(6 - ammoCount);
+
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
@@ -683,12 +701,6 @@ export default class BootScene extends Phaser.Scene {
     //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
 
-    //Adjust lifecount text
-    lifecountText.setText("Lifecount: " + lifecount);
-
-    //adjust bullets
-    ammoCountText.setText("Ammo: " + ammoCount);
-
     //Player movement
     if (pause != true) {
         var cursors = this.input.keyboard.createCursorKeys();
@@ -710,16 +722,20 @@ export default class BootScene extends Phaser.Scene {
         pointer.setVisible(true);
         ammoText.setVisible(true);
         pointer3.setVisible(true);
+        healthtext.setVisible(true);
+        healthpointer.setVisible(true);
       }
-  
+
       if (buildPhase == false && waveNumber == 1){
         movetext.setVisible(false);
         firetext.setVisible(false);
         pointer.setVisible(false);
         ammoText.setVisible(false);
         pointer3.setVisible(false);
+        healthtext.setVisible(false);
+        healthpointer.setVisible(false);
       }
-  
+
       //tutorial text number 2
       if (buildPhase == true && waveNumber == 2){
         selecttext.setVisible(true);
@@ -732,13 +748,11 @@ export default class BootScene extends Phaser.Scene {
         placetext.setVisible(false);
         pointer2.setVisible(false);
       }
-  
       //tutorial text number 3
       if (buildPhase == true && waveNumber == 3){
         upgradetext.setVisible(true);
         costText.setVisible(true);
       }
-  
       if (buildPhase == false && waveNumber == 3){
         upgradetext.setVisible(false);
         costText.setVisible(false);

@@ -5,6 +5,9 @@ var bullets;
 var player;
 var shells;
 
+var waterHealth;
+var bulletCount;
+
 // Sounds
 var gunfire;
 var cannonshot;
@@ -38,4 +41,16 @@ var waveNumber;
 
 
 
+var movetext;
+var firetext;
+var ammoText;
+var selecttext;
+var placetext;
+var upgradetext;
+var costText;
 
+// Trackers
+
+var timeRemaining;
+var enemiesRemaining;
+var waveNumber;
