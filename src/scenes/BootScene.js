@@ -370,27 +370,75 @@ export default class BootScene extends Phaser.Scene {
         button2.alpha = 0.5;
     });
 
-    //Display where turrets can be placed
-    graphics = this.add.graphics();
-    redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);
+    //place turrets (ADD FOR CANNONS)
+    this.input.on('pointerdown', placeTower);
+    //display where the turrets can be placed
+    /*graphics = this.add.graphics();
+    redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);*/
     var q, w;
+    var turretGhost = this.add.image(0, 0, 'turret');
+    turretGhost.alpha = 0.4;
+    turretGhost.setVisible(false);
+    var cannonGhost = this.add.image(0, 0, 'cannon');
+    cannonGhost.alpha = 0.4;
+    cannonGhost.setVisible(false);
+    var teslaGhost = this.add.image(0, 0, 'lightning');
+    teslaGhost.alpha = 0.4;
+    teslaGhost.setVisible(false);
     this.input.on('pointermove', function(pointer) {
         if (pause == true || selected == false){
         } else {
             q = Math.floor(pointer.x/64);
             w = Math.floor(pointer.y/64);
             if (canPlaceTurret(w, q)) {
-                graphics.clear();
+                if (turret_selector == 0){
+                    //turret
+                    console.log("turret")
+                    turretGhost.x = q * 64 + 32;
+                    turretGhost.y = w * 64 + 32;
+                    turretGhost.setVisible(true);
+                    turretIndicator.clear();
+                    turretRange.x = turretGhost.x;
+                    turretRange.y = turretGhost.y;
+                    turretIndicator.fillCircleShape(turretRange);
+                } else if (turret_selector == 1){
+                    //cannon
+                    cannonGhost.x = q * 64 + 32;
+                    cannonGhost.y = w * 64 + 32;
+                    cannonGhost.setVisible(true);
+                    cannonIndicator.clear();
+                    cannonRange.x = cannonGhost.x;
+                    cannonRange.y = cannonGhost.y;
+                    cannonIndicator.fillCircleShape(cannonRange);
+                } else if (turret_selector == 2){
+                    //tesla
+                    teslaGhost.x = q * 64 + 32;
+                    teslaGhost.y = w * 64 + 32;
+                    teslaGhost.setVisible(true);
+                    teslaIndicator.clear();
+                    teslaRange.x = teslaGhost.x;
+                    teslaRange.y = teslaGhost.y;
+                    teslaIndicator.fillCircleShape(teslaRange);
+                }
+
+                /*graphics.clear();
                 graphics.lineStyle(2, 0x00FF00, 1);
                 graphics.strokeRectShape(redSquare);
                 redSquare.x = q * 64;
-                redSquare.y = w * 64;
+                redSquare.y = w * 64;*/
             } else {
-                graphics.clear();
+                //might need to check for turret_indicator for efficiency?
+                turretGhost.setVisible(false);
+                cannonGhost.setVisible(false);
+                teslaGhost.setVisible(false);
+                turretIndicator.clear();
+                cannonIndicator.clear();
+                teslaIndicator.clear();
+                /*graphics.clear();
                 graphics.lineStyle(2, 0xFF0000, 1);
                 graphics.strokeRectShape(redSquare);
                 redSquare.x = q * 64;
-                redSquare.y = w * 64;
+                redSquare.y = w * 64;*/
             }
         }
     });
@@ -433,7 +481,7 @@ export default class BootScene extends Phaser.Scene {
     this.input.on('pointerdown', placeTower);
 
     
-    //Add indicators for where turrets can be viewed
+    //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
     turretIndicator.lineStyle(2, 0xFF0000, 0.5);
