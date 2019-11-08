@@ -7,10 +7,10 @@
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
+                    [-1, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
 
@@ -255,7 +255,6 @@ export default class BootScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
-
     if (singleShot==true){
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceBar.on("down", function(){
@@ -265,7 +264,7 @@ export default class BootScene extends Phaser.Scene {
             }
         });
     } 
-
+    //full-auto gun
     var buyMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
     buyMachineGun.on("down", function(){
         if (scraps>=15 && machine == false){
@@ -274,9 +273,6 @@ export default class BootScene extends Phaser.Scene {
             console.log("Purchased machine gun");
         }
     });
-
-
-
 
 //info displays
 
@@ -342,7 +338,7 @@ export default class BootScene extends Phaser.Scene {
 
     //Turrent selection
     //selected = false; 
-    button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
+    button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5; 
     button1.on('pointerup', function(){
         turret_selector = 0;
@@ -351,7 +347,7 @@ export default class BootScene extends Phaser.Scene {
         button2.alpha = 0.5;
         button3.alpha = 0.5;
     });
-    button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
+    button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
     button2.alpha = 0.5; 
     button2.on('pointerup', function(){
         turret_selector = 1;
@@ -370,11 +366,9 @@ export default class BootScene extends Phaser.Scene {
         button2.alpha = 0.5;
     });
 
-    //place turrets (ADD FOR CANNONS)
+    //place towers
     this.input.on('pointerdown', placeTower);
     //display where the turrets can be placed
-    /*graphics = this.add.graphics();
-    redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);*/
     var q, w;
     var turretGhost = this.add.image(0, 0, 'turret');
     turretGhost.alpha = 0.4;
@@ -421,11 +415,6 @@ export default class BootScene extends Phaser.Scene {
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
 
-                /*graphics.clear();
-                graphics.lineStyle(2, 0x00FF00, 1);
-                graphics.strokeRectShape(redSquare);
-                redSquare.x = q * 64;
-                redSquare.y = w * 64;*/
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -434,11 +423,6 @@ export default class BootScene extends Phaser.Scene {
                 turretIndicator.clear();
                 cannonIndicator.clear();
                 teslaIndicator.clear();
-                /*graphics.clear();
-                graphics.lineStyle(2, 0xFF0000, 1);
-                graphics.strokeRectShape(redSquare);
-                redSquare.x = q * 64;
-                redSquare.y = w * 64;*/
             }
         }
     });
@@ -479,7 +463,6 @@ export default class BootScene extends Phaser.Scene {
 
     //place turrets
     this.input.on('pointerdown', placeTower);
-
     
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
@@ -550,7 +533,7 @@ export default class BootScene extends Phaser.Scene {
     selecttext.setVisible(false);
     placetext = this.add.text(240, 80, "Click a space to place a tower", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     placetext.setVisible(false);
-    pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
+    pointer2 = this.add.image(40, 390, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
     upgradetext = this.add.text(235, 42, "Upgrade a turret by clicking it", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     upgradetext.setVisible(false);
@@ -562,7 +545,6 @@ export default class BootScene extends Phaser.Scene {
     purchaseWeaponText2.setVisible(false);
 
 //Start the game
-
         pause = false
         //begin build phase
         buildPhase = true;
