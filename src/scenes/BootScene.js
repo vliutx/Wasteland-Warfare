@@ -92,7 +92,7 @@
     var turrets;
     var cannons;
     var lightnings;
-    var selected;
+    //var selected;
 
     // Damage
     var BULLET_DAMAGE = 40;
@@ -341,12 +341,12 @@ export default class BootScene extends Phaser.Scene {
       });
 
     //Turrent selection
-    selected = false; 
+    //selected = false; 
     button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5; 
     button1.on('pointerup', function(){
         turret_selector = 0;
-        selected = true;
+        //selected = true;
         button1.alpha = 1;
         button2.alpha = 0.5;
         button3.alpha = 0.5;
@@ -355,7 +355,7 @@ export default class BootScene extends Phaser.Scene {
     button2.alpha = 0.5; 
     button2.on('pointerup', function(){
         turret_selector = 1;
-        selected = true;
+        //selected = true;
         button2.alpha = 1;
         button1.alpha = 0.5;
         button3.alpha = 0.5;
@@ -364,7 +364,7 @@ export default class BootScene extends Phaser.Scene {
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
         turret_selector = 2;
-        selected = true;
+        //selected = true;
         button3.alpha = 1;
         button1.alpha = 0.5;
         button2.alpha = 0.5;
@@ -386,7 +386,7 @@ export default class BootScene extends Phaser.Scene {
     teslaGhost.alpha = 0.4;
     teslaGhost.setVisible(false);
     this.input.on('pointermove', function(pointer) {
-        if (pause == true || selected == false){
+        if (pause == true /*|| selected == false*/){
         } else {
             q = Math.floor(pointer.x/64);
             w = Math.floor(pointer.y/64);
@@ -1593,7 +1593,7 @@ function placeTower(pointer) {
                 });
                 tick.play();
             }
-            button1.alpha = .5;
+            //button1.alpha = .5;
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -1613,7 +1613,7 @@ function placeTower(pointer) {
                 });
                 tick.play();
             }
-            button2.alpha = .5;
+            //button2.alpha = .5;
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -1623,10 +1623,10 @@ function placeTower(pointer) {
                 lightning.setVisible(true);
                 lightning.place(i, j);
             }
-            button3.alpha = .5;
+            //button3.alpha = .5;
         }
-        selected = false;
-        turret_selector = -1;
+        //selected = false;
+        //turret_selector = -1;
         graphics.clear();
     }
 }
