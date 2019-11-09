@@ -12,8 +12,6 @@
                     [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
                     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
-
-
     // Counters
     var scraps = 0;
     var lifecount = 10;
@@ -92,7 +90,6 @@
     var turrets;
     var cannons;
     var lightnings;
-    //var selected;
 
     // Damage
     var BULLET_DAMAGE = 40;
@@ -101,8 +98,6 @@
     var shots = 6;
 
     // graphics stuff
-    var redSquare
-    var graphics
     var turretIndicator
     var turretRange
     var cannonIndicator
@@ -275,13 +270,11 @@ export default class BootScene extends Phaser.Scene {
     });
 
 //info displays
-
     waterHealth = this.add.sprite(850, 595, 'waterHealth');
     waterHealth.setFrame(10);
     bulletCount = this.add.sprite(760, 605, 'bulletCount');
 
 //Enemies
-
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
     tough_enemies = this.physics.add.group({ classType: Tough, runChildUpdate: true });
@@ -336,13 +329,11 @@ export default class BootScene extends Phaser.Scene {
         repeat: 0,
       });
 
-    //Turrent selection
-    //selected = false; 
+    //Turret selection
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5; 
     button1.on('pointerup', function(){
         turret_selector = 0;
-        //selected = true;
         button1.alpha = 1;
         button2.alpha = 0.5;
         button3.alpha = 0.5;
@@ -351,7 +342,6 @@ export default class BootScene extends Phaser.Scene {
     button2.alpha = 0.5; 
     button2.on('pointerup', function(){
         turret_selector = 1;
-        //selected = true;
         button2.alpha = 1;
         button1.alpha = 0.5;
         button3.alpha = 0.5;
@@ -360,7 +350,6 @@ export default class BootScene extends Phaser.Scene {
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
         turret_selector = 2;
-        //selected = true;
         button3.alpha = 1;
         button1.alpha = 0.5;
         button2.alpha = 0.5;
@@ -380,14 +369,13 @@ export default class BootScene extends Phaser.Scene {
     teslaGhost.alpha = 0.4;
     teslaGhost.setVisible(false);
     this.input.on('pointermove', function(pointer) {
-        if (pause == true /*|| selected == false*/){
+        if (pause == true){
         } else {
             q = Math.floor(pointer.x/64);
             w = Math.floor(pointer.y/64);
             if (canPlaceTurret(w, q)) {
                 if (turret_selector == 0){
                     //turret
-                    console.log("turret")
                     turretGhost.x = q * 64 + 32;
                     turretGhost.y = w * 64 + 32;
                     turretGhost.setVisible(true);
@@ -414,7 +402,10 @@ export default class BootScene extends Phaser.Scene {
                     teslaRange.y = teslaGhost.y;
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
-
+            } else if (map[w][q] == 1 || map[w][q] == 2) { //if there's a turret there
+            	turretGhost.setVisible(false);
+                cannonGhost.setVisible(false);
+                teslaGhost.setVisible(false);
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -428,11 +419,11 @@ export default class BootScene extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(154, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
-    var b2Text = this.add.text(154, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(154, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -467,16 +458,16 @@ export default class BootScene extends Phaser.Scene {
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
-    turretIndicator.lineStyle(2, 0xFF0000, 0.5);
-    turretIndicator.fillStyle(0xFF0000, 0.3);
+    turretIndicator.lineStyle(2, 0xFFFFFF, 0.5);
+    turretIndicator.fillStyle(0xFFFFFF, 0.3);
     cannonIndicator = this.add.graphics();
     cannonRange = new Phaser.Geom.Circle(0, 0, 132);
-    cannonIndicator.lineStyle(2, 0xFF0000, 0.5);
-    cannonIndicator.fillStyle(0xFF0000, 0.3);
+    cannonIndicator.lineStyle(2, 0xFFFFFF, 0.5);
+    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-    teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
-    teslaIndicator.fillStyle(0xFF0000, 0.3);
+    teslaIndicator.lineStyle(2, 0xFFFFFF, 0.5);
+    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
 //Create game texts
 
@@ -1565,17 +1556,19 @@ function placeTower(pointer) {
                 turret.setVisible(true);
                 turret.place(i, j);
                 turret.on('pointerover', function(){
-                    turretIndicator.clear();
-                    turretRange.x = turret.x;
-                    turretRange.y = turret.y;
-                    turretIndicator.fillCircleShape(turretRange);
+                	if (pause != true){
+                    	turretRange.x = turret.x;
+                    	turretRange.y = turret.y;
+                    	turretIndicator.fillCircleShape(turretRange);
+                	}
                 });
                 turret.on('pointerout', function(){
                     turretIndicator.clear();
                 });
                 tick.play();
             }
-            //button1.alpha = .5;
+            button1.alpha = .5;
+            turretIndicator.clear();
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -1585,17 +1578,19 @@ function placeTower(pointer) {
                 cannon.setVisible(true);
                 cannon.place(i, j);
                 cannon.on('pointerover', function(){
-                    cannonIndicator.clear();
-                    cannonRange.x = cannon.x;
-                    cannonRange.y = cannon.y;
-                    cannonIndicator.fillCircleShape(cannonRange);
+                	if (pause != true){
+                    	cannonRange.x = cannon.x;
+                    	cannonRange.y = cannon.y;
+                    	cannonIndicator.fillCircleShape(cannonRange);
+                	}
                 });
                 cannon.on('pointerout', function(){
                     cannonIndicator.clear();
                 });
                 tick.play();
             }
-            //button2.alpha = .5;
+            button2.alpha = .5;
+            cannonIndicator.clear();
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -1604,42 +1599,24 @@ function placeTower(pointer) {
                 lightning.setActive(true);
                 lightning.setVisible(true);
                 lightning.place(i, j);
-            }
-            //button3.alpha = .5;
-        }
-        //selected = false;
-        //turret_selector = -1;
-        graphics.clear();
-    }
-}
-
-
-function placeCannon(pointer) {
-    if (scraps >= 0){
-        scraps -= 0;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
-            var cannon = cannons.get();
-            if (cannon){
-                cannon.setActive(true);
-                cannon.setVisible(true);
-                cannon.place(i, j);
                 lightning.on('pointerover', function(){
-                    teslaIndicator.clear();
-                    teslaRange.x = lightning.x;
-                    teslaRange.y = lightning.y;
-                    teslaIndicator.fillCircleShape(teslaRange);
+                	if (pause != true){
+                    	teslaRange.x = lightning.x;
+                    	teslaRange.y = lightning.y;
+                    	teslaIndicator.fillCircleShape(teslaRange);
+                    }
                 });
                 lightning.on('pointerout', function(){
                     teslaIndicator.clear();
                 });
                 tick.play();
             }
+            button3.alpha = .5;
+            teslaIndicator.clear();
         }
+        turret_selector = -1;
     }
 }
-
 
 
 function addBullet(x, y, angle) {
