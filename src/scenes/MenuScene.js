@@ -36,16 +36,22 @@ export default class MenuScene extends Phaser.Scene {
     var tesla2 = this.add.sprite(470, 605, "lightning");
     var cannon = this.add.image(395, 500, "cannon").setRotation(Math.PI);
 
-    startText = this.add.text(160, 420, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
+    startText = this.add.text(220, 380, "Press \"T\" to play tutorial", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
+    startText = this.add.text(205, 420, "Press \"G\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
 
-    var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    var tutorialKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
+    var fullGameKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
 
-    startKey.on("down", function(){
+
+    tutorialKey.on("down", function(){
         this.scene.start('BootScene');
     }, this
     );
+    fullGameKey.on("down", function(){
+        this.scene.start('FullGame');
+    }, this
+    );
   }
-
 
   update (time, delta) {
     // Update the scene

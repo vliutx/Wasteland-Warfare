@@ -2,14 +2,14 @@
 
 
     var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [ 0, 0,-1, 0,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1],
+                    [ 0, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
+                    [ 0, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1, 0,-1,-1],
+                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0,-1, 0,-1,-1],
+                    [ 0, 0,-1, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1,-1],
+                    [ 0, 0,-1, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1,-1],
+                    [ 0, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
+                    [-1,-1,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1],
                     [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
@@ -132,9 +132,9 @@
     var test = true;
 
 
-export default class BootScene extends Phaser.Scene {
+export default class FullGame extends Phaser.Scene {
   constructor () {
-    super('BootScene');
+    super('FullGame');
   }
 
   init (data) {
@@ -175,7 +175,7 @@ export default class BootScene extends Phaser.Scene {
 
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
-    this.load.image('desertBackground', './assets/tilesets/level1map.png');
+    this.load.image('desertBackground', './assets/tilesets/level2map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
@@ -205,6 +205,10 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
 
+    // upgrades
+    this.load.image('checkmark', 'assets/checkmark.png');
+    this.load.image('xmark', 'assets/xmark.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -216,13 +220,24 @@ export default class BootScene extends Phaser.Scene {
     this.add.image(this.centerX, this.centerY, "desertBackground");
 
     //Create the path
+    //DIFFERENT FROM MAIN CODE
     path = this.add.path(160, 0);
-    path.lineTo(160, 416);
+    path.lineTo(160, 160);
+    path.lineTo(288, 160);
+    path.lineTo(288, 96);
+    path.lineTo(416, 96);
+    path.lineTo(416, 288);
+    path.lineTo(160, 288);
+    path.lineTo(160, 544);
+    path.lineTo(288, 544);
+    path.lineTo(288, 416);
     path.lineTo(416, 416);
-    path.lineTo(416, 160);
-    path.lineTo(544, 160);
+    path.lineTo(416, 544);
     path.lineTo(544, 544);
-    path.lineTo(800, 544);
+    path.lineTo(544, 96);
+    path.lineTo(672, 96);
+    path.lineTo(672, 480);
+    path.lineTo(800, 480);
     path.lineTo(800, -50);
 
     //Add sounds
@@ -506,56 +521,16 @@ export default class BootScene extends Phaser.Scene {
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     //this.enemiesRemainingText.setVisible(false);
     //Create health text
-// Edited out
-    // lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    // lifecountText.setVisible(false);
-    // //ammoCount
-    // ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    // ammoCountText.setVisible(false);
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
-    continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
     //Defeat text
     defeatText = this.add.text(250, 5, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
     restartText = this.add.text(195, 100, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
-
-    //various tutorial texts
-    movetext = this.add.text(250, 40, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    movetext.setVisible(false);
-    firetext = this.add.text(340, 80, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    firetext.setVisible(false);
-    pointer = this.add.image(800, 30, 'pointer');
-    pointer.setVisible(false);
-    // ammoText = this.add.text(777, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    // ammoText.setVisible(false);
-    // pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
-    // pointer3.setVisible(false);
-    ammoText = this.add.text(735, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    ammoText.setVisible(false);
-    pointer3 = this.add.image(758, 540, 'pointer').setRotation(Math.PI/2);
-    pointer3.setVisible(false);
-    healthtext = this.add.text(810, 460, 'Health', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    healthtext.setVisible(false);
-    healthpointer = this.add.image(847, 520, 'pointer').setRotation(Math.PI/2);
-    healthpointer.setVisible(false);
-    selecttext = this.add.text(200, 40, "Select towers by clicking the tower.", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    selecttext.setVisible(false);
-    placetext = this.add.text(240, 80, "Click a space to place a tower", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    placetext.setVisible(false);
-    pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
-    pointer2.setVisible(false);
-    upgradetext = this.add.text(235, 42, "Upgrade a turret by clicking it", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    upgradetext.setVisible(false);
-    costText = this.add.text(205, 80, "(turret upgrade = 2x cost of turret)", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    costText.setVisible(false);
-    purchaseWeaponText = this.add.text(270, 42, "Purchase a machine gun ", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    purchaseWeaponText.setVisible(false);
-    purchaseWeaponText2 = this.add.text(350, 80, "by pressing \"2\"", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
-    purchaseWeaponText2.setVisible(false);
 
 //Start the game
 
@@ -618,13 +593,23 @@ export default class BootScene extends Phaser.Scene {
         theme.stop();
 
         //Prompt user to continue
-        //FIX
         continueText.setVisible(true);
         var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         continueKey.on("down", function(){
-          this.scene.start('FullGame');
-      }, this
-      );
+            //Disable continue text
+            continueText.setVisible(false);
+            //Disable victory text
+            victoryText.setVisible(false);
+            //unpause game
+            pause = false;
+            //Enable wave text
+            waveText.setVisible(true);
+            //Enable scrap text
+            scrapText.setVisible(true);
+            //Increment wavesRemaining so condition goes to false
+            timeText.setVisible(true);
+            wavesRemaining-= 1;
+        });
     }
 
     //Loss condition
@@ -924,17 +909,38 @@ var Regular = new Phaser.Class({
         update: function (time, delta)
         {
             //VERY MAKESHIFT ROTATION
+            //DIFFERENT FROM MAIN GAME
             if (this.follower.vec.x == 160) {
               this.rotation = Math.PI;
-            } else if (this.follower.vec.x > 160 && this.follower.vec.x < 416 ) {
+            } else if (this.follower.vec.x > 160 && this.follower.vec.x < 288 && this.follower.vec.y == 160) {
+              this.rotation = Math.PI/2;
+            } else if (this.follower.vec.x == 288 && this.follower.vec.y > 96 && this.follower.vec.y < 160) {
+              this.rotation = 0;
+            } else if (this.follower.vec.y == 96 && this.follower.vec.x > 288 && this.follower.vec.x < 416) {
               this.rotation = Math.PI/2;
             } else if (this.follower.vec.x == 416) {
-              this.rotation = 0;
-            } else if (this.follower.vec.x > 416 && this.follower.vec.x < 544 ) {
-              this.rotation = Math.PI/2;
-            } else if (this.follower.vec.x == 544) {
               this.rotation = Math.PI;
-            } else if (this.follower.vec.x > 544 && this.follower.vec.x < 800 ) {
+            } else if (this.follower.vec.x < 416 && this.follower.vec.x > 160 && this.follower.vec.y == 288) {
+              this.rotation = 3*Math.PI/2;
+            } else if (this.follower.vec.x == 160 && this.follower.vec.y > 300) {
+              this.rotation = Math.PI;
+            } else if (this.follower.vec.y == 544) {
+              this.rotation = Math.PI/2;
+            } else if (this.follower.vec.y == 544) {
+              this.rotation = Math.PI/2;
+            } else if (this.follower.vec.x == 288 && this.follower.vec.y > 400) {
+              this.rotation = 0;
+            } else if (this.follower.vec.x > 288 && this.follower.vec.x < 416 && this.follower.vec.y == 416) {
+              this.rotation = Math.PI/2;
+            } else if (this.follower.vec.x == 416 && this.follower.vec.y > 400) {
+              this.rotation = Math.PI;
+            } else if (this.follower.vec.x == 544) {
+              this.rotation = 0;
+            } else if (this.follower.vec.x > 544 && this.follower.vec.x < 672 ) {
+              this.rotation = Math.PI/2;
+            } else if (this.follower.vec.x == 672) {
+              this.rotation = Math.PI;
+            } else if (this.follower.vec.x > 672 && this.follower.vec.x < 800) {
               this.rotation = Math.PI/2;
             } else if (this.follower.vec.x == 800) {
               this.rotation = 0;
@@ -999,22 +1005,43 @@ var Tough = new Phaser.Class({
     },
     update: function (time, delta)
     {
-        //VERY MAKESHIFT ROTATION
-        if (this.follower.vec.x == 160) {
-          this.rotation = Math.PI;
-        } else if (this.follower.vec.x > 160 && this.follower.vec.x < 416 ) {
-          this.rotation = Math.PI/2;
-        } else if (this.follower.vec.x == 416) {
-          this.rotation = 0;
-        } else if (this.follower.vec.x > 416 && this.follower.vec.x < 544 ) {
-          this.rotation = Math.PI/2;
-        } else if (this.follower.vec.x == 544) {
-          this.rotation = Math.PI;
-        } else if (this.follower.vec.x > 544 && this.follower.vec.x < 800 ) {
-          this.rotation = Math.PI/2;
-        } else if (this.follower.vec.x == 800) {
-          this.rotation = 0;
-        }
+      //VERY MAKESHIFT ROTATION
+      //DIFFERENT FROM MAIN GAME
+      if (this.follower.vec.x == 160) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x > 160 && this.follower.vec.x < 288 && this.follower.vec.y == 160) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 288 && this.follower.vec.y > 96 && this.follower.vec.y < 160) {
+        this.rotation = 0;
+      } else if (this.follower.vec.y == 96 && this.follower.vec.x > 288 && this.follower.vec.x < 416) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 416) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x < 416 && this.follower.vec.x > 160 && this.follower.vec.y == 288) {
+        this.rotation = 3*Math.PI/2;
+      } else if (this.follower.vec.x == 160 && this.follower.vec.y > 300) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.y == 544) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.y == 544) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 288 && this.follower.vec.y > 400) {
+        this.rotation = 0;
+      } else if (this.follower.vec.x > 288 && this.follower.vec.x < 416 && this.follower.vec.y == 416) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 416 && this.follower.vec.y > 400) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x == 544) {
+        this.rotation = 0;
+      } else if (this.follower.vec.x > 544 && this.follower.vec.x < 672 ) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 672) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x > 672 && this.follower.vec.x < 800) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 800) {
+        this.rotation = 0;
+      }
 
         if (pause != true){
             this.follower.t += this.ENEMY_SPEED * delta;
@@ -1073,22 +1100,43 @@ var Boss = new Phaser.Class({
     },
     update: function (time, delta)
     {
-        //VERY MAKESHIFT ROTATION
-        if (this.follower.vec.x == 160) {
-          this.rotation = Math.PI;
-        } else if (this.follower.vec.x > 160 && this.follower.vec.x < 416 ) {
-          this.rotation = Math.PI/2;
-        } else if (this.follower.vec.x == 416) {
-          this.rotation = 0;
-        } else if (this.follower.vec.x > 416 && this.follower.vec.x < 544 ) {
-          this.rotation = Math.PI/2;
-        } else if (this.follower.vec.x == 544) {
-          this.rotation = Math.PI;
-        } else if (this.follower.vec.x > 544 && this.follower.vec.x < 800 ) {
-          this.rotation = Math.PI/2;
-        } else if (this.follower.vec.x == 800) {
-          this.rotation = 0;
-        }
+      //VERY MAKESHIFT ROTATION
+      //DIFFERENT FROM MAIN GAME
+      if (this.follower.vec.x == 160) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x > 160 && this.follower.vec.x < 288 && this.follower.vec.y == 160) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 288 && this.follower.vec.y > 96 && this.follower.vec.y < 160) {
+        this.rotation = 0;
+      } else if (this.follower.vec.y == 96 && this.follower.vec.x > 288 && this.follower.vec.x < 416) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 416) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x < 416 && this.follower.vec.x > 160 && this.follower.vec.y == 288) {
+        this.rotation = 3*Math.PI/2;
+      } else if (this.follower.vec.x == 160 && this.follower.vec.y > 300) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.y == 544) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.y == 544) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 288 && this.follower.vec.y > 400) {
+        this.rotation = 0;
+      } else if (this.follower.vec.x > 288 && this.follower.vec.x < 416 && this.follower.vec.y == 416) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 416 && this.follower.vec.y > 400) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x == 544) {
+        this.rotation = 0;
+      } else if (this.follower.vec.x > 544 && this.follower.vec.x < 672 ) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 672) {
+        this.rotation = Math.PI;
+      } else if (this.follower.vec.x > 672 && this.follower.vec.x < 800) {
+        this.rotation = Math.PI/2;
+      } else if (this.follower.vec.x == 800) {
+        this.rotation = 0;
+      }
 
         if (pause != true){
             this.follower.t += this.ENEMY_SPEED * delta;
@@ -1152,21 +1200,43 @@ var Fast = new Phaser.Class({
         update: function (time, delta)
         {
           //VERY MAKESHIFT ROTATION
+          //DIFFERENT FROM MAIN GAME
           if (this.follower.vec.x == 160) {
             this.rotation = Math.PI;
-          } else if (this.follower.vec.x > 160 && this.follower.vec.x < 416 ) {
+          } else if (this.follower.vec.x > 160 && this.follower.vec.x < 288 && this.follower.vec.y == 160) {
+            this.rotation = Math.PI/2;
+          } else if (this.follower.vec.x == 288 && this.follower.vec.y > 96 && this.follower.vec.y < 160) {
+            this.rotation = 0;
+          } else if (this.follower.vec.y == 96 && this.follower.vec.x > 288 && this.follower.vec.x < 416) {
             this.rotation = Math.PI/2;
           } else if (this.follower.vec.x == 416) {
-            this.rotation = 0;
-          } else if (this.follower.vec.x > 416 && this.follower.vec.x < 544 ) {
-            this.rotation = Math.PI/2;
-          } else if (this.follower.vec.x == 544) {
             this.rotation = Math.PI;
-          } else if (this.follower.vec.x > 544 && this.follower.vec.x < 800 ) {
+          } else if (this.follower.vec.x < 416 && this.follower.vec.x > 160 && this.follower.vec.y == 288) {
+            this.rotation = 3*Math.PI/2;
+          } else if (this.follower.vec.x == 160 && this.follower.vec.y > 300) {
+            this.rotation = Math.PI;
+          } else if (this.follower.vec.y == 544) {
+            this.rotation = Math.PI/2;
+          } else if (this.follower.vec.y == 544) {
+            this.rotation = Math.PI/2;
+          } else if (this.follower.vec.x == 288 && this.follower.vec.y > 400) {
+            this.rotation = 0;
+          } else if (this.follower.vec.x > 288 && this.follower.vec.x < 416 && this.follower.vec.y == 416) {
+            this.rotation = Math.PI/2;
+          } else if (this.follower.vec.x == 416 && this.follower.vec.y > 400) {
+            this.rotation = Math.PI;
+          } else if (this.follower.vec.x == 544) {
+            this.rotation = 0;
+          } else if (this.follower.vec.x > 544 && this.follower.vec.x < 672 ) {
+            this.rotation = Math.PI/2;
+          } else if (this.follower.vec.x == 672) {
+            this.rotation = Math.PI;
+          } else if (this.follower.vec.x > 672 && this.follower.vec.x < 800) {
             this.rotation = Math.PI/2;
           } else if (this.follower.vec.x == 800) {
             this.rotation = 0;
           }
+
             if (pause != true){
                 this.follower.t += this.ENEMY_SPEED * delta;
                 path.getPoint(this.follower.t, this.follower.vec);
