@@ -7,22 +7,23 @@
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
-
-
+                    [-1, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
     // Counters
     var scraps = 0;
     var lifecount = 10;
-    var wavesRemaining = 3;
+    var wavesRemaining = 4;
+    var totalWaves = wavesRemaining;
     var gameTime = 0;
     var turret_selector = -1;
     var gameTime = 0;
     var reloadTime = 0;
-
+    var count = 0;
+    var BC = 1;
+    var timeRemaining;
 
     // Booleans
     var pause = true;
@@ -30,89 +31,56 @@
     var startGame = false;
     var restart = false;
     var reloading = false;
-
+    var spacedown = false;
+    var singleShot = true;
+    var machineGun = false;
+    var machine = false;
 
     // Counters
     var enemiesRemaining;
     var waveNumber;
     var lifecount;
-    var ammoCount;
+    var ammoCount = 6;
+    var tickTimer = 3;
 
     // Misc
     var path;
-    var walking;
-    var wind;
     var tick;
     var death;
-    var ammoCount;
-    var ammoCountText;
-    var reloading = false;
-
-    //NAME THESE BETTER/DON'T PUT THEM HERE
-    var movetext;
-    var firetext;
     var pointer;
     var pointer2;
-    var selecttext;
-    var placetext;
-    var count = 0;
-    var BC = 1;
-    var wavesRemaining = 5;
-    var totalWaves = wavesRemaining;
+    var pointer3;
+    var healthpointer;
+    var healthtext;
+    var played = false;
 
-
-
-    // Enemies
-    var FAST_SPEED = 1/12500;
-    var FAST_HEALTH = 50;
-    var fast_enemies;
-
-    var REG_SPEED = 1/15000;
-    var REG_HEALTH = 100;
-    var reg_enemies;
-
-    var tough_enemies;
-    var TOUGH_SPEED = 1/17500;
-    var TOUGH_HEALTH = 300;
-
-    var boss_enemies;
-    var BOSS_SPEED = 1/20000;
-    var BOSS_HEALTH = 1000;
-
-
-    // Damgage
-    var BULLET_DAMAGE = 25;
-    var SHELL_DAMAGE = 150;
+    // Sounds
+    var cannonshot;
+    var wind;
+    var tick;
+    var theme;
+    var tank;
+    var explode;
+    var electric;
+    var reload;
 
     // Sounds
     var cannonshot;
     var wind;
     var tick;
 
-    //NAME THESE BETTER/DON'T PUT THEM HERE
-    var movetext;
-    var firetext;
-    var pointer;
-    var pointer2;
-    var selecttext;
-    var placetext;
-    var count = 0;
-    var BC = 1;
-    var wavesRemaining = 5;
-    var totalWaves = wavesRemaining;
-
     // Enemies
-    var FAST_SPEED = 1/12500;
-    var FAST_HEALTH = 50;
     var fast_enemies;
+    var FAST_SPEED = 1/12500;
+    var FAST_HEALTH = 80;
 
-    var REG_SPEED = 1/15000;
-    var REG_HEALTH = 100;
     var reg_enemies;
+    var REG_SPEED = 1/17500;
+    var REG_HEALTH = 160;
 
     var tough_enemies;
-    var TOUGH_SPEED = 1/17500;
-    var TOUGH_HEALTH = 300;
+    var TOUGH_SPEED = 1/20000;
+    var TOUGH_HEALTH = 240;
 
     var boss_enemies;
     var BOSS_SPEED = 1/20000;
@@ -123,14 +91,45 @@
     var cannons;
     var lightnings;
 
-    // Damgage
-    var BULLET_DAMAGE = 50;
-    var SHELL_DAMAGE = 150;
+    // Damage
+    var BULLET_DAMAGE = 40;
+    var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
+    var shots = 6;
+
+    // graphics stuff
+    var turretIndicator
+    var turretRange
+    var cannonIndicator
+    var cannonRange
+    var teslaIndicator
+    var teslaRange
+
+    // Buttons
+    var button1;
+    var button2;
+    var button3;
+
+    // time between fires
+    var delts = 0;
+    var frplayer = 200;
+
+    var nextEnemy = 0;
+    var waveSize = 6;
+    var spawned = 0;
+    enemiesRemaining = waveSize;
+    waveNumber = 1;
+    var spawnDelay = 400;
+
+    // Enemy Spawns
+    var enemies = [4,2,0,0];
+    var empty = [0,0,0,0];
+    var test = true;
+
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
-    super('Boot');
+    super('BootScene');
   }
 
   init (data) {
@@ -151,13 +150,27 @@ export default class BootScene extends Phaser.Scene {
       frameHeight: 64,
       frameWidth: 64
     });
+    this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
+        frameHeight: 48,
+        frameWidth: 48
+      });
+      this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+        frameHeight: 96,
+        frameWidth: 96
+      });
+    
+    this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
+        frameHeight: 80,
+        frameWidth: 80
+    });
+    this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
 
-    this.load.image('bossenemy', 'assets/TankBoss.png');
     this.load.image('turret', 'assets/Turret1.png');
-    this.load.image('player', 'assets/MainPlayer.png');
     this.load.image('bullet', 'assets/Bullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
-    this.load.image('player', './assets/MainPlayer.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
 
@@ -171,6 +184,11 @@ export default class BootScene extends Phaser.Scene {
     this.load.audio('death', 'assets/sounds/death.mp3');
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
+    this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
+    this.load.audio('explosion', 'assets/sounds/Explode.mp3');
+    this.load.audio('electricity', 'assets/sounds/Electric.mp3');
+    this.load.audio('reload', 'assets/sounds/reloading.mp3');
 
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
@@ -192,53 +210,9 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
-    //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true, volume: 0.1});
-    wind.play();
-    tick = this.sound.add('tick');
-
-    //Initialize gun ammo
-    ammoCount = 6;
-
-    //DOES NOT WORK CURRENTLY
-    walking = this.anims.create({
-      key: "walk",
-      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    });
-
-    //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true});
-    wind.play();
-    tick = this.sound.add('tick');
-
-    //Initialize gun ammo
-    ammoCount = 6;
-
-    //DOES NOT WORK CURRENTLY
-    walking = this.anims.create({
-      key: "walk",
-      frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    });
-
-    this.anims.create({
-        key: "lightning",
-        frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
-        frameRate: 10,
-        repeat: 0,
-      });
-      
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
-
-    //Add sounds
-    gunfire = this.sound.add('gunshot');
-    cannonshot = this.sound.add('cannonshot');
-    death = this.sound.add('death');
 
     //Create the path
     path = this.add.path(160, 0);
@@ -250,49 +224,57 @@ export default class BootScene extends Phaser.Scene {
     path.lineTo(800, 544);
     path.lineTo(800, -50);
 
-    //creates buttons to change between the turrets
-    var button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
-    button1.on('pointerup', function(){
-        turret_selector = 0;
-        button1.alpha = 1;
-        button2.alpha = 0.5;
-        button3.alpha = 0.5;
-    });
-    var button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
-    button2.on('pointerup', function(){
-        turret_selector = 1;
-        button2.alpha = 1;
-        button1.alpha = 0.5;
-        button3.alpha = 0.5;
-    });
-    var button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
-    button3.on('pointerup', function(){
-        turret_selector = 2;
-        button3.alpha = 1;
-        button1.alpha = 0.5;
-        button2.alpha = 0.5;
-    });
-    button1.alpha = 0.5; // all deselected? trying it idk
-    button2.alpha = 0.5;
-    button3.alpha = 0.5;
+    //Add sounds
+    gunfire = this.sound.add('gunshot', {volume: 0.20});
+    cannonshot = this.sound.add('cannonshot');
+    death = this.sound.add('death', {volume: 0.1});
+    explode = this.sound.add('explosion', {volume: 0.7});
+    tank = this.sound.add('tankSounds', {loop: true});
+    electric = this.sound.add('electricity',{volume: 0.1, loop: false});
+    reload = this.sound.add('reload', {volume: .40});
+
+    //ambient wind and ticking
+    wind = this.sound.add('wind', {loop: true, volume: 0.1});
+    tick = this.sound.add('tick');
+    theme = this.sound.add('theme', {loop: true, volume: 0.5});
+
+    //play Sounds
+    theme.play();
+    wind.play();
 
 //Create enemies/towers/player groups
 
-    //Player
-    player = this.physics.add.sprite(864, 32, 'player');
+//Player
+
+    player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
     //player can shoot
-    var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    spaceBar.on("down", function(){
-        if (pause != true && reloading == false){
-        addBullet(player.x,player.y,Math.PI)
-        ammoCount -= 1
+    if (singleShot==true){
+        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        spaceBar.on("down", function(){
+            if (pause != true && reloading == false){
+            addBullet(player.x,player.y,Math.PI)
+            ammoCount -= 1
+            }
+        });
+    } 
+    //full-auto gun
+    var buyMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    buyMachineGun.on("down", function(){
+        if (scraps>=15 && machine == false){
+            machineGun = true;
+            scraps -= 15;
+            console.log("Purchased machine gun");
         }
     });
 
+//info displays
+    waterHealth = this.add.sprite(850, 595, 'waterHealth');
+    waterHealth.setFrame(10);
+    bulletCount = this.add.sprite(760, 605, 'bulletCount');
 
-    //Enemies
+//Enemies
     reg_enemies = this.physics.add.group({ classType: Regular, runChildUpdate: true });
     fast_enemies = this.physics.add.group({ classType: Fast, runChildUpdate: true });
     tough_enemies = this.physics.add.group({ classType: Tough, runChildUpdate: true });
@@ -300,18 +282,33 @@ export default class BootScene extends Phaser.Scene {
 
     //enemy animations
     this.anims.create({
-        key: "walk",
-        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 3 }),
+        key: "reg_walk",
+        frames: this.anims.generateFrameNumbers("regularenemy", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: -1
     });
 
-    reg_enemies.playAnimation('walk', true);
+    this.anims.create({
+        key: "tough_walk",
+        frames: this.anims.generateFrameNumbers("toughenemy", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+    });
 
+    this.anims.create({
+        key: "fast_walk",
+        frames: this.anims.generateFrameNumbers("fastenemy", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+    });
+ 
+    this.anims.create({
+        key: "tank_move",
+        frames: this.anims.generateFrameNumbers("bossenemy", { start: 0, end: 1 }),
+        frameRate: 8,
+        repeat: -1
+    });
 
-
-
-    // Declare variables
     this.nextEnemy = 0;
     this.waveSize = 6;
     this.spawned = 0;
@@ -319,13 +316,126 @@ export default class BootScene extends Phaser.Scene {
     waveNumber = 1;
     this.spawnDelay = 400;
 
+// Turrets
 
-    // Turrets
+    //Create turrets
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
     cannons = this.add.group({classType: Cannon, runChildUpdate: true});
     lightnings = this.add.group({classType: Lightning, runChildUpdate: true});
+    this.anims.create({
+        key: "lightning",
+        frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: 0,
+      });
 
-    // Bullets
+    //Turret selection
+    button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
+    button1.alpha = 0.5; 
+    button1.on('pointerup', function(){
+        turret_selector = 0;
+        button1.alpha = 1;
+        button2.alpha = 0.5;
+        button3.alpha = 0.5;
+    });
+    button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
+    button2.alpha = 0.5; 
+    button2.on('pointerup', function(){
+        turret_selector = 1;
+        button2.alpha = 1;
+        button1.alpha = 0.5;
+        button3.alpha = 0.5;
+    });
+    button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
+    button3.alpha = 0.5;
+    button3.on('pointerup', function(){
+        turret_selector = 2;
+        button3.alpha = 1;
+        button1.alpha = 0.5;
+        button2.alpha = 0.5;
+    });
+
+    //place towers
+    this.input.on('pointerdown', placeTower);
+    //display where the turrets can be placed
+    var q, w;
+    var turretGhost = this.add.image(0, 0, 'turret');
+    turretGhost.alpha = 0.4;
+    turretGhost.setVisible(false);
+    var cannonGhost = this.add.image(0, 0, 'cannon');
+    cannonGhost.alpha = 0.4;
+    cannonGhost.setVisible(false);
+    var teslaGhost = this.add.image(0, 0, 'lightning');
+    teslaGhost.alpha = 0.4;
+    teslaGhost.setVisible(false);
+    this.input.on('pointermove', function(pointer) {
+        if (pause == true){
+        } else {
+            q = Math.floor(pointer.x/64);
+            w = Math.floor(pointer.y/64);
+            if (canPlaceTurret(w, q)) {
+                if (turret_selector == 0){
+                    //turret
+                    turretGhost.x = q * 64 + 32;
+                    turretGhost.y = w * 64 + 32;
+                    turretGhost.setVisible(true);
+                    turretIndicator.clear();
+                    turretRange.x = turretGhost.x;
+                    turretRange.y = turretGhost.y;
+                    turretIndicator.fillCircleShape(turretRange);
+                } else if (turret_selector == 1){
+                    //cannon
+                    cannonGhost.x = q * 64 + 32;
+                    cannonGhost.y = w * 64 + 32;
+                    cannonGhost.setVisible(true);
+                    cannonIndicator.clear();
+                    cannonRange.x = cannonGhost.x;
+                    cannonRange.y = cannonGhost.y;
+                    cannonIndicator.fillCircleShape(cannonRange);
+                } else if (turret_selector == 2){
+                    //tesla
+                    teslaGhost.x = q * 64 + 32;
+                    teslaGhost.y = w * 64 + 32;
+                    teslaGhost.setVisible(true);
+                    teslaIndicator.clear();
+                    teslaRange.x = teslaGhost.x;
+                    teslaRange.y = teslaGhost.y;
+                    teslaIndicator.fillCircleShape(teslaRange);
+                }
+            } else if (map[w][q] == 1 || map[w][q] == 2) { //if there's a turret there
+            	turretGhost.setVisible(false);
+                cannonGhost.setVisible(false);
+                teslaGhost.setVisible(false);
+            } else {
+                //might need to check for turret_indicator for efficiency?
+                turretGhost.setVisible(false);
+                cannonGhost.setVisible(false);
+                teslaGhost.setVisible(false);
+                turretIndicator.clear();
+                cannonIndicator.clear();
+                teslaIndicator.clear();
+            }
+        }
+    });
+
+    //Descriptions of turrets
+    var b1Text = this.add.text(100, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b1Text.setVisible(false);
+    var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b2Text.setVisible(false);
+    var b3Text = this.add.text(100, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    b3Text.setVisible(false);
+
+    //Display turret descriptions when hovering over icon
+    button1.on('pointerover', function(){b1Text.setVisible(true)});
+    button1.on('pointerout', function(){b1Text.setVisible(false)});
+    button2.on('pointerover', function(){b2Text.setVisible(true)});
+    button2.on('pointerout', function(){b2Text.setVisible(false)});
+    button3.on('pointerover', function(){b3Text.setVisible(true)});
+    button3.on('pointerout', function(){b3Text.setVisible(false)});
+
+
+// Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
@@ -342,30 +452,46 @@ export default class BootScene extends Phaser.Scene {
     this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
     this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
 
-    //place turrets (ADD FOR CANNONS)
+    //place turrets
     this.input.on('pointerdown', placeTower);
-
+    
+    //Add indicators for where turrets can reach
+    turretIndicator = this.add.graphics();
+    turretRange = new Phaser.Geom.Circle(0, 0, 132);
+    //turretIndicator.fillStyle(0xFFFFFF, 0.3);
+    cannonIndicator = this.add.graphics();
+    cannonRange = new Phaser.Geom.Circle(0, 0, 132);
+    //cannonIndicator.fillStyle(0xFFFFFF, 0.3);
+    teslaIndicator = this.add.graphics();
+    teslaRange = new Phaser.Geom.Circle(0, 0, 96);
+    //teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
 //Create game texts
-
+	//create background to make text more readable
+	var graphicz = this.add.graphics();
+    var textBack = new Phaser.Geom.Rectangle(210, 5, 555, 32);
+    graphicz.fillStyle(0x000000, 1);
+    graphicz.fillRectShape(textBack);
+    graphicz.clear();
     //Add scrap text
-    scrapText = this.add.text(400, 40, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(215, 5, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
-    waveText = this.add.text(400, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
+    waveText = this.add.text(420, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 10;
-    timeText = this.add.text(165, 600, timeRemaining, {fontSize: 30, color: '#000000', fontStyle: 'bold'});
+    this.buildTime = 15;
+    timeText = this.add.text(620, 5, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-    this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
-    this.enemiesRemainingText.setVisible(false);
+    //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    //this.enemiesRemainingText.setVisible(false);
     //Create health text
-    lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    lifecountText.setVisible(false);
-    //ammoCount
-    ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    ammoCountText.setVisible(false);
+// Edited out
+    // lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    // lifecountText.setVisible(false);
+    // //ammoCount
+    // ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
+    // ammoCountText.setVisible(false);
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
@@ -376,48 +502,93 @@ export default class BootScene extends Phaser.Scene {
     defeatText.setVisible(false);
     restartText = this.add.text(195, 100, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
+
     //various tutorial texts
-    movetext = this.add.text(250, 80, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    movetext = this.add.text(250, 40, "Move with up and down arrow.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     movetext.setVisible(false);
-    firetext = this.add.text(340, 130, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    firetext = this.add.text(340, 80, "Fire with space", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
     firetext.setVisible(false);
     pointer = this.add.image(800, 30, 'pointer');
     pointer.setVisible(false);
-    selecttext = this.add.text(170, 80, "Select towers by clicking the tower.", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    // ammoText = this.add.text(777, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    // ammoText.setVisible(false);
+    // pointer3 = this.add.image(800, 540, 'pointer').setRotation(Math.PI/2);
+    // pointer3.setVisible(false);
+    ammoText = this.add.text(735, 480, 'Ammo', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    ammoText.setVisible(false);
+    pointer3 = this.add.image(758, 540, 'pointer').setRotation(Math.PI/2);
+    pointer3.setVisible(false);
+    healthtext = this.add.text(810, 460, 'Health', {fontSize: 20, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    healthtext.setVisible(false);
+    healthpointer = this.add.image(847, 520, 'pointer').setRotation(Math.PI/2);
+    healthpointer.setVisible(false);
+    selecttext = this.add.text(200, 40, "Select towers by clicking the tower.", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     selecttext.setVisible(false);
-    placetext = this.add.text(220, 130, "Click a space to place a tower", {fontSize: 30, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    placetext = this.add.text(240, 80, "Click a space to place a tower", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
     placetext.setVisible(false);
-    pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
+    pointer2 = this.add.image(40, 390, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
-
+    upgradetext = this.add.text(235, 42, "Upgrade a turret by clicking it", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    upgradetext.setVisible(false);
+    costText = this.add.text(205, 80, "(turret upgrade = 2x cost of turret)", {fontSize: 26, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    costText.setVisible(false);
+    purchaseWeaponText = this.add.text(270, 42, "Purchase a machine gun ", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    purchaseWeaponText.setVisible(false);
+    purchaseWeaponText2 = this.add.text(350, 80, "by pressing \"2\"", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
+    purchaseWeaponText2.setVisible(false);
+    
+    
 
 //Start the game
-
-    //Prompt player to start game
-    startText = this.add.text(225, 5, "Press \"P\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
-
-    //Create key for player to start game
-    var startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    startKey.on("down", function(){
-        //start game
         pause = false
         //begin build phase
         buildPhase = true;
         //disable start text
         startText.setVisible(false);
+        //background for text
+        graphicz.fillStyle(0x000000, 1);
+        graphicz.fillRectShape(textBack);
         //Enable wave text
         waveText.setVisible(true);
         //Enable scrap text
         scrapText.setVisible(true);
-        //Enable lifecount text
-        lifecountText.setVisible(true);
-        ammoCountText.setVisible(true);
-    });
-
+        graphicz.fillStyle(0xFFFFFF, 0.3);
 
   } //End create
 
   update (time, delta) {
+
+    //Weapon type
+    if (machineGun==true){
+        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        spaceBar.on("down", function(){
+            spacedown = true;
+        });
+        spaceBar.on("up", function(){
+            spacedown = false;
+        })
+        machine = true;
+        machineGun = false;
+        ammoCount = 12;
+    }
+    if (machine){
+        if (spacedown == true){
+            if (time - delts > frplayer && pause != true && reloading == false) {
+                delts = time
+                addBullet(player.x,player.y,Math.PI)
+                ammoCount -= 1
+            }
+        }
+    }
+
+
+    //Health and bullet updates
+    waterHealth.setFrame(lifecount);
+    if (machine==false){
+        bulletCount.setFrame(6 - ammoCount);
+    }else{
+        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
+    }
 
     //Win Condition
     if (wavesRemaining == 0){
@@ -428,6 +599,8 @@ export default class BootScene extends Phaser.Scene {
         scrapText.setVisible(false);
         waveText.setVisible(false);
         victoryText.setVisible(true);
+        timeText.setVisible(false);
+        theme.stop();
 
         //Prompt user to continue
         continueText.setVisible(true);
@@ -444,6 +617,7 @@ export default class BootScene extends Phaser.Scene {
             //Enable scrap text
             scrapText.setVisible(true);
             //Increment wavesRemaining so condition goes to false
+            timeText.setVisible(true);
             wavesRemaining-= 1;
         });
     }
@@ -459,6 +633,7 @@ export default class BootScene extends Phaser.Scene {
 
         //Display defeat text
         defeatText.setVisible(true);
+        theme.stop();
 
         //Prompt player to restart the game
         restartText.setVisible(true);
@@ -472,12 +647,24 @@ export default class BootScene extends Phaser.Scene {
     if (ammoCount == 0){
       reloading = true;
       reloadTime += delta/1000;
-
-      if (Math.floor(reloadTime) == 1){
-        ammoCount = 6;
-        reloadTime = 0;
-        reloading = false;
+      if (played == false) {
+          reload.play();
+          played = true;
       }
+
+      if (Math.floor(reloadTime) >= 1){
+        if (machine == false){
+            ammoCount = 6;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+        } else {
+            ammoCount = 12;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+        }
+     }
     }
 
     //Build phase
@@ -486,107 +673,91 @@ export default class BootScene extends Phaser.Scene {
         //Add game timer
         gameTime += delta/1000;
         timeRemaining =  Math.floor(this.buildTime - gameTime);
-        timeText.setText('Time before next wave: ' + timeRemaining);
+        timeText.setText('Time: ' + timeRemaining);
+        timeText.setColor('#FFFFFF');
+        if (timeRemaining <= 5) {
+            timeText.setColor('#FF0000');
+        };
+
+        //ticking sound
+
+        if (timeRemaining == tickTimer){
+          tick.play();
+          tickTimer -= 1;
+        };
 
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
+            //ammoCount = 6;
+            reloading = false;
             //Build phase over
             buildPhase = false;
             //Reset gameTime
             gameTime = 0;
             //Remove text
             timeText.setVisible(false);
+            //reset tickTimer
+            tickTimer = 3;
             //reset enemies remaining
-            enemiesRemaining = this.waveSize;
+            enemiesRemaining = enemies.reduce((a, b) => a + b, 0);
             this.spawned = 0;
             //Add text
-            this.enemiesRemainingText.setVisible(true);
+            //this.enemiesRemainingText.setVisible(true);
         }
     } //Build phase ends
 
-    //tutorial text number 1
-    if (buildPhase == true && waveNumber == 1){
-      movetext.setVisible(true);
-      firetext.setVisible(true);
-      pointer.setVisible(true);
-    }
-
-    if (buildPhase == false && waveNumber == 1){
-      movetext.setVisible(false);
-      firetext.setVisible(false);
-      pointer.setVisible(false);
-    }
-
-    //tutorial text number 2
-    if (buildPhase == true && waveNumber == 2){
-      selecttext.setVisible(true);
-      placetext.setVisible(true);
-      pointer2.setVisible(true);
-    }
-
-    if (buildPhase == false && waveNumber == 2){
-      selecttext.setVisible(false);
-      placetext.setVisible(false);
-      pointer2.setVisible(false);
-    }
-
 
     //Combat phase
-    if (buildPhase == false && pause != true){
+    if (buildPhase == false && pause != true && lifecount > 0){
         //Set timer
         gameTime += delta;
-        //Display # of enemies remaining
-        this.enemiesRemainingText.setText('Enemies remaining: ' + enemiesRemaining);
-        //Spawn in enemies
-        if ((gameTime > this.nextEnemy) && (this.spawned < this.waveSize)){
-            var fast = fast_enemies.get();
-            var regular = reg_enemies.get();
 
-            if (waveNumber >= 3 && count < 2*(waveNumber-2)){
-                var tough = tough_enemies.get();
-                count += 1;
-            }
+        //Spawn in ememies
+        if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){ 
 
-            if (wavesRemaining == 1 && BC != 0){
-                var boss = boss_enemies.get();
-                enemiesRemaining+=1;
-                BC -= 1;
-            }
+            //Spawn in each type of enemy consecutively
+            for(var i = 0; i<enemies.length; i++){
 
-            if (boss){
-                boss.setActive(true);
-                boss.setVisible(true);
-                boss.startOnPath(100);
+                if (i==0 && enemies[i] != 0){      // Reg enemies
+                    var regular = reg_enemies.get();
+                    enemies[0] -= 1
+                    regular.setActive(true);
+                    regular.setVisible(true);
+                    regular.startOnPath(REG_HEALTH);
+                    this.spawned+=1
+
+                }else if (i==1 && enemies[i] != 0){  // Fast enemies
+                    var fast = fast_enemies.get();
+                    enemies[1] -= 1
+                    fast.setActive(true);
+                    fast.setVisible(true);
+                    fast.startOnPath(FAST_HEALTH);
+                    this.spawned+=1
+
+                }else if (i==2 && enemies[i] != 0){   // Tough enemies
+                    var tough = tough_enemies.get();
+                    enemies[2] -= 1
+                    tough.setActive(true);
+                    tough.setVisible(true);
+                    tough.startOnPath(100);
+                    this.spawned+=1
+
+                }else if (i==3 && enemies[i] != 0){   // Boss enemy
+                    var boss = boss_enemies.get();
+                    enemies[3] -= 1
+                    boss.setActive(true);
+                    boss.setVisible(true);
+                    boss.startOnPath(100);
+                    this.spawned+=1
+                }
+
+                // Include spawn delay
                 this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
+
             }
+        } // all enemies spawned
+    
 
-            if (tough){
-                tough.setActive(true);
-                tough.setVisible(true);
-                tough.startOnPath(100);
-                this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
-            }
-
-            if (regular){
-                regular.setActive(true);
-                regular.setVisible(true);
-                regular.startOnPath(REG_HEALTH);
-
-                this.nextEnemy = gameTime + this.spawnDelay;
-                this.spawned+=1
-            }
-
-            if (fast){
-                fast.setActive(true);
-                fast.setVisible(true);
-                fast.startOnPath(FAST_HEALTH);
-
-                this.nextEnemy = gameTime + this.spawnDelay+100;
-                this.spawned+=1
-            }
-        } //All enemies spawned
 
         //All enemies despawned
         if (enemiesRemaining <= 0){
@@ -596,8 +767,6 @@ export default class BootScene extends Phaser.Scene {
             timeText.setVisible(true);
             //reset game time
             gameTime = 0;
-            //Enemy text disable
-            this.enemiesRemainingText.setVisible(false);
             //reset this.nextEnemy
             this.nextEnemy = 0;
             //Increment wave number and remaining waves
@@ -605,36 +774,102 @@ export default class BootScene extends Phaser.Scene {
             waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
             wavesRemaining -= 1;
             //Increment wave size
-            this.waveSize += 4;
+            if (waveNumber == 2){
+                enemies = [6,6,0,0];
+            } else if (waveNumber ==3){
+                enemies = [6,6,3,0];
+            } else if (waveNumber == 4){
+                enemies = [8,6,4,1];
+            } else {    // Endless survival
+                for(var i = 0; i<enemies.length; i++){
+                    if (waveNumber%3 != 0){
+                        if (i<3){
+                            enemies[i] += 3;
+                        } 
+                    } else {
+                        enemies[i] += 1;
+                    }
+                }
+            }
             //Increment spawn delay
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            count = 0;
+            scraps += (3 + waveNumber-2);
         }
     } //End combat phase
 
     //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
 
-    //Adjust lifecount text
-    lifecountText.setText("Lifecount: " + lifecount);
-
-    //adjust bullets
-    ammoCountText.setText("Ammo: " + ammoCount);
-
     //Player movement
     if (pause != true) {
         var cursors = this.input.keyboard.createCursorKeys();
         var speed = 6
+        var wKey = this.input.keyboard.addKey('W');
+        var sKey = this.input.keyboard.addKey('S');
 
-        if (cursors.up.isDown) {
+        if (cursors.up.isDown || wKey.isDown) {
         player.y -= speed;
-        } else if (cursors.down.isDown) {
+        } else if (cursors.down.isDown || sKey.isDown) {
         player.y += speed;
         } else {
         }
+    }
+    //player movement but w and s
 
+
+    //tutorial text number 1
+    if (buildPhase == true && waveNumber == 1){
+        movetext.setVisible(true);
+        firetext.setVisible(true);
+        pointer.setVisible(true);
+        ammoText.setVisible(true);
+        pointer3.setVisible(true);
+        healthtext.setVisible(true);
+        healthpointer.setVisible(true);
+      }
+
+    if (buildPhase == false && waveNumber == 1){
+    movetext.setVisible(false);
+    firetext.setVisible(false);
+    pointer.setVisible(false);
+    ammoText.setVisible(false);
+    pointer3.setVisible(false);
+    healthtext.setVisible(false);
+    healthpointer.setVisible(false);
+    }
+
+    //tutorial text number 2
+    if (buildPhase == true && waveNumber == 2){
+    selecttext.setVisible(true);
+    placetext.setVisible(true);
+    pointer2.setVisible(true);
+    }
+
+    if (buildPhase == false && waveNumber == 2){
+    selecttext.setVisible(false);
+    placetext.setVisible(false);
+    pointer2.setVisible(false);
+    }
+    //tutorial text number 3
+    if (buildPhase == true && waveNumber == 3){
+    upgradetext.setVisible(true);
+    costText.setVisible(true);
+    }
+    if (buildPhase == false && waveNumber == 3){
+    upgradetext.setVisible(false);
+    costText.setVisible(false);
+    }
+
+    //tutorial text number 4
+    if (buildPhase == true && waveNumber == 4){
+        purchaseWeaponText.setVisible(true);
+        purchaseWeaponText2.setVisible(true);
+    }
+    if (buildPhase == false && waveNumber == 4){
+        purchaseWeaponText.setVisible(false);
+        purchaseWeaponText2.setVisible(false);
     }
 
   } //End update()
@@ -651,7 +886,7 @@ var Regular = new Phaser.Class({
         function Enemy (scene)
         {
             Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'regularenemy');
-            this.play("walk", this);
+            this.play("reg_walk", this);
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
             this.hp = 0;
         },
@@ -668,7 +903,7 @@ var Regular = new Phaser.Class({
 
             this.setPosition(this.follower.vec.x, this.follower.vec.y);
         },
-        receiveDamage: function(damage) {  
+        receiveDamage: function(damage) {
 
             this.hp -= damage;
 
@@ -677,7 +912,8 @@ var Regular = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
-                enemiesRemaining -= 1;;
+                enemiesRemaining -= 1;
+                death.play();
             }
         },
         update: function (time, delta)
@@ -720,14 +956,15 @@ var Regular = new Phaser.Class({
 
 var Tough = new Phaser.Class({
 
-    Extends: Phaser.GameObjects.Image,
+    Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
     function Enemy (scene)
     {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'toughenemy');
+        Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'toughenemy');
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        this.play("tough_walk", this);
         this.hp = 0;
     },
 
@@ -750,7 +987,8 @@ var Tough = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
-            scraps += 2;
+            scraps += 3;
+            death.play();
             enemiesRemaining -= 1;
         }
     },
@@ -793,14 +1031,15 @@ var Tough = new Phaser.Class({
 
 var Boss = new Phaser.Class({
 
-    Extends: Phaser.GameObjects.Image,
+    Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
-    function Enemy (scene)
-    {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bossenemy');
+    function Enemy (scene){
+        Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'bossenemy');
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+        this.play("tank_move", this);
+        tank.play();
         this.hp = 0;
     },
 
@@ -811,9 +1050,7 @@ var Boss = new Phaser.Class({
     {
         this.follower.t = 0;
         this.hp = BOSS_HEALTH;
-
         path.getPoint(this.follower.t, this.follower.vec);
-
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
     },
     receiveDamage: function(damage) {
@@ -823,6 +1060,8 @@ var Boss = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
+            tank.stop();
+            explode.play()
             scraps += 10;
             enemiesRemaining -= 1;;
         }
@@ -857,6 +1096,7 @@ var Boss = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 enemiesRemaining -= 3;
+                tank.stop();
                 lifecount -= 10
             }
         }
@@ -867,15 +1107,16 @@ var Boss = new Phaser.Class({
 
 var Fast = new Phaser.Class({
 
-        Extends: Phaser.GameObjects.Image,
+        Extends: Phaser.GameObjects.Sprite,
 
         initialize:
 
         function Enemy (scene)
         {
-            Phaser.GameObjects.Image.call(this, scene, 0, 0, 'fastenemy');
+            Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'fastenemy');
 
             this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
+            this.play("fast_walk", this);
             this.hp = 0;
         },
 
@@ -899,6 +1140,7 @@ var Fast = new Phaser.Class({
                 this.setActive(false);
                 this.setVisible(false);
                 scraps += 1;
+                death.play();
                 enemiesRemaining -= 1;
             }
         },
@@ -951,7 +1193,7 @@ var Turret = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
-        this.fireRate = 1000;
+        this.fireRate = 700;
         //var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
         //Phaser.GameObjects.Image.call(button1, scene, -32, 0, 'checkmark');//.setInteractive();
         //button1.on('pointerup', this.upgrade2);
@@ -995,32 +1237,7 @@ var Turret = new Phaser.Class({
             this.fireRate /= 2;
             this.setTint(0x0000ff);
         }
-    },
-    upgrade: function ()
-    {
-        this.button1.setActive(true);
-        this.button1.setVisible(true);
-        this.button2.setActive(true);
-        this.button2.setVisible(true);
-    },
-    upgrade2: function ()
-    {
-    var i = (this.y - 32) / 64;
-    var j = (this.x - 32) / 64;
-        if (scraps >= 10 && map[i][j] == 1){
-            scraps -= 10;
-            map[i][j] = 2;
-            this.fireRate /= 2;
-            this.setTint(0x0000ff);
-        }
-    },
-    upgrade3: function ()
-    {
-        this.button1.setActive(false);
-        this.button1.setVisible(false);
-        this.button2.setActive(false);
-        this.button2.setVisible(false);
-    },
+    }
 });
 
 
@@ -1033,8 +1250,10 @@ var Cannon = new Phaser.Class({
     function Turret (scene)
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
+        this.setInteractive();
+        this.on('pointerdown', this.upgrade);
         this.nextTic = 0;
-        this.fireRate = 1500;
+        this.fireRate = 1000;
     },
     place: function(i, j) {
 
@@ -1058,8 +1277,20 @@ var Cannon = new Phaser.Class({
             this.fire();
             this.nextTic = time + this.fireRate;
         }
+    },
+    upgrade: function ()
+    {
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (scraps >= 20 && map[i][j] == 1){
+            scraps -= 20;
+            map[i][j] = 2;
+            this.fireRate /= 2;
+            this.setTint(0xff00ff);
+        }
     }
 });
+
 
 var Lightning = new Phaser.Class({
 
@@ -1088,8 +1319,9 @@ var Lightning = new Phaser.Class({
         for(var i=0; i < enemies.length; i++){
             enemies[i].receiveDamage(LIGHTNING_DAMAGE);
             this.play("lightning", this);
+            electric.play();
         }
-        
+
     },
     update: function (time, delta)
     {
@@ -1102,8 +1334,8 @@ var Lightning = new Phaser.Class({
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 15 && map[i][j] == 1){
-            scraps -= 15;
+        if (scraps >= 30 && map[i][j] == 1){
+            scraps -= 30;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1217,13 +1449,13 @@ function getEnemy(x, y, distance) {
     var fastUnits = fast_enemies.getChildren();
     var toughUnits = tough_enemies.getChildren();
     var bossUnits = boss_enemies.getChildren();
-    for(var i = 0; i < regularUnits.length; i++) {
-        if(regularUnits[i].active && Phaser.Math.Distance.Between(x, y, regularUnits[i].x, regularUnits[i].y) < distance)
-            return regularUnits[i];
-    }
     for(var i = 0; i < fastUnits.length; i++) {
         if(fastUnits[i].active && Phaser.Math.Distance.Between(x, y, fastUnits[i].x, fastUnits[i].y) < distance)
             return fastUnits[i];
+    }
+    for(var i = 0; i < regularUnits.length; i++) {
+        if(regularUnits[i].active && Phaser.Math.Distance.Between(x, y, regularUnits[i].x, regularUnits[i].y) < distance)
+            return regularUnits[i];
     }
     for(var i = 0; i < toughUnits.length; i++) {
         if(toughUnits[i].active && Phaser.Math.Distance.Between(x, y, toughUnits[i].x, toughUnits[i].y) < distance)
@@ -1263,7 +1495,6 @@ function getEnemies(x, y, distance) {
     }else{
         return false
     }
-    
 }
 
 function damageEnemyBullet(enemy, bullet) {
@@ -1332,7 +1563,20 @@ function placeTower(pointer) {
                 turret.setActive(true);
                 turret.setVisible(true);
                 turret.place(i, j);
+                turret.on('pointerover', function(){
+                	if (pause != true){
+                    	turretRange.x = turret.x;
+                    	turretRange.y = turret.y;
+                    	turretIndicator.fillCircleShape(turretRange);
+                	}
+                });
+                turret.on('pointerout', function(){
+                    turretIndicator.clear();
+                });
+                tick.play();
             }
+            button1.alpha = .5;
+            turretIndicator.clear();
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -1341,7 +1585,20 @@ function placeTower(pointer) {
                 cannon.setActive(true);
                 cannon.setVisible(true);
                 cannon.place(i, j);
+                cannon.on('pointerover', function(){
+                	if (pause != true){
+                    	cannonRange.x = cannon.x;
+                    	cannonRange.y = cannon.y;
+                    	cannonIndicator.fillCircleShape(cannonRange);
+                	}
+                });
+                cannon.on('pointerout', function(){
+                    cannonIndicator.clear();
+                });
+                tick.play();
             }
+            button2.alpha = .5;
+            cannonIndicator.clear();
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -1350,11 +1607,24 @@ function placeTower(pointer) {
                 lightning.setActive(true);
                 lightning.setVisible(true);
                 lightning.place(i, j);
+                lightning.on('pointerover', function(){
+                	if (pause != true){
+                    	teslaRange.x = lightning.x;
+                    	teslaRange.y = lightning.y;
+                    	teslaIndicator.fillCircleShape(teslaRange);
+                    }
+                });
+                lightning.on('pointerout', function(){
+                    teslaIndicator.clear();
+                });
+                tick.play();
             }
+            button3.alpha = .5;
+            teslaIndicator.clear();
         }
+        turret_selector = -1;
     }
 }
-
 
 
 function addBullet(x, y, angle) {
