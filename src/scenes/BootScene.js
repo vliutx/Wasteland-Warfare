@@ -1,6 +1,7 @@
 /*global Phaser*/
 
 
+
     var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
@@ -12,9 +13,10 @@
                     [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
                     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
+
     // Counters
-    var scraps = 0;
-    var lifecount = 10;
+    var scraps = 40;
+    var lifecount = 1;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
@@ -93,8 +95,8 @@
     //var selected;
 
     // Damage
-    var BULLET_DAMAGE = 40;
-    var SHELL_DAMAGE = 120;
+    var BULLET_DAMAGE = 60;
+    var SHELL_DAMAGE = 160;
     var LIGHTNING_DAMAGE = 5;
     var shots = 6;
 
@@ -211,6 +213,8 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+
+    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -479,7 +483,7 @@ export default class BootScene extends Phaser.Scene {
     waveText = this.add.text(420, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 15;
+    this.buildTime = 5;
     timeText = this.add.text(620, 5, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
@@ -539,9 +543,7 @@ export default class BootScene extends Phaser.Scene {
 //Start the game
         pause = false
         //begin build phase
-        buildPhase = true;
-        //disable start text
-        startText.setVisible(false);
+        buildPhase = true
         //Enable wave text
         waveText.setVisible(true);
         //Enable scrap text
@@ -630,10 +632,11 @@ export default class BootScene extends Phaser.Scene {
 
         //Prompt player to restart the game
         restartText.setVisible(true);
-        var restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        restartKey.on("down", function(){
+
+        if (Phaser.Input.Keyboard.JustDown(this.restart)) {
+            this.scene.start('MenuScene')
             location.reload();
-        });
+        }
     }
 
     //out of bullets. Reload
@@ -775,7 +778,7 @@ export default class BootScene extends Phaser.Scene {
                 enemies = [8,6,4,1];
             } else {    // Endless survival
                 for(var i = 0; i<enemies.length; i++){
-                    if (waveNumber%3 != 0){
+                    if (waveNumber%2 != 0){
                         if (i<3){
                             enemies[i] += 3;
                         } 
