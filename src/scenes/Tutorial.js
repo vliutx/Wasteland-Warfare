@@ -130,9 +130,9 @@
     var test = true;
 
 
-export default class BootScene extends Phaser.Scene {
+export default class Tutorial extends Phaser.Scene {
   constructor () {
-    super('BootScene');
+    super('Tutorial');
   }
 
   init (data) {
