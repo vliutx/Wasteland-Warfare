@@ -44,7 +44,7 @@ export default class MenuScene extends Phaser.Scene {
 
 
     tutorialKey.on("down", function(){
-        this.scene.start('BootScene');
+        this.scene.start('Tutorial');
     }, this
     );
     fullGameKey.on("down", function(){
