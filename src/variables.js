@@ -15,7 +15,6 @@ var wind;
 
 // Texts
 var timeText;
-var startText;
 var waveText;
 var scrapText;
 var lifecountText;
@@ -34,22 +33,8 @@ var selecttext;
 var placetext;
 var purchaseWeaponText;
 var purchaseWeaponText2;
+var startText;
 
-// Trackers
-
-
-var enemiesRemaining;
-var waveNumber;
-
-
-
-var movetext;
-var firetext;
-var ammoText;
-var selecttext;
-var placetext;
-var upgradetext;
-var costText;
 
 // Trackers
 
