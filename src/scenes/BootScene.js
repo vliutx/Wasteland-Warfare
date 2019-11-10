@@ -605,7 +605,7 @@ export default class BootScene extends Phaser.Scene {
     }
 
     //Win Condition
-    if (wavesRemaining == 4){
+    if (wavesRemaining == 0){
         //Psuedo pause the game
         pause = true
 
@@ -620,7 +620,7 @@ export default class BootScene extends Phaser.Scene {
         //FIX
         continueText.setVisible(true);
         if (Phaser.Input.Keyboard.JustDown(this.continue)) {
-          this.scene.start('FullGamne')
+          this.scene.start('FullGame')
         }
         //var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         //continueKey.on("down", function(){
