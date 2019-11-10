@@ -458,19 +458,21 @@ export default class BootScene extends Phaser.Scene {
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
-    turretIndicator.lineStyle(2, 0xFFFFFF, 0.5);
-    turretIndicator.fillStyle(0xFFFFFF, 0.3);
+    //turretIndicator.fillStyle(0xFFFFFF, 0.3);
     cannonIndicator = this.add.graphics();
     cannonRange = new Phaser.Geom.Circle(0, 0, 132);
-    cannonIndicator.lineStyle(2, 0xFFFFFF, 0.5);
-    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
+    //cannonIndicator.fillStyle(0xFFFFFF, 0.3);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-    teslaIndicator.lineStyle(2, 0xFFFFFF, 0.5);
-    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
+    //teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
 //Create game texts
-
+	//create background to make text more readable
+	var graphicz = this.add.graphics();
+    var textBack = new Phaser.Geom.Rectangle(210, 5, 555, 32);
+    graphicz.fillStyle(0x000000, 1);
+    graphicz.fillRectShape(textBack);
+    graphicz.clear();
     //Add scrap text
     scrapText = this.add.text(215, 5, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
@@ -534,6 +536,8 @@ export default class BootScene extends Phaser.Scene {
     purchaseWeaponText.setVisible(false);
     purchaseWeaponText2 = this.add.text(350, 80, "by pressing \"2\"", {fontSize: 32, color: '#ff0000', fontStyle: 'bold', depth: 10});
     purchaseWeaponText2.setVisible(false);
+    
+    
 
 //Start the game
         pause = false
@@ -541,10 +545,14 @@ export default class BootScene extends Phaser.Scene {
         buildPhase = true;
         //disable start text
         startText.setVisible(false);
+        //background for text
+        graphicz.fillStyle(0x000000, 1);
+        graphicz.fillRectShape(textBack);
         //Enable wave text
         waveText.setVisible(true);
         //Enable scrap text
         scrapText.setVisible(true);
+        graphicz.fillStyle(0xFFFFFF, 0.3);
 
   } //End create
 
