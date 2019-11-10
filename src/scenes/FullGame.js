@@ -205,10 +205,6 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
 
-    // upgrades
-    this.load.image('checkmark', 'assets/checkmark.png');
-    this.load.image('xmark', 'assets/xmark.png');
-
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -537,8 +533,7 @@ export default class FullGame extends Phaser.Scene {
         pause = false
         //begin build phase
         buildPhase = true;
-        //disable start text
-        startText.setVisible(false);
+
         //Enable wave text
         waveText.setVisible(true);
         //Enable scrap text
@@ -808,59 +803,6 @@ export default class FullGame extends Phaser.Scene {
     }
     //player movement but w and s
 
-
-    //tutorial text number 1
-    if (buildPhase == true && waveNumber == 1){
-        movetext.setVisible(true);
-        firetext.setVisible(true);
-        pointer.setVisible(true);
-        ammoText.setVisible(true);
-        pointer3.setVisible(true);
-        healthtext.setVisible(true);
-        healthpointer.setVisible(true);
-      }
-
-    if (buildPhase == false && waveNumber == 1){
-    movetext.setVisible(false);
-    firetext.setVisible(false);
-    pointer.setVisible(false);
-    ammoText.setVisible(false);
-    pointer3.setVisible(false);
-    healthtext.setVisible(false);
-    healthpointer.setVisible(false);
-    }
-
-    //tutorial text number 2
-    if (buildPhase == true && waveNumber == 2){
-    selecttext.setVisible(true);
-    placetext.setVisible(true);
-    pointer2.setVisible(true);
-    }
-
-    if (buildPhase == false && waveNumber == 2){
-    selecttext.setVisible(false);
-    placetext.setVisible(false);
-    pointer2.setVisible(false);
-    }
-    //tutorial text number 3
-    if (buildPhase == true && waveNumber == 3){
-    upgradetext.setVisible(true);
-    costText.setVisible(true);
-    }
-    if (buildPhase == false && waveNumber == 3){
-    upgradetext.setVisible(false);
-    costText.setVisible(false);
-    }
-
-    //tutorial text number 4
-    if (buildPhase == true && waveNumber == 4){
-        purchaseWeaponText.setVisible(true);
-        purchaseWeaponText2.setVisible(true);
-    }
-    if (buildPhase == false && waveNumber == 4){
-        purchaseWeaponText.setVisible(false);
-        purchaseWeaponText2.setVisible(false);
-    }
 
   } //End update()
 

@@ -214,6 +214,7 @@ export default class BootScene extends Phaser.Scene {
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
+    this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
 
     //Create the path
     path = this.add.path(160, 0);
@@ -562,8 +563,6 @@ export default class BootScene extends Phaser.Scene {
         pause = false
         //begin build phase
         buildPhase = true;
-        //disable start text
-        startText.setVisible(false);
         //Enable wave text
         waveText.setVisible(true);
         //Enable scrap text
@@ -606,7 +605,7 @@ export default class BootScene extends Phaser.Scene {
     }
 
     //Win Condition
-    if (wavesRemaining == 0){
+    if (wavesRemaining == 4){
         //Psuedo pause the game
         pause = true
 
@@ -620,11 +619,15 @@ export default class BootScene extends Phaser.Scene {
         //Prompt user to continue
         //FIX
         continueText.setVisible(true);
-        var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-        continueKey.on("down", function(){
-          this.scene.start('FullGame');
-      }, this
-      );
+        if (Phaser.Input.Keyboard.JustDown(this.continue)) {
+          this.scene.start('FullGamne')
+        }
+        //var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+        //continueKey.on("down", function(){
+          //this.scene.start('FullGame');
+      //}, this
+      //);
+
     }
 
     //Loss condition
