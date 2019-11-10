@@ -14,16 +14,6 @@ var cannonshot;
 var wind;
 
 // Texts
-
-
-// Trackers
-
-
-var enemiesRemaining;
-var waveNumber;
-
-
-
 var timeText;
 var waveText;
 var scrapText;
@@ -43,24 +33,8 @@ var selecttext;
 var placetext;
 var purchaseWeaponText;
 var purchaseWeaponText2;
-
-// Trackers
-
-
-var enemiesRemaining;
-var waveNumber;
-
-
-
-var movetext;
-var firetext;
-var selecttext;
-var placetext;
-var purchaseWeaponText;
-var purchaseWeaponText2;
 var startText;
-var upgradetext;
-var costText;
+
 
 // Trackers
 
