@@ -34,6 +34,7 @@ var placetext;
 var purchaseWeaponText;
 var purchaseWeaponText2;
 var startText;
+var enemiesRemainingText
 
 
 // Trackers
