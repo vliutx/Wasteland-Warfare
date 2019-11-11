@@ -1,7 +1,5 @@
 /*global Phaser*/
 
-
-
     var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
@@ -12,7 +10,6 @@
                     [-1, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
                     [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
                     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
-
 
     // Counters
     var scraps = 40;
@@ -35,14 +32,16 @@
     var reloading = false;
     var spacedown = false;
     var singleShot = true;
-    var machineGun = false;
+    var purchaseMachineGun = false;
     var machine = false;
+    var reloadme = false;
 
     // Counters
     var enemiesRemaining;
     var waveNumber;
     var lifecount;
-    var ammoCount = 6;
+    var maxAmmo = 6;
+    var ammoCount = maxAmmo;
     var tickTimer = 3;
 
     // Misc
@@ -92,7 +91,6 @@
     var turrets;
     var cannons;
     var lightnings;
-    //var selected;
 
     // Damage
     var BULLET_DAMAGE = 60;
@@ -210,8 +208,6 @@ export default class Tutorial extends Phaser.Scene {
 
   create() {
 
-    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
     this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
@@ -251,6 +247,7 @@ export default class Tutorial extends Phaser.Scene {
     player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
+
     //player can shoot
     if (singleShot==true){
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -261,26 +258,20 @@ export default class Tutorial extends Phaser.Scene {
             }
         });
     } 
-    //full-auto gun
+
+    //Reload key for the player
+    this.reloadKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+
+// Weapons
+    //Machine gun
     var buyMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
     buyMachineGun.on("down", function(){
         if (scraps>=15 && machine == false){
-            machineGun = true;
+            purchaseMachineGun = true;
             scraps -= 15;
             console.log("Purchased machine gun");
         }
     });
-
-    var buyMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
-    buyMachineGun.on("down", function(){
-        if (scraps>=15 && machine == false){
-            machineGun = true;
-            scraps -= 15;
-            console.log("Purchased machine gun");
-        }
-    });
-
-
 
 
 //info displays
@@ -448,24 +439,6 @@ export default class Tutorial extends Phaser.Scene {
     button3.on('pointerover', function(){b3Text.setVisible(true)});
     button3.on('pointerout', function(){b3Text.setVisible(false)});
 
-
-// Bullets
-    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
-    shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
-
-//Physics overlaps
-
-    //Bullets overlap for turrets/player
-    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet.bind(this));
-    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
-    this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
-    this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
-    //Shells overlap for cannon
-    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
-    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
-    this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
-    this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
-
     //place turrets
     this.input.on('pointerdown', placeTower);
     
@@ -494,6 +467,26 @@ export default class Tutorial extends Phaser.Scene {
     teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
     teslaIndicator.fillStyle(0xFF0000, 0.3);
 
+
+// Bullets
+    bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
+
+//Physics overlaps
+
+    //Bullets overlap for turrets/player
+    this.physics.add.overlap(reg_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
+    //Shells overlap for cannon
+    this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
+    this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
+
+    
+
 //Create game texts
 	//create background to make text more readable
 	var graphicz = this.add.graphics();
@@ -513,14 +506,7 @@ export default class Tutorial extends Phaser.Scene {
     //Add enemies remaining text
     //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     //this.enemiesRemainingText.setVisible(false);
-    //Create health text
-// Edited out
-    // lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    // lifecountText.setVisible(false);
-    // //ammoCount
-    // ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    // ammoCountText.setVisible(false);
-    //Create Victory text
+    //Create victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
@@ -528,7 +514,7 @@ export default class Tutorial extends Phaser.Scene {
     //Defeat text
     defeatText = this.add.text(250, 5, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
-    restartText = this.add.text(195, 100, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    restartText = this.add.text(195, 100, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
 
     //various tutorial texts
@@ -566,56 +552,28 @@ export default class Tutorial extends Phaser.Scene {
     purchaseWeaponText2.setVisible(false);
 
 //Start the game
-        pause = false
-        //begin build phase
-        buildPhase = true;
-        //disable start text
-        startText.setVisible(false);
-        //background for text
-        graphicz.fillStyle(0x000000, 1);
-        graphicz.fillRectShape(textBack);
-        //Enable wave text
-        waveText.setVisible(true);
-        //Enable scrap text
-        scrapText.setVisible(true);
-        graphicz.fillStyle(0xFFFFFF, 0.3);
+    pause = false
+    //begin build phase
+    buildPhase = true;
+    //disable start text
+    startText.setVisible(false);
+    //background for text
+    graphicz.fillStyle(0x000000, 1);
+    graphicz.fillRectShape(textBack);
+    //Enable wave text
+    waveText.setVisible(true);
+    //Enable scrap text
+    scrapText.setVisible(true);
+    graphicz.fillStyle(0xFFFFFF, 0.3);
+
+    // Create restart key
+    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
   } //End create
 
   update (time, delta) {
 
-    //Weapon type
-    if (machineGun==true){
-        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        spaceBar.on("down", function(){
-            spacedown = true;
-        });
-        spaceBar.on("up", function(){
-            spacedown = false;
-        })
-        machine = true;
-        machineGun = false;
-        ammoCount = 12;
-    }
-    if (machine){
-        if (spacedown == true){
-            if (time - delts > frplayer && pause != true && reloading == false) {
-                delts = time
-                addBullet(player.x,player.y,Math.PI)
-                ammoCount -= 1
-            }
-        }
-    }
-
-
-    //Health and bullet updates
-    waterHealth.setFrame(lifecount);
-    if (machine==false){
-        bulletCount.setFrame(6 - ammoCount);
-    }else{
-        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
-    }
-
+// Game Phases
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
@@ -664,30 +622,6 @@ export default class Tutorial extends Phaser.Scene {
         }
     }
 
-    //out of bullets. Reload
-    if (ammoCount == 0){
-      reloading = true;
-      reloadTime += delta/1000;
-      if (played == false) {
-          reload.play();
-          played = true;
-      }
-
-      if (Math.floor(reloadTime) >= 1){
-        if (machine == false){
-            ammoCount = 6;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-        } else {
-            ammoCount = 12;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-        }
-     }
-    }
-
     //Build phase
     if (buildPhase == true && pause != true){
 
@@ -725,7 +659,7 @@ export default class Tutorial extends Phaser.Scene {
             //Add text
             //this.enemiesRemainingText.setVisible(true);
         }
-    } //Build phase ends
+    } //End build phase 
 
 
     //Combat phase
@@ -777,8 +711,6 @@ export default class Tutorial extends Phaser.Scene {
 
             }
         } // all enemies spawned
-    
-
 
         //All enemies despawned
         if (enemiesRemaining <= 0){
@@ -820,8 +752,86 @@ export default class Tutorial extends Phaser.Scene {
         }
     } //End combat phase
 
+
+//Reload Mechanic (Copy over reload key from constant updates)
+    if (ammoCount == 0 || reloadme == true) {
+        reloading = true;
+        reloadTime += delta/1000;
+        if (played == false) {
+            reload.play();
+            played = true;
+        }
+
+        if (Math.floor(reloadTime) >= 1){
+        if (machine == false){
+            ammoCount = maxAmmo;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
+        } else {
+            ammoCount = maxAmmo;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
+        }
+        }
+        
+    }
+
+          
+//Buy weapons
+    // Machine Gun
+    if (purchaseMachineGun){
+        // Adjust 
+        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        spaceBar.on("down", function(){
+            spacedown = true;
+        });
+        spaceBar.on("up", function(){
+            spacedown = false;
+        })
+        machine = true;
+        purchaseMachineGun = false;
+        maxAmmo = 12;
+        ammoCount = maxAmmo;
+    }
+
+    // Death machine
+
+    // Rocket Launcher
+
+    //Weapon selection
+    //Machine Gun
+    if (machine){
+        if (spacedown == true){
+            if (time - delts > frplayer && pause != true && reloading == false) {
+                delts = time
+                addBullet(player.x,player.y,Math.PI)
+                ammoCount -= 1
+            }
+        }
+    }
+
+
+// Constant updates
+    // Check for reload
+    if (Phaser.Input.Keyboard.JustDown(this.reloadKey)) {
+        if (ammoCount != maxAmmo){
+            reloadme = true;
+        }
+    }
     //Adjust scrap text
     scrapText.setText("Scraps: " + scraps);
+
+    //Health and bullet updates
+    waterHealth.setFrame(lifecount);
+    if (machine==false){
+        bulletCount.setFrame(6 - ammoCount);
+    }else{
+        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
+    }
 
     //Player movement
     if (pause != true) {
@@ -840,6 +850,7 @@ export default class Tutorial extends Phaser.Scene {
     //player movement but w and s
 
 
+// Tutorial Texts
     //tutorial text number 1
     if (buildPhase == true && waveNumber == 1){
         movetext.setVisible(true);
@@ -852,35 +863,35 @@ export default class Tutorial extends Phaser.Scene {
       }
 
     if (buildPhase == false && waveNumber == 1){
-    movetext.setVisible(false);
-    firetext.setVisible(false);
-    pointer.setVisible(false);
-    ammoText.setVisible(false);
-    pointer3.setVisible(false);
-    healthtext.setVisible(false);
-    healthpointer.setVisible(false);
+        movetext.setVisible(false);
+        firetext.setVisible(false);
+        pointer.setVisible(false);
+        ammoText.setVisible(false);
+        pointer3.setVisible(false);
+        healthtext.setVisible(false);
+        healthpointer.setVisible(false);
     }
 
     //tutorial text number 2
     if (buildPhase == true && waveNumber == 2){
-    selecttext.setVisible(true);
-    placetext.setVisible(true);
-    pointer2.setVisible(true);
+        selecttext.setVisible(true);
+        placetext.setVisible(true);
+        pointer2.setVisible(true);
     }
 
     if (buildPhase == false && waveNumber == 2){
-    selecttext.setVisible(false);
-    placetext.setVisible(false);
-    pointer2.setVisible(false);
+        selecttext.setVisible(false);
+        placetext.setVisible(false);
+        pointer2.setVisible(false);
     }
     //tutorial text number 3
     if (buildPhase == true && waveNumber == 3){
-    upgradetext.setVisible(true);
-    costText.setVisible(true);
+        upgradetext.setVisible(true);
+        costText.setVisible(true);
     }
     if (buildPhase == false && waveNumber == 3){
-    upgradetext.setVisible(false);
-    costText.setVisible(false);
+        upgradetext.setVisible(false);
+        costText.setVisible(false);
     }
 
     //tutorial text number 4
