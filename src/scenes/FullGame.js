@@ -288,7 +288,7 @@ export default class FullGame extends Phaser.Scene {
             }
         });
     }
-    
+
     //Reload key for the player
     this.reloadKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
@@ -368,7 +368,7 @@ export default class FullGame extends Phaser.Scene {
 
     //Turret selection
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
-    button1.alpha = 0.5; 
+    button1.alpha = 0.5;
     button1.on('pointerup', function(){
         turret_selector = 0;
         button1.alpha = 1;
@@ -469,7 +469,7 @@ export default class FullGame extends Phaser.Scene {
 
     //place turrets
     this.input.on('pointerdown', placeTower);
-    
+
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
@@ -554,11 +554,7 @@ export default class FullGame extends Phaser.Scene {
     //Defeat text
     defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
-<<<<<<< HEAD
-    restartText = this.add.text(195, 100, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
-=======
-    restartText = this.add.text(195, 345, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
->>>>>>> jarrod_dev
+    restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     this.healthText = this.add.text(600, 500, "100", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
 
@@ -656,7 +652,7 @@ export default class FullGame extends Phaser.Scene {
             //Add text
             //this.enemiesRemainingText.setVisible(true);
         }
-    } //End build phase 
+    } //End build phase
 
 
     //Combat phase
@@ -665,7 +661,7 @@ export default class FullGame extends Phaser.Scene {
         gameTime += delta;
 
         //Spawn in ememies
-        if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){ 
+        if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){
 
             //Spawn in each type of enemy consecutively
             for(var i = 0; i<enemies.length; i++){
@@ -758,14 +754,14 @@ export default class FullGame extends Phaser.Scene {
                 reloadme = false;
             }
         }
-        
+
     }
 
-          
+
 //Buy weapons
     // Machine Gun
     if (purchaseMachineGun){
-        // Adjust 
+        // Adjust
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceBar.on("down", function(){
             spacedown = true;

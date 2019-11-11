@@ -1,9 +1,5 @@
 /*global Phaser*/
 
-<<<<<<< HEAD
-=======
-
->>>>>>> jarrod_dev
     var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
@@ -98,7 +94,7 @@
     var turrets;
     var cannons;
     var lightnings;
-    
+
     /*// Tower Upgrade
     var buttonYes;
     var buttonNo;*/
@@ -232,6 +228,7 @@ export default class Tutorial extends Phaser.Scene {
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
     this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
+    var graphicz = this.add.graphics();
 
     //Create the path
     path = this.add.path(160, 0);
@@ -279,11 +276,7 @@ export default class Tutorial extends Phaser.Scene {
             ammoCount -= 1
             }
         });
-<<<<<<< HEAD
-    } 
-=======
     }
->>>>>>> jarrod_dev
 
     //Reload key for the player
     this.reloadKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -536,7 +529,7 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.add.overlap(tough_enemies, shells, damageEnemyShell.bind(this));
     this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
 
-    
+
 //Create game texts
 
     //Add scrap text
@@ -549,11 +542,6 @@ export default class Tutorial extends Phaser.Scene {
     this.buildTime = 15;
     timeText = this.add.text(615, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-<<<<<<< HEAD
-    //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
-    //this.enemiesRemainingText.setVisible(false);
-    //Create victory text
-=======
     enemiesRemainingText = this.add.text(600, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     enemiesRemainingText.setVisible(false);
     //Create health text
@@ -564,7 +552,6 @@ export default class Tutorial extends Phaser.Scene {
     // ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
     // ammoCountText.setVisible(false);
     //Create Victory text
->>>>>>> jarrod_dev
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
@@ -572,11 +559,7 @@ export default class Tutorial extends Phaser.Scene {
     //Defeat text
     defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
-<<<<<<< HEAD
-    restartText = this.add.text(195, 100, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
-=======
-    restartText = this.add.text(195, 345, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
->>>>>>> jarrod_dev
+    restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
 
     //various tutorial texts
@@ -614,7 +597,6 @@ export default class Tutorial extends Phaser.Scene {
     purchaseWeaponText.setVisible(false);
 
 //Start the game
-<<<<<<< HEAD
     pause = false
     //begin build phase
     buildPhase = true;
@@ -622,7 +604,6 @@ export default class Tutorial extends Phaser.Scene {
     startText.setVisible(false);
     //background for text
     graphicz.fillStyle(0x000000, 1);
-    graphicz.fillRectShape(textBack);
     //Enable wave text
     waveText.setVisible(true);
     //Enable scrap text
@@ -631,16 +612,6 @@ export default class Tutorial extends Phaser.Scene {
 
     // Create restart key
     this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-=======
-
-        pause = false
-        //begin build phase
-        buildPhase = true;
-        //Enable wave text
-        waveText.setVisible(true);
-        //Enable scrap text
-        scrapText.setVisible(true);
->>>>>>> jarrod_dev
 
   } //End create
 
@@ -728,7 +699,7 @@ export default class Tutorial extends Phaser.Scene {
             this.spawned = 0;
 
         }
-    } //End build phase 
+    } //End build phase
 
 
     //Combat phase
@@ -780,11 +751,6 @@ export default class Tutorial extends Phaser.Scene {
 
             }
         } // all enemies spawned
-<<<<<<< HEAD
-=======
-
-
->>>>>>> jarrod_dev
 
         //All enemies despawned
         if (enemiesRemaining <= 0){
@@ -851,14 +817,14 @@ export default class Tutorial extends Phaser.Scene {
             reloadme = false;
         }
         }
-        
+
     }
 
-          
+
 //Buy weapons
     // Machine Gun
     if (purchaseMachineGun){
-        // Adjust 
+        // Adjust
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceBar.on("down", function(){
             spacedown = true;
@@ -943,15 +909,6 @@ export default class Tutorial extends Phaser.Scene {
       }
 
     if (buildPhase == false && waveNumber == 1){
-<<<<<<< HEAD
-        movetext.setVisible(false);
-        firetext.setVisible(false);
-        pointer.setVisible(false);
-        ammoText.setVisible(false);
-        pointer3.setVisible(false);
-        healthtext.setVisible(false);
-        healthpointer.setVisible(false);
-=======
       tutorialBacking1.setVisible(false);
       tutorialBacking2.setVisible(false);
       movetext.setVisible(false);
@@ -961,27 +918,10 @@ export default class Tutorial extends Phaser.Scene {
       pointer3.setVisible(false);
       healthtext.setVisible(false);
       healthpointer.setVisible(false);
->>>>>>> jarrod_dev
     }
 
     //tutorial text number 2
     if (buildPhase == true && waveNumber == 2){
-<<<<<<< HEAD
-        selecttext.setVisible(true);
-        placetext.setVisible(true);
-        pointer2.setVisible(true);
-    }
-
-    if (buildPhase == false && waveNumber == 2){
-        selecttext.setVisible(false);
-        placetext.setVisible(false);
-        pointer2.setVisible(false);
-    }
-    //tutorial text number 3
-    if (buildPhase == true && waveNumber == 3){
-        upgradetext.setVisible(true);
-        costText.setVisible(true);
-=======
       tutorialBacking1.setVisible(true);
       tutorialBacking2.setVisible(true);
       selecttext.setVisible(true);
@@ -1002,19 +942,13 @@ export default class Tutorial extends Phaser.Scene {
       tutorialBacking2.setVisible(true);
       upgradetext.setVisible(true);
       costText.setVisible(true);
->>>>>>> jarrod_dev
     }
 
     if (buildPhase == false && waveNumber == 3){
-<<<<<<< HEAD
-        upgradetext.setVisible(false);
-        costText.setVisible(false);
-=======
       tutorialBacking1.setVisible(false);
       tutorialBacking2.setVisible(false);
       upgradetext.setVisible(false);
       costText.setVisible(false);
->>>>>>> jarrod_dev
     }
 
     //tutorial text number 4
@@ -1797,19 +1731,12 @@ function placeCannon(pointer) {
                 cannon.setVisible(true);
                 cannon.place(i, j);
                 lightning.on('pointerover', function(){
-<<<<<<< HEAD
                 	if (pause != true){
                     	teslaRange.x = lightning.x;
                         teslaRange.y = lightning.y;
-                        
+
                     	teslaIndicator.fillCircleShape(teslaRange);
                     }
-=======
-                    teslaIndicator.clear();
-                    teslaRange.x = lightning.x;
-                    teslaRange.y = lightning.y;
-                    teslaIndicator.fillCircleShape(teslaRange);
->>>>>>> jarrod_dev
                 });
                 lightning.on('pointerout', function(){
                     teslaIndicator.clear();
