@@ -743,19 +743,19 @@ export default class FullGame extends Phaser.Scene {
         }
 
         if (Math.floor(reloadTime) >= 1){
-        if (machine == false){
-            ammoCount = maxAmmo;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-            reloadme = false;
-        } else {
-            ammoCount = maxAmmo;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-            reloadme = false;
-        }
+            if (machine == false){
+                ammoCount = maxAmmo;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            } else {
+                ammoCount = maxAmmo;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            }
         }
         
     }
@@ -776,6 +776,10 @@ export default class FullGame extends Phaser.Scene {
         purchaseMachineGun = false;
         maxAmmo = 12;
         ammoCount = maxAmmo;
+        reloadTime = 0;
+        reloading = false;
+        played = false;
+        reloadme = false;
     }
 
     // Death machine

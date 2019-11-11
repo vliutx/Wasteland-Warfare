@@ -1642,7 +1642,8 @@ function placeTower(pointer) {
                 lightning.on('pointerover', function(){
                 	if (pause != true){
                     	teslaRange.x = lightning.x;
-                    	teslaRange.y = lightning.y;
+                        teslaRange.y = lightning.y;
+                        
                     	teslaIndicator.fillCircleShape(teslaRange);
                     }
                 });
