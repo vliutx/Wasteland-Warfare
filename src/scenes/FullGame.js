@@ -16,7 +16,7 @@
 
     // Counters
     var scraps = 40;
-    var lifecount = 100;
+    var lifecount = 10;
     var wavesRemaining = 10;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
@@ -556,7 +556,7 @@ export default class FullGame extends Phaser.Scene {
     defeatText.setVisible(false);
     restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
-    this.healthText = this.add.text(600, 500, "100", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
+    //this.healthText = this.add.text(600, 500, "100", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
 
 
 //Start the game
@@ -808,8 +808,8 @@ export default class FullGame extends Phaser.Scene {
 
     //Health and bullet updates
 
-    //waterHealth.setFrame(lifecount);
-    this.healthText.setText(lifecount);
+    waterHealth.setFrame(lifecount);
+    //this.healthText.setText(lifecount);
     if (machine==false){
         bulletCount.setFrame(6 - ammoCount);
     }else{
