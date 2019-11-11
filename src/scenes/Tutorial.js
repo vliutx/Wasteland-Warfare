@@ -436,11 +436,6 @@ export default class Tutorial extends Phaser.Scene {
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
 
-                /*graphics.clear();
-                graphics.lineStyle(2, 0x00FF00, 1);
-                graphics.strokeRectShape(redSquare);
-                redSquare.x = q * 64;
-                redSquare.y = w * 64;*/
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -503,14 +498,7 @@ export default class Tutorial extends Phaser.Scene {
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
     buttonNo.setVisible(false);
-    /*this.input.on('pointerdown', function(){
-        if (buttonYes.isActive){
-            buttonYes.setActive(false);
-            buttonYes.setVisible(false);
-            buttonNo.setActive(false);
-            buttonNo.setVisible(false);
-        }
-    });*/
+
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
