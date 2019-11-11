@@ -547,14 +547,18 @@ export default class FullGame extends Phaser.Scene {
     //this.enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText = this.add.text(250, 250, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
-    continueText = this.add.text(195, 90, "(Press \"P\" to continue the game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    continueText = this.add.text(195, 345, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
     //Defeat text
-    defeatText = this.add.text(250, 5, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
+    defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
+<<<<<<< HEAD
     restartText = this.add.text(195, 100, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+=======
+    restartText = this.add.text(195, 345, "(Press \"R\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+>>>>>>> jarrod_dev
     restartText.setVisible(false);
     this.healthText = this.add.text(600, 500, "100", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
 
