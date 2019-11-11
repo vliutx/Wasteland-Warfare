@@ -41,3 +41,7 @@ var startText;
 var timeRemaining;
 var enemiesRemaining;
 var waveNumber;
+
+// Upgrade Button
+var buttonYes;
+var buttonNo;
