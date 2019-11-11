@@ -796,6 +796,10 @@ export default class Tutorial extends Phaser.Scene {
         purchaseMachineGun = false;
         maxAmmo = 12;
         ammoCount = maxAmmo;
+        reloadTime = 0;
+        reloading = false;
+        played = false;
+        reloadme = false;
     }
 
     // Death machine
