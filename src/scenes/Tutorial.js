@@ -357,7 +357,7 @@ export default class Tutorial extends Phaser.Scene {
 
     //Turrent selection
     //selected = false;
-    button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
+    button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
         turret_selector = 0;
@@ -366,7 +366,7 @@ export default class Tutorial extends Phaser.Scene {
         button2.alpha = 0.5;
         button3.alpha = 0.5;
     });
-    button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
+    button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
     button2.alpha = 0.5;
     button2.on('pointerup', function(){
         turret_selector = 1;
@@ -587,7 +587,7 @@ export default class Tutorial extends Phaser.Scene {
     selecttext.setVisible(false);
     placetext = this.add.text(275, 100, "Click a space to place a tower", {fontSize: 23, color: '#ffffff', depth: 10});
     placetext.setVisible(false);
-    pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
+    pointer2 = this.add.image(40, 400, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
     upgradetext = this.add.text(270, 65, "Upgrade a turret by clicking it", {fontSize: 23, color: '#ffffff', depth: 10});
     upgradetext.setVisible(false);
@@ -624,8 +624,6 @@ export default class Tutorial extends Phaser.Scene {
         pause = true
 
         //Display victory text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
@@ -1384,6 +1382,7 @@ var Cannon = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;

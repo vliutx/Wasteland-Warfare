@@ -1,21 +1,21 @@
 /*global Phaser*/
 
 
-    var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
+    var map =      [[ 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                     [ 0, 0,-1, 0,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1],
                     [ 0, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
                     [ 0, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1, 0,-1,-1],
                     [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0,-1, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1,-1],
                     [ 0, 0,-1, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1,-1],
-                    [ 0, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
+                    [-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
                     [-1,-1,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1],
                     [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
 
     // Counters
-    var scraps = 40;
+    var scraps = 0;
     var lifecount = 10;
     var wavesRemaining = 10;
     var totalWaves = wavesRemaining;
@@ -220,6 +220,10 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
 
+    // turret upgrade
+    this.load.image('checkmark', 'assets/checkmark.png');
+    this.load.image('xmark', 'assets/xmark.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -371,18 +375,25 @@ export default class FullGame extends Phaser.Scene {
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
         turret_selector = 0;
+        //selected = true;
         button1.alpha = 1;
         button2.alpha = 0.5;
         button3.alpha = 0.5;
     });
     button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
+    button2.alpha = 0.5;
     button2.on('pointerup', function(){
+        turret_selector = 1;
+        //selected = true;
+        button2.alpha = 1;
+        button1.alpha = 0.5;
         button3.alpha = 0.5;
     });
     button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
         turret_selector = 2;
+        //selected = true;
         button3.alpha = 1;
         button1.alpha = 0.5;
         button2.alpha = 0.5;
@@ -495,6 +506,25 @@ export default class FullGame extends Phaser.Scene {
     teslaIndicator.lineStyle(2, 0xFFFFFFFF, 0.5);
     teslaIndicator.fillStyle(0xFFFFFFFF, 0.3);
 
+    //turret upgrade feedback
+    buttonYes = this.add.image(0, 0, 'checkmark');
+    buttonYes.setInteractive();
+    buttonYes.setScale(.05);
+    buttonNo = this.add.image(0, 0, 'xmark');
+    buttonNo.setInteractive();
+    buttonNo.setScale(.05);
+    buttonYes.setActive(false);
+    buttonYes.setVisible(false);
+    buttonNo.setActive(false);
+    buttonNo.setVisible(false);
+    /*this.input.on('pointerdown', function(){
+        if (buttonYes.isActive){
+            buttonYes.setActive(false);
+            buttonYes.setVisible(false);
+            buttonNo.setActive(false);
+            buttonNo.setVisible(false);
+        }
+    });*/
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -1237,7 +1267,7 @@ var Turret = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 700;
     },
@@ -1261,10 +1291,38 @@ var Turret = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
+        buttonYes.setActive(false);
+        buttonYes.setVisible(false);
+        buttonNo.setActive(false);
+        buttonNo.setVisible(false);
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;
@@ -1285,7 +1343,7 @@ var Cannon = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 1000;
     },
@@ -1312,6 +1370,30 @@ var Cannon = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
@@ -1336,7 +1418,7 @@ var Lightning = new Phaser.Class({
     {
         Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'lightning');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 200;
 
@@ -1362,6 +1444,30 @@ var Lightning = new Phaser.Class({
         if(time > this.nextTic) {
             this.fire();
             this.nextTic = time + this.fireRate;
+        }
+    },
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
         }
     },
     upgrade: function ()
