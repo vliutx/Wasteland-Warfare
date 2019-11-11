@@ -6,10 +6,10 @@
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
+                    [-1, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
     // Counters
@@ -95,10 +95,6 @@
     var cannons;
     var lightnings;
 
-    /*// Tower Upgrade
-    var buttonYes;
-    var buttonNo;*/
-
     // Damage
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
@@ -106,8 +102,6 @@
     var shots = 6;
 
     // graphics stuff
-    var redSquare
-    var graphics
     var turretIndicator
     var turretRange
     var cannonIndicator
@@ -356,21 +350,18 @@ export default class Tutorial extends Phaser.Scene {
       });
 
     //Turrent selection
-    //selected = false;
-    button1 = this.add.sprite(40, 530, 'turreticon', 0).setInteractive();
+    button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
         turret_selector = 0;
-        //selected = true;
         button1.alpha = 1;
         button2.alpha = 0.5;
         button3.alpha = 0.5;
     });
-    button2 = this.add.sprite(110, 530, 'cannonicon', 0).setInteractive();
+    button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
     button2.alpha = 0.5;
     button2.on('pointerup', function(){
         turret_selector = 1;
-        //selected = true;
         button2.alpha = 1;
         button1.alpha = 0.5;
         button3.alpha = 0.5;
@@ -379,7 +370,6 @@ export default class Tutorial extends Phaser.Scene {
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
         turret_selector = 2;
-        //selected = true;
         button3.alpha = 1;
         button1.alpha = 0.5;
         button2.alpha = 0.5;
@@ -387,9 +377,6 @@ export default class Tutorial extends Phaser.Scene {
 
     //place turrets (ADD FOR CANNONS)
     this.input.on('pointerdown', placeTower);
-    //display where the turrets can be placed
-    /*graphics = this.add.graphics();
-    redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);*/
     var q, w;
     var turretGhost = this.add.image(0, 0, 'turret');
     turretGhost.alpha = 0.4;
@@ -401,7 +388,7 @@ export default class Tutorial extends Phaser.Scene {
     teslaGhost.alpha = 0.4;
     teslaGhost.setVisible(false);
     this.input.on('pointermove', function(pointer) {
-        if (pause == true /*|| selected == false*/){
+        if (pause == true){
         } else {
             q = Math.floor(pointer.x/64);
             w = Math.floor(pointer.y/64);
@@ -435,7 +422,10 @@ export default class Tutorial extends Phaser.Scene {
                     teslaRange.y = teslaGhost.y;
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
-
+            } else if (map[w][q] == 1 || map[w][q] == 2){
+                turretGhost.setVisible(false);
+                cannonGhost.setVisible(false);
+                teslaGhost.setVisible(false);
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -444,21 +434,16 @@ export default class Tutorial extends Phaser.Scene {
                 turretIndicator.clear();
                 cannonIndicator.clear();
                 teslaIndicator.clear();
-                /*graphics.clear();
-                graphics.lineStyle(2, 0xFF0000, 1);
-                graphics.strokeRectShape(redSquare);
-                redSquare.x = q * 64;
-                redSquare.y = w * 64;*/
             }
         }
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(154, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
-    var b2Text = this.add.text(154, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(154, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -472,20 +457,16 @@ export default class Tutorial extends Phaser.Scene {
     //place turrets
     this.input.on('pointerdown', placeTower);
 
-
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
-    turretIndicator.lineStyle(2, 0xFF0000, 0.5);
-    turretIndicator.fillStyle(0xFF0000, 0.3);
+    turretIndicator.fillStyle(0xFFFFFF, 0.3);
     cannonIndicator = this.add.graphics();
     cannonRange = new Phaser.Geom.Circle(0, 0, 132);
-    cannonIndicator.lineStyle(2, 0xFF0000, 0.5);
-    cannonIndicator.fillStyle(0xFF0000, 0.3);
+    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-    teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
-    teslaIndicator.fillStyle(0xFF0000, 0.3);
+    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
     //turret upgrade feedback
     buttonYes = this.add.image(0, 0, 'checkmark');
@@ -498,7 +479,6 @@ export default class Tutorial extends Phaser.Scene {
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
     buttonNo.setVisible(false);
-
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -575,7 +555,7 @@ export default class Tutorial extends Phaser.Scene {
     selecttext.setVisible(false);
     placetext = this.add.text(275, 100, "Click a space to place a tower", {fontSize: 23, color: '#ffffff', depth: 10});
     placetext.setVisible(false);
-    pointer2 = this.add.image(40, 460, 'pointer').setRotation(Math.PI/2);
+    pointer2 = this.add.image(40, 400, 'pointer').setRotation(Math.PI/2);
     pointer2.setVisible(false);
     upgradetext = this.add.text(270, 65, "Upgrade a turret by clicking it", {fontSize: 23, color: '#ffffff', depth: 10});
     upgradetext.setVisible(false);
@@ -612,8 +592,6 @@ export default class Tutorial extends Phaser.Scene {
         pause = true
 
         //Display victory text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
@@ -1345,7 +1323,7 @@ var Cannon = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 1000;
     },
@@ -1372,15 +1350,44 @@ var Cannon = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 20 && map[i][j] == 1){
-            scraps -= 20;
+        buttonYes.setActive(false);
+        buttonYes.setVisible(false);
+        buttonNo.setActive(false);
+        buttonNo.setVisible(false);
+        if (scraps >= 10 && map[i][j] == 1){
+            scraps -= 10;
             map[i][j] = 2;
             this.fireRate /= 2;
-            this.setTint(0xff00ff);
+            this.setTint(0x0000ff);
         }
     }
 });
@@ -1396,7 +1403,7 @@ var Lightning = new Phaser.Class({
     {
         Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'lightning');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 200;
 
@@ -1424,12 +1431,40 @@ var Lightning = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 30 && map[i][j] == 1){
-            scraps -= 30;
+        buttonYes.setActive(false);
+        buttonYes.setVisible(false);
+        buttonNo.setActive(false);
+        buttonNo.setVisible(false);
+        if (scraps >= 10 && map[i][j] == 1){
+            scraps -= 10;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1658,17 +1693,19 @@ function placeTower(pointer) {
                 turret.setVisible(true);
                 turret.place(i, j);
                 turret.on('pointerover', function(){
-                    turretIndicator.clear();
-                    turretRange.x = turret.x;
-                    turretRange.y = turret.y;
-                    turretIndicator.fillCircleShape(turretRange);
+                    if (pause != true){
+                        turretRange.x = turret.x;
+                        turretRange.y = turret.y;
+                        turretIndicator.fillCircleShape(turretRange);
+                    }
                 });
                 turret.on('pointerout', function(){
                     turretIndicator.clear();
                 });
                 tick.play();
             }
-            //button1.alpha = .5;
+            button1.alpha = .5;
+            turretIndicator.clear();
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -1678,17 +1715,19 @@ function placeTower(pointer) {
                 cannon.setVisible(true);
                 cannon.place(i, j);
                 cannon.on('pointerover', function(){
-                    cannonIndicator.clear();
-                    cannonRange.x = cannon.x;
-                    cannonRange.y = cannon.y;
-                    cannonIndicator.fillCircleShape(cannonRange);
+                    if (pause != true){
+                        cannonRange.x = cannon.x;
+                        cannonRange.y = cannon.y;
+                        cannonIndicator.fillCircleShape(cannonRange);
+                    }
                 });
                 cannon.on('pointerout', function(){
                     cannonIndicator.clear();
                 });
                 tick.play();
             }
-            //button2.alpha = .5;
+            button2.alpha = .5;
+            cannonIndicator.clear();
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -1697,12 +1736,18 @@ function placeTower(pointer) {
                 lightning.setActive(true);
                 lightning.setVisible(true);
                 lightning.place(i, j);
+                lightning.on('pointerover', function(){
+                    if (pause != true){
+                        teslaRange.x = lightning.x;
+                        teslaRange.y = lightning.y;
+                        teslaIndicator.fillCircleShape(teslaRange);
+                    }
+                })
             }
-            //button3.alpha = .5;
+            button3.alpha = .5;
+            teslaIndicator.clear();
         }
-        //selected = false;
-        //turret_selector = -1;
-        graphics.clear();
+        turret_selector = -1;
     }
 }
 
