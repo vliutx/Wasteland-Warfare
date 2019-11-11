@@ -534,17 +534,17 @@ export default class FullGame extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(215, 5, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(210, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
-    waveText = this.add.text(420, 5, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
+    waveText = this.add.text(415, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 25, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = buildTimer;
-    timeText = this.add.text(620, 5, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    this.buildTime = 15;
+    timeText = this.add.text(615, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-    //this.enemiesRemainingText = this.add.text(165, 600, enemiesRemaining, {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
-    //this.enemiesRemainingText.setVisible(false);
+    enemiesRemainingText = this.add.text(600, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
     victoryText = this.add.text(250, 250, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
