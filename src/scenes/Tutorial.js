@@ -91,6 +91,10 @@
     var turrets;
     var cannons;
     var lightnings;
+    
+    /*// Tower Upgrade
+    var buttonYes;
+    var buttonNo;*/
 
     // Damage
     var BULLET_DAMAGE = 60;
@@ -201,12 +205,18 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
 
+    // turret upgrade
+    this.load.image('checkmark', 'assets/checkmark.png');
+    this.load.image('xmark', 'assets/xmark.png');
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
   }
 
   create() {
+
+    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
@@ -467,6 +477,25 @@ export default class Tutorial extends Phaser.Scene {
     teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
     teslaIndicator.fillStyle(0xFF0000, 0.3);
 
+    //turret upgrade feedback
+    buttonYes = this.add.image(0, 0, 'checkmark');
+    buttonYes.setInteractive();
+    buttonYes.setScale(.05);
+    buttonNo = this.add.image(0, 0, 'xmark');
+    buttonNo.setInteractive();
+    buttonNo.setScale(.05);
+    buttonYes.setActive(false);
+    buttonYes.setVisible(false);
+    buttonNo.setActive(false);
+    buttonNo.setVisible(false);
+    /*this.input.on('pointerdown', function(){
+        if (buttonYes.isActive){
+            buttonYes.setActive(false);
+            buttonYes.setVisible(false);
+            buttonNo.setActive(false);
+            buttonNo.setVisible(false);
+        }
+    });*/
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -486,7 +515,6 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.add.overlap(boss_enemies, shells, damageEnemyShell.bind(this));
 
     
-
 //Create game texts
 	//create background to make text more readable
 	var graphicz = this.add.graphics();
@@ -1227,21 +1255,9 @@ var Turret = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'turret');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 700;
-        //var button1 = Phaser.GameObjects.Image.call(this, scene, -32, 0, 'checkmark');
-        //Phaser.GameObjects.Image.call(button1, scene, -32, 0, 'checkmark');//.setInteractive();
-        //button1.on('pointerup', this.upgrade2);
-        //var button2;
-        //Phaser.GameObjects.Image.call(button2, scene, 32, 0, 'xmark');
-        //button2.setInteractive();
-        //this.button2.on('pointerup', this.upgrade3);
-        /*
-        this.button1.setActive(false);
-        this.button1.setVisible(false);
-        this.button2.setActive(false);
-        this.button2.setVisible(false);*/
     },
     place: function(i, j) {
         this.y = i * 64 + 64/2;
@@ -1263,10 +1279,38 @@ var Turret = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
+        buttonYes.setActive(false);
+        buttonYes.setVisible(false);
+        buttonNo.setActive(false);
+        buttonNo.setVisible(false);
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;

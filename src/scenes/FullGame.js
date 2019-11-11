@@ -298,6 +298,7 @@ export default class FullGame extends Phaser.Scene {
     buyMachineGun.on("down", function(){
         if (scraps>=15 && machine == false){
             purchaseMachineGun = true;
+            machine = true;
             scraps -= 15;
             console.log("Purchased machine gun");
         }
@@ -375,11 +376,7 @@ export default class FullGame extends Phaser.Scene {
         button3.alpha = 0.5;
     });
     button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
-    button2.alpha = 0.5; 
     button2.on('pointerup', function(){
-        turret_selector = 1;
-        button2.alpha = 1;
-        button1.alpha = 0.5;
         button3.alpha = 0.5;
     });
     button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
@@ -1662,7 +1659,6 @@ function placeTower(pointer) {
         turret_selector = -1;
     }
 }
-
 
 
 function placeCannon(pointer) {
