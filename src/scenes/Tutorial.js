@@ -503,9 +503,11 @@ export default class Tutorial extends Phaser.Scene {
     buttonYes = this.add.image(0, 0, 'checkmark');
     buttonYes.setInteractive();
     buttonYes.setScale(.05);
+    buttonYes.setDepth(1);
     buttonNo = this.add.image(0, 0, 'xmark');
     buttonNo.setInteractive();
     buttonNo.setScale(.05);
+    buttonNo.setDepth(1);
     buttonYes.setActive(false);
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
