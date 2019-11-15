@@ -115,6 +115,9 @@
     var button1;
     var button2;
     var button3;
+    var gbutton1;
+    var gbutton2;
+    var gbutton3;
 
     // time between fires
     var delts = 0;
@@ -207,6 +210,11 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     this.load.image('tutorialBacking', 'assets/TutorialBacking.png');
     this.load.image('tutorialBacking2', 'assets/TutorialBacking.png');
+
+    // gun selector stuff will need to be added
+    //this.load.image('gun', 'assets/pewpew.png');
+    //this.load.image('gun2', 'assets/pewpew.png');
+    //this.load.image('gun3', 'assets/pewpew.png');
 
     // turret upgrade
     this.load.image('checkmark', 'assets/checkmark.png');
@@ -349,7 +357,7 @@ export default class Tutorial extends Phaser.Scene {
         repeat: 0,
       });
 
-    //Turrent selection
+    //Turret selection
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
@@ -373,6 +381,29 @@ export default class Tutorial extends Phaser.Scene {
         button3.alpha = 1;
         button1.alpha = 0.5;
         button2.alpha = 0.5;
+    });
+
+    //Gun selection (ICONS WILL NEED TO BE UPDATED IM BORROWING TURRETS FOR NOW)
+    gbutton1 = this.add.sprite(40, 40, 'turreticon', 0).setInteractive();
+    gbutton1.alpha = 0.5;
+    gbutton1.on('pointerup', function(){
+        gbutton1.alpha = 1;
+        gbutton2.alpha = 0.5;
+        gbutton3.alpha = 0.5;
+    });
+    gbutton2 = this.add.sprite(40, 110, 'cannonicon', 0).setInteractive();
+    gbutton2.alpha = 0.5;
+    gbutton2.on('pointerup', function(){
+        gbutton2.alpha = 1;
+        gbutton1.alpha = 0.5;
+        gbutton3.alpha = 0.5;
+    });
+    gbutton3 = this.add.sprite(40, 180, 'lightningicon', 0).setInteractive();
+    gbutton3.alpha = 0.5;
+    gbutton3.on('pointerup', function(){
+        gbutton3.alpha = 1;
+        gbutton1.alpha = 0.5;
+        gbutton2.alpha = 0.5;
     });
 
     //place turrets (ADD FOR CANNONS)
@@ -527,8 +558,10 @@ export default class Tutorial extends Phaser.Scene {
     //Defeat text
     defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
+    defeatText.setDepth(1);
     restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
+    restartText.setDepth(1);
 
     //various tutorial texts
     //tutorialbacking stuff
