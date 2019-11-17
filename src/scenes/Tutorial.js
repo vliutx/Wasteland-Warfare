@@ -43,6 +43,15 @@
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
     var deathgun = false; //did they purchase the death machine?
+    var gameOverPlayed = false
+
+    // Counters
+    var enemiesRemaining;
+    var waveNumber;
+    var lifecount;
+    var maxAmmo = 6;
+    var ammoCount = maxAmmo;
+    var tickTimer = 3;
 
     // Misc
     var path;
@@ -62,6 +71,7 @@
     var wind;
     var tick;
     var theme;
+    var gameOverMusic;
     var tank;
     var explode;
     var electric;
@@ -189,6 +199,20 @@ export default class Tutorial extends Phaser.Scene {
     // UI
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
+
+    // Assets for lightning turret
+    this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
+        frameHeight: 96,
+        frameWidth: 96
+      });
+
+  
+    // Assets for cannon class
+    this.load.image('cannon', 'assets/cannon.png');
+    this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
+    this.load.image('shell', 'assets/Cannonball.png');
+
+    // turret selector/tutorial stuff
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
@@ -200,7 +224,10 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
-    // player (none)
+
+    // player 
+    this.load.image('playerBullet', 'assets/newBullet.png');
+
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -214,6 +241,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
     // player
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
     // turrets
@@ -556,11 +584,11 @@ export default class Tutorial extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(100, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
     var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(100, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -601,6 +629,7 @@ export default class Tutorial extends Phaser.Scene {
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    playerBullets = this.physics.add.group({ classType: PlayerBullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
 //Physics overlaps
@@ -741,6 +770,12 @@ export default class Tutorial extends Phaser.Scene {
         waveText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
+
+        gameOverMusic = this.sound.add('gameOverMusic', {loop: false, volume: 0.5});
+        if (gameOverPlayed == false) {
+          gameOverMusic.play();
+          gameOverPlayed = true
+        }
 
         //Prompt player to restart the game
         restartText.setVisible(true);
@@ -1676,6 +1711,54 @@ var Bullet = new Phaser.Class({
 
 });
 
+var PlayerBullet = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Bullet (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'playerBullet');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(4000, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
 
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
@@ -1891,6 +1974,15 @@ function addBullet(x, y, angle) {
     if (bullet)
     {
         bullet.fire(x, y, angle);
+        gunfire.play()
+    }
+}
+
+function addPlayerBullet(x, y, angle) {
+    var playerbullet = playerBullets.get();
+    if (playerbullet)
+    {
+        playerbullet.fire(x, y, angle);
         gunfire.play()
     }
 }
