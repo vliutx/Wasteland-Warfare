@@ -47,6 +47,8 @@
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
     var deathgun = false; //did they purchase the death machine?
+    var gameOverPlayed = false
+    var purchaseMachineGun = false;
 
     // Misc
     var path;
@@ -59,6 +61,7 @@
     var wind;
     var tick;
     var theme;
+    var gameOverMusic;
     var tank;
     var explode;
     var electric;
@@ -221,14 +224,19 @@ export default class FullGame extends Phaser.Scene {
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
+
     // player
+    this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
+
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
     //
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
     //
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
+
     // enemies
     this.load.audio('death', 'assets/sounds/death.mp3');
     this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
@@ -318,7 +326,7 @@ export default class FullGame extends Phaser.Scene {
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
         //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-        ammoCount = maxAmmo;
+        ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
@@ -358,7 +366,7 @@ export default class FullGame extends Phaser.Scene {
             weapon = 1;
             maxAmmo = 12;
             //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-            ammoCount = maxAmmo;
+            ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
@@ -573,11 +581,11 @@ export default class FullGame extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(100, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
     var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(100, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -619,6 +627,7 @@ export default class FullGame extends Phaser.Scene {
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
+    playerBullets = this.physics.add.group({ classType: PlayerBullet, runChildUpdate: true });
 
 //Physics overlaps
 
@@ -703,10 +712,13 @@ export default class FullGame extends Phaser.Scene {
         pause = true;
 
         //Display defeat text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
+        gameOverMusic = this.sound.add('gameOverMusic', {loop: false, volume: 0.5});
+        if (gameOverPlayed == false) {
+          gameOverMusic.play();
+          gameOverPlayed = true
+        }
 
         //Prompt player to restart the game
         restartText.setVisible(true);
@@ -1644,6 +1656,54 @@ var Bullet = new Phaser.Class({
 
 });
 
+var PlayerBullet = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Bullet (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'playerBullet');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(4000, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
 
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
@@ -1866,6 +1926,14 @@ function addBullet(x, y, angle) {
     }
 }
 
+function addPlayerBullet(x, y, angle) {
+    var playerbullet = playerBullets.get();
+    if (playerbullet)
+    {
+        playerbullet.fire(x, y, angle);
+        gunfire.play()
+    }
+}
 
 function addShell(x, y, angle) {
     var shell = shells.get();
