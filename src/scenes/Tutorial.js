@@ -721,7 +721,6 @@ export default class Tutorial extends Phaser.Scene {
     //begin build phase
     buildPhase = true;
     //disable start text
-    startText.setVisible(false);
     //Enable wave text
     waveText.setVisible(true);
     //Enable scrap text
