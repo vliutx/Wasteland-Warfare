@@ -24,6 +24,11 @@
     var count = 0;
     var BC = 1;
     var timeRemaining;
+    var enemiesRemaining;
+    var waveNumber;
+    var maxAmmo = 6;
+    var ammoCount = maxAmmo;
+    var tickTimer = 3;
 
     // Booleans
     var pause = true;
@@ -35,19 +40,9 @@
     var reloading = false;
     var reloadme = false;
     var spacedown = false;
-    //var singleShot = true;
-    //var purchaseMachineGun = false;
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
     var deathgun = false; //did they purchase the death machine?
-    
-    // Counters
-    var enemiesRemaining;
-    var waveNumber;
-    var lifecount;
-    var maxAmmo = 6;
-    var ammoCount = maxAmmo;
-    var tickTimer = 3;
 
     // Misc
     var path;
@@ -71,11 +66,6 @@
     var explode;
     var electric;
     var reload;
-
-    // Sounds
-    var cannonshot;
-    var wind;
-    var tick;
 
     // Enemies
     var fast_enemies;
@@ -501,8 +491,9 @@ export default class Tutorial extends Phaser.Scene {
         //description text
     });
 
-    //place turrets (ADD FOR CANNONS)
+    //place towers
     this.input.on('pointerdown', placeTower);
+    //display where the turrets can be placed
     var q, w;
     var turretGhost = this.add.image(0, 0, 'turret');
     turretGhost.alpha = 0.4;
@@ -702,21 +693,17 @@ export default class Tutorial extends Phaser.Scene {
     buildPhase = true;
     //disable start text
     startText.setVisible(false);
-    //background for text
-    graphicz.fillStyle(0x000000, 1);
     //Enable wave text
     waveText.setVisible(true);
     //Enable scrap text
     scrapText.setVisible(true);
     graphicz.fillStyle(0xFFFFFF, 0.3);
-
     // Create restart key
     this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
   } //End create
 
   update (time, delta) {
-
 // Game Phases
     //Win Condition
     if (wavesRemaining == 0){
@@ -724,6 +711,8 @@ export default class Tutorial extends Phaser.Scene {
         pause = true
 
         //Display victory text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
@@ -748,6 +737,8 @@ export default class Tutorial extends Phaser.Scene {
         pause = true;
 
         //Display defeat text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
 
@@ -773,7 +764,6 @@ export default class Tutorial extends Phaser.Scene {
         };
 
         //ticking sound
-
         if (timeRemaining == tickTimer){
           tick.play();
           tickTimer -= 1;
@@ -795,7 +785,6 @@ export default class Tutorial extends Phaser.Scene {
             //reset enemies remaining
             enemiesRemaining = enemies.reduce((a, b) => a + b, 0);
             this.spawned = 0;
-
         }
     } //End build phase
 
@@ -901,19 +890,19 @@ export default class Tutorial extends Phaser.Scene {
         }
 
         if (Math.floor(reloadTime) >= 1){
-        if (machine == false){
-            ammoCount = maxAmmo;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-            reloadme = false;
-        } else {
-            ammoCount = maxAmmo;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-            reloadme = false;
-        }
+            if (machine == false){
+                ammoCount = maxAmmo;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            } else {
+                ammoCount = maxAmmo;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            }
         }
 
     }
@@ -967,15 +956,12 @@ export default class Tutorial extends Phaser.Scene {
         var speed = 6
         var wKey = this.input.keyboard.addKey('W');
         var sKey = this.input.keyboard.addKey('S');
-
         if (cursors.up.isDown || wKey.isDown) {
-        player.y -= speed;
+            player.y -= speed;
         } else if (cursors.down.isDown || sKey.isDown) {
-        player.y += speed;
-        } else {
+            player.y += speed;
         }
     }
-    //player movement but w and s
 
 
 // Tutorial Texts
