@@ -635,10 +635,6 @@ export default class FullGame extends Phaser.Scene {
         //pause game
         pause = true;
 
-        //remove scrap and wave text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
-
         //Display defeat text
         defeatText.setVisible(true);
         theme.stop();
