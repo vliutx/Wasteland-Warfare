@@ -44,8 +44,8 @@ export default class MenuScene extends Phaser.Scene {
 
     var tutorialButton =  this.add.sprite(this.centerX, 450, "button").setInteractive();
     var fullGameButton =  this.add.sprite(this.centerX, 570, "button").setInteractive();
-    tutorialButton.setScale(2);
-    fullGameButton.setScale(2);
+    tutorialButton.setScale(3);
+    fullGameButton.setScale(3);
     tutorialButton.on('pointerup', function(){
       titleTheme.stop()
       this.scene.start('Tutorial');
