@@ -15,7 +15,7 @@
 
 
     // Counters
-    var scraps = 0;
+    var scraps = 40;
     var lifecount = 10;
     var wavesRemaining = 10;
     var totalWaves = wavesRemaining;
@@ -173,15 +173,18 @@ export default class FullGame extends Phaser.Scene {
     this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
         frameHeight: 48,
         frameWidth: 48
-      });
-      this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+    });
+    this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
         frameHeight: 96,
         frameWidth: 96
-      });
-
+    });
     this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
         frameHeight: 80,
         frameWidth: 80
+    });
+    this.load.spritesheet("machineBulletCount", "./assets/spriteSheets/MachineBulletCount.png", {
+        frameHeight: 160,
+        frameWidth: 160
     });
     this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
         frameHeight: 96,
@@ -304,7 +307,6 @@ export default class FullGame extends Phaser.Scene {
             purchaseMachineGun = true;
             machine = true;
             scraps -= 15;
-            console.log("Purchased machine gun");
         }
     });
 
@@ -313,6 +315,8 @@ export default class FullGame extends Phaser.Scene {
     waterHealth = this.add.sprite(850, 595, 'waterHealth');
     waterHealth.setFrame(10);
     bulletCount = this.add.sprite(760, 605, 'bulletCount');
+    machineBulletCount = this.add.sprite(730, 590, 'machineBulletCount');
+    machineBulletCount.setVisible(false);
 
 //Enemies
 
@@ -807,6 +811,8 @@ export default class FullGame extends Phaser.Scene {
         reloading = false;
         played = false;
         reloadme = false;
+        bulletCount.setVisible(false);
+        machineBulletCount.setVisible(true);
     }
 
     // Death machine
@@ -820,7 +826,9 @@ export default class FullGame extends Phaser.Scene {
             if (time - delts > frplayer && pause != true && reloading == false) {
                 delts = time
                 addBullet(player.x,player.y,Math.PI)
-                ammoCount -= 1
+                if (spacedown != false){
+                    ammoCount -= 1
+                }
             }
         }
     }
@@ -843,7 +851,7 @@ export default class FullGame extends Phaser.Scene {
     if (machine==false){
         bulletCount.setFrame(6 - ammoCount);
     }else{
-        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
+        machineBulletCount.setFrame(12 - ammoCount);
     }
 
     //Player movement

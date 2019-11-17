@@ -13,7 +13,7 @@
 
 
     // Counters
-    var scraps = 0;
+    var scraps = 40;
     var lifecount = 10;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
@@ -175,6 +175,10 @@ export default class Tutorial extends Phaser.Scene {
         frameHeight: 80,
         frameWidth: 80
     });
+    this.load.spritesheet("machineBulletCount", "./assets/spriteSheets/MachineBulletCount.png", {
+        frameHeight: 160,
+        frameWidth: 160
+    });
     this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
         frameHeight: 96,
         frameWidth: 96
@@ -298,6 +302,9 @@ export default class Tutorial extends Phaser.Scene {
     waterHealth = this.add.sprite(850, 595, 'waterHealth');
     waterHealth.setFrame(10);
     bulletCount = this.add.sprite(760, 605, 'bulletCount');
+    machineBulletCount = this.add.sprite(760, 605, 'machineBulletCount');
+    machineBulletCount.setScale(0.65);
+    machineBulletCount.setVisible(false);
 
 //Enemies
 
@@ -838,6 +845,8 @@ export default class Tutorial extends Phaser.Scene {
         reloading = false;
         played = false;
         reloadme = false;
+        bulletCount.setVisible(false);
+        machineBulletCount.setVisible(true);
     }
 
     // Death machine
@@ -872,7 +881,7 @@ export default class Tutorial extends Phaser.Scene {
     if (machine==false){
         bulletCount.setFrame(6 - ammoCount);
     }else{
-        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
+        machineBulletCount.setFrame(12 - ammoCount);
     }
 
     //Player movement

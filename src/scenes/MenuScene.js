@@ -14,6 +14,7 @@ export default class MenuScene extends Phaser.Scene {
     this.load.image('background', './assets/titleScreen.png');
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('cannon', 'assets/cannon.png');
+    this.load.image('button', 'assets/TitleButton.png')
 
     this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
         frameHeight: 96,
@@ -30,27 +31,28 @@ export default class MenuScene extends Phaser.Scene {
     var background = this.add.image(this.centerX, this.centerY, "background");
     background.setScale(6.4);
 
-    var turret1 = this.add.image(780, 400, "turret").setRotation(18*Math.PI/13);
-    var turret2 = this.add.image(550, 500, "turret").setRotation(18*Math.PI/13);
-    var tesla1 = this.add.sprite(320, 605, "lightning");
-    var tesla2 = this.add.sprite(470, 605, "lightning");
-    var cannon = this.add.image(395, 500, "cannon").setRotation(Math.PI);
+    var turret1 = this.add.image(600, 585, "turret").setRotation(18*Math.PI/13);
+    var turret2 = this.add.image(270, 500, "turret").setRotation(18*Math.PI/13);
+    var tesla1 = this.add.sprite(40, 605, "lightning");
+    var tesla2 = this.add.sprite(190, 605, "lightning");
+    var cannon = this.add.image(110, 500, "cannon").setRotation(Math.PI);
+    cannon.setScale(1.5);
 
-    startText = this.add.text(220, 380, "Press \"T\" to play tutorial", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
-    startText = this.add.text(205, 420, "Press \"G\" to start the game", {fontSize: 32, color: '#FF0000', fontStyle: 'bold'});
-
-    var tutorialKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
-    var fullGameKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
-
-
-    tutorialKey.on("down", function(){
-        this.scene.start('Tutorial');
+    var tutorialButton =  this.add.sprite(this.centerX, 450, "button").setInteractive();
+    var fullGameButton =  this.add.sprite(this.centerX, 570, "button").setInteractive();
+    tutorialButton.setScale(2);
+    fullGameButton.setScale(2);
+    tutorialButton.on('pointerup', function(){
+      this.scene.start('Tutorial');
     }, this
     );
-    fullGameKey.on("down", function(){
-        this.scene.start('FullGame');
+    fullGameButton.on('pointerup', function(){
+      this.scene.start('FullGame');
     }, this
     );
+    startText = this.add.text(this.centerX - 75, 435, "Tutorial", {fontSize: 32, color: '#FFFFFF', fontStyle: 'bold'});
+    startText = this.add.text(this.centerX - 40, 555, "Game", {fontSize: 32, color: '#FFFFFF', fontStyle: 'bold'});
+
   }
 
   update (time, delta) {
