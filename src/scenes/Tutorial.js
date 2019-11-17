@@ -188,7 +188,7 @@ export default class Tutorial extends Phaser.Scene {
 
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
-    this.load.image('newBullet', 'assets/newBullet.png');
+    this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
@@ -280,7 +280,7 @@ export default class Tutorial extends Phaser.Scene {
         var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         spaceBar.on("down", function(){
             if (pause != true && reloading == false){
-            addBullet(player.x,player.y,Math.PI)
+            addPlayerBullet(player.x,player.y,Math.PI)
             ammoCount -= 1
             }
         });
@@ -525,6 +525,7 @@ export default class Tutorial extends Phaser.Scene {
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    playerBullets = this.physics.add.group({ classType: PlayerBullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
 //Physics overlaps
@@ -1526,7 +1527,7 @@ var Bullet = new Phaser.Class({
 
     function Bullet (scene)
     {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'newBullet');
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
 
         this.incX = 0;
         this.incY = 0;
@@ -1567,6 +1568,54 @@ var Bullet = new Phaser.Class({
 
 });
 
+var PlayerBullet = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Bullet (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'playerBullet');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(4000, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
 
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
@@ -1772,6 +1821,15 @@ function addBullet(x, y, angle) {
     if (bullet)
     {
         bullet.fire(x, y, angle);
+        gunfire.play()
+    }
+}
+
+function addPlayerBullet(x, y, angle) {
+    var playerbullet = playerBullets.get();
+    if (playerbullet)
+    {
+        playerbullet.fire(x, y, angle);
         gunfire.play()
     }
 }
