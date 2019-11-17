@@ -36,6 +36,7 @@
     var purchaseMachineGun = false;
     var machine = false;
     var reloadme = false;
+    var gameOverPlayed = false
 
     // Counters
     var enemiesRemaining;
@@ -63,6 +64,7 @@
     var wind;
     var tick;
     var theme;
+    var gameOverMusic;
     var tank;
     var explode;
     var electric;
@@ -201,6 +203,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
     this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
@@ -466,11 +469,11 @@ export default class Tutorial extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(154, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
-    var b2Text = this.add.text(154, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(154, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -657,6 +660,12 @@ export default class Tutorial extends Phaser.Scene {
         //Display defeat text
         defeatText.setVisible(true);
         theme.stop();
+
+        gameOverMusic = this.sound.add('gameOverMusic', {loop: false, volume: 0.5});
+        if (gameOverPlayed == false) {
+          gameOverMusic.play();
+          gameOverPlayed = true
+        }
 
         //Prompt player to restart the game
         restartText.setVisible(true);

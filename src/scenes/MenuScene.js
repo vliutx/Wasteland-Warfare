@@ -16,6 +16,8 @@ export default class MenuScene extends Phaser.Scene {
     this.load.image('cannon', 'assets/cannon.png');
     this.load.image('button', 'assets/TitleButton.png')
 
+    this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+
     this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
         frameHeight: 96,
         frameWidth: 96
@@ -28,6 +30,8 @@ export default class MenuScene extends Phaser.Scene {
 
   create (data) {
     //Create the scene
+    var titleTheme = this.sound.add('theme', {loop: true, volume: 0.5});
+    titleTheme.play();
     var background = this.add.image(this.centerX, this.centerY, "background");
     background.setScale(6.4);
 
@@ -43,10 +47,12 @@ export default class MenuScene extends Phaser.Scene {
     tutorialButton.setScale(2);
     fullGameButton.setScale(2);
     tutorialButton.on('pointerup', function(){
+      titleTheme.stop()
       this.scene.start('Tutorial');
     }, this
     );
     fullGameButton.on('pointerup', function(){
+      titleTheme.stop();
       this.scene.start('FullGame');
     }, this
     );
