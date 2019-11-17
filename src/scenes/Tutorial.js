@@ -188,6 +188,7 @@ export default class Tutorial extends Phaser.Scene {
 
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
+    this.load.image('newBullet', 'assets/newBullet.png');
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
@@ -1525,7 +1526,7 @@ var Bullet = new Phaser.Class({
 
     function Bullet (scene)
     {
-        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'newBullet');
 
         this.incX = 0;
         this.incY = 0;
