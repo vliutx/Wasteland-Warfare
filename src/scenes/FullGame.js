@@ -214,7 +214,7 @@ export default class FullGame extends Phaser.Scene {
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
-    // 
+    //
     this.load.image('cannon', 'assets/cannon.png');
     this.load.image('shell', 'assets/Cannonball.png');
     // enemies (none)
@@ -301,7 +301,7 @@ export default class FullGame extends Phaser.Scene {
     player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
-    
+
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
@@ -636,6 +636,11 @@ export default class FullGame extends Phaser.Scene {
     this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
     this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
     this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(reg_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(fast_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(tough_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(boss_enemies, playerBullets, damageEnemyBullet.bind(this));
+    
     //Shells overlap for cannon
     this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
     this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
@@ -877,7 +882,7 @@ export default class FullGame extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -885,7 +890,7 @@ export default class FullGame extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x,player.y,Math.PI);
                 ammoCount -= 1;
             }
         } /*else if (weapon == 2){

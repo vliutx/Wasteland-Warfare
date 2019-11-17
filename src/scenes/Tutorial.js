@@ -206,7 +206,7 @@ export default class Tutorial extends Phaser.Scene {
         frameWidth: 96
       });
 
-  
+
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
@@ -225,7 +225,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
 
-    // player 
+    // player
     this.load.image('playerBullet', 'assets/newBullet.png');
 
     // turrets
@@ -256,7 +256,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
     ////// END Audio //////
     ///////////////// END assets /////////////////
-    
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -639,6 +639,10 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
     this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
     this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(reg_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(fast_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(tough_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(boss_enemies, playerBullets, damageEnemyBullet.bind(this));
     //Shells overlap for cannon
     this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
     this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
@@ -765,8 +769,6 @@ export default class Tutorial extends Phaser.Scene {
         pause = true;
 
         //Display defeat text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
 
@@ -948,7 +950,7 @@ export default class Tutorial extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -956,7 +958,7 @@ export default class Tutorial extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x,player.y,Math.PI);
                 ammoCount -= 1;
             }
         } /*else if (weapon == 2){
