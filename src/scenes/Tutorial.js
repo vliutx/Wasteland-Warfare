@@ -33,14 +33,14 @@
 
     // Gun stuff pew pew
     var reloading = false;
+    var reloadme = false;
     var spacedown = false;
     //var singleShot = true;
     //var purchaseMachineGun = false;
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
     var deathgun = false; //did they purchase the death machine?
-    var reloadme = false;
-
+    
     // Counters
     var enemiesRemaining;
     var waveNumber;
@@ -127,7 +127,7 @@
 
     // time between fires
     var delts = 0;
-    var frplayer = 200;
+    var frplayer = 200; // might need multiple variables for diff guns
 
     var nextEnemy = 0;
     var waveSize = 6;
@@ -158,6 +158,10 @@ export default class Tutorial extends Phaser.Scene {
     this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
         frameHeight: 80,
         frameWidth: 80
+    });
+    this.load.spritesheet("machineBulletCount", "./assets/spriteSheets/MachineBulletCount.png", {
+        frameHeight: 160,
+        frameWidth: 160
     });
     this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
         frameHeight: 96,
@@ -313,6 +317,8 @@ export default class Tutorial extends Phaser.Scene {
         played = false;
         reloadme = false;
         ////////////////////////////////////////////////////////////////////////////////////////
+        machineBulletCount.setVisible(false);
+        bulletCount.setVisible(true);
     });
     var switchMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
     switchMachineGun.on("down", function(){
@@ -329,6 +335,8 @@ export default class Tutorial extends Phaser.Scene {
                 played = false;
                 reloadme = false;
                 ////////////////////////////////////////////////////////////////////////////////////////
+                bulletCount.setVisible(false);
+                machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
                 gbutton2.setVisible(false);
                 gbutton1.alpha = 0.5;
@@ -349,6 +357,8 @@ export default class Tutorial extends Phaser.Scene {
             played = false;
             reloadme = false;
             ////////////////////////////////////////////////////////////////////////////////////////
+            bulletCount.setVisible(false);
+            machineBulletCount.setVisible(true);
         }
     }, this);
     var switchDeathGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
@@ -380,6 +390,9 @@ export default class Tutorial extends Phaser.Scene {
     waterHealth = this.add.sprite(850, 595, 'waterHealth');
     waterHealth.setFrame(10);
     bulletCount = this.add.sprite(760, 605, 'bulletCount');
+    machineBulletCount = this.add.sprite(760, 605, 'machineBulletCount');
+    machineBulletCount.setScale(0.65);
+    machineBulletCount.setVisible(false);
 
 //Enemies
 
@@ -637,8 +650,10 @@ export default class Tutorial extends Phaser.Scene {
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
+    victoryText.setDepth(1);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
+    continueText.setDepth(1);
     //Defeat text
     defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
@@ -921,7 +936,7 @@ export default class Tutorial extends Phaser.Scene {
                 addBullet(player.x,player.y,Math.PI);
                 ammoCount -= 1;
             }
-        } /*else if (weapon == ){
+        } /*else if (weapon == 2){
         // Death Machine or RPG or whatever (To be added)
 
         }*/
