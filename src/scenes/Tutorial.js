@@ -955,10 +955,10 @@ export default class Tutorial extends Phaser.Scene {
 
     //Health and bullet updates
     waterHealth.setFrame(lifecount);
-    if (machine==false){
+    if (weapon == 0){
         bulletCount.setFrame(6 - ammoCount);
-    }else{
-        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
+    } else if (weapon == 1){
+        machineBulletCount.setFrame(12 - ammoCount);
     }
 
     //Player movement
