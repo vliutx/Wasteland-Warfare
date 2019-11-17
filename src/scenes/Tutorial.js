@@ -6,15 +6,15 @@
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
                     [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
+                    [-1, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
+                    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
 
 
     // Counters
     var scraps = 40;
-    var lifecount = 10;
+    var lifecount = 5;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
@@ -24,18 +24,25 @@
     var count = 0;
     var BC = 1;
     var timeRemaining;
+    var enemiesRemaining;
+    var waveNumber;
+    var maxAmmo = 6;
+    var ammoCount = maxAmmo;
+    var tickTimer = 3;
 
     // Booleans
     var pause = true;
     var buildPhase = false;
     var startGame = false;
     var restart = false;
+
+    // Gun stuff pew pew
     var reloading = false;
-    var spacedown = false;
-    var singleShot = true;
-    var purchaseMachineGun = false;
-    var machine = false;
     var reloadme = false;
+    var spacedown = false;
+    var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
+    var machine = false; //did they purchase the machine gun?
+    var deathgun = false; //did they purchase the death machine?
     var gameOverPlayed = false
 
     // Counters
@@ -70,11 +77,6 @@
     var electric;
     var reload;
 
-    // Sounds
-    var cannonshot;
-    var wind;
-    var tick;
-
     // Enemies
     var fast_enemies;
     var FAST_SPEED = 1/12500;
@@ -97,10 +99,6 @@
     var cannons;
     var lightnings;
 
-    /*// Tower Upgrade
-    var buttonYes;
-    var buttonNo;*/
-
     // Damage
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
@@ -108,8 +106,6 @@
     var shots = 6;
 
     // graphics stuff
-    var redSquare
-    var graphics
     var turretIndicator
     var turretRange
     var cannonIndicator
@@ -123,10 +119,15 @@
     var button1;
     var button2;
     var button3;
+    var gbutton1;
+    var gbutton2;
+    var gbutton3;
+    var buyLock1;
+    var buyLock2;
 
     // time between fires
     var delts = 0;
-    var frplayer = 200;
+    var frplayer = 200; // might need multiple variables for diff guns
 
     var nextEnemy = 0;
     var waveSize = 6;
@@ -151,28 +152,9 @@ export default class Tutorial extends Phaser.Scene {
   }
 
   preload () {
-    // Preload assets
-    this.load.spritesheet("regularenemy", "./assets/spriteSheets/RegularEnemy.png", {
-      frameHeight: 64,
-      frameWidth: 64
-    });
-    this.load.spritesheet("fastenemy", "./assets/spriteSheets/FastEnemy.png", {
-      frameHeight: 64,
-      frameWidth: 64
-    });
-    this.load.spritesheet("toughenemy", "./assets/spriteSheets/ToughEnemy.png", {
-      frameHeight: 64,
-      frameWidth: 64
-    });
-    this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
-        frameHeight: 48,
-        frameWidth: 48
-      });
-      this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
-        frameHeight: 96,
-        frameWidth: 96
-      });
-
+    ///////////////// Preload assets /////////////////
+    ////// Spritesheets //////
+    // UI
     this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
         frameHeight: 80,
         frameWidth: 80
@@ -185,14 +167,38 @@ export default class Tutorial extends Phaser.Scene {
         frameHeight: 96,
         frameWidth: 96
     });
-
-    this.load.image('turret', 'assets/Turret1.png');
-    this.load.image('bullet', 'assets/Bullet.png');
-    this.load.image('playerBullet', 'assets/newBullet.png');
+    // player
+    this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
+        frameHeight: 48,
+        frameWidth: 48
+    });
+    // turrets
+    this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
+    // enemies
+    this.load.spritesheet("regularenemy", "./assets/spriteSheets/RegularEnemy.png", {
+        frameHeight: 64,
+        frameWidth: 64
+    });
+    this.load.spritesheet("fastenemy", "./assets/spriteSheets/FastEnemy.png", {
+        frameHeight: 64,
+        frameWidth: 64
+    });
+    this.load.spritesheet("toughenemy", "./assets/spriteSheets/ToughEnemy.png", {
+        frameHeight: 64,
+        frameWidth: 64
+    });
+    this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
+    ////// END Spritesheets //////
+    ////// Images //////
+    // UI
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
-    this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
-
 
     // Assets for lightning turret
     this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
@@ -200,16 +206,7 @@ export default class Tutorial extends Phaser.Scene {
         frameWidth: 96
       });
 
-    this.load.audio('death', 'assets/sounds/death.mp3');
-    this.load.audio('wind', 'assets/sounds/Wind.mp3');
-    this.load.audio('tick', 'assets/sounds/Tick.mp3');
-    this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
-    this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
-    this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
-    this.load.audio('explosion', 'assets/sounds/Explode.mp3');
-    this.load.audio('electricity', 'assets/sounds/Electric.mp3');
-    this.load.audio('reload', 'assets/sounds/reloading.mp3');
-
+  
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
@@ -221,11 +218,45 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     this.load.image('tutorialBacking', 'assets/TutorialBacking.png');
     this.load.image('tutorialBacking2', 'assets/TutorialBacking.png');
-
-    // turret upgrade
+    // gun selector stuff will need to be added
+    this.load.image('lock', 'assets/Lock.png')
+    this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
+    this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
 
+    // player 
+    this.load.image('playerBullet', 'assets/newBullet.png');
+
+    // turrets
+    this.load.image('turret', 'assets/Turret1.png');
+    this.load.image('bullet', 'assets/Bullet.png');
+    //
+    this.load.image('cannon', 'assets/cannon.png');
+    this.load.image('shell', 'assets/Cannonball.png');
+    // enemies (none)
+    ////// END Images //////
+    ////// Audio //////
+    // UI
+    this.load.audio('wind', 'assets/sounds/Wind.mp3');
+    this.load.audio('tick', 'assets/sounds/Tick.mp3');
+    this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
+    // player
+    this.load.audio('reload', 'assets/sounds/reloading.mp3');
+    // turrets
+    this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
+    //
+    this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
+    //
+    this.load.audio('electricity', 'assets/sounds/Electric.mp3');
+    // enemies
+    this.load.audio('death', 'assets/sounds/death.mp3');
+    this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
+    this.load.audio('explosion', 'assets/sounds/Explode.mp3');
+    ////// END Audio //////
+    ///////////////// END assets /////////////////
+    
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -235,7 +266,7 @@ export default class Tutorial extends Phaser.Scene {
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
-    this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P)
+    this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     var graphicz = this.add.graphics();
 
     //Create the path
@@ -275,31 +306,102 @@ export default class Tutorial extends Phaser.Scene {
     player.setCollideWorldBounds(true);
 
     //player can shoot
-
-    if (singleShot==true){
-        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        spaceBar.on("down", function(){
-            if (pause != true && reloading == false){
-            addPlayerBullet(player.x,player.y,Math.PI)
-            ammoCount -= 1
-            }
-        });
-    }
+    var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    spaceBar.on("down", function(){
+        spacedown = true;
+    });
+    spaceBar.on("up", function(){
+        spacedown = false;
+    });
 
     //Reload key for the player
     this.reloadKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
 // Weapons
+// This first checks if the gun is bought. If it isn't it buys it and immediately switches to it
+// If it is bought, it allows the user to switch back and forth
     //Machine gun
-    var buyMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
-    buyMachineGun.on("down", function(){
-        if (scraps>=15 && machine == false){
-            purchaseMachineGun = true;
-            scraps -= 15;
-            console.log("Purchased machine gun");
-        }
+    var switchPisol = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ONE);
+    switchPisol.on("down", function(){
+        gbutton1.alpha = 1;
+        gbutton2.alpha = 0.5;
+        gbutton3.alpha = 0.5;
+        weapon = 0; //we don't need to check for purchase because default
+        maxAmmo = 6;
+        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
+        ammoCount = 0;
+        reloadTime = 0;
+        reloading = false;
+        played = false;
+        reloadme = false;
+        ////////////////////////////////////////////////////////////////////////////////////////
+        machineBulletCount.setVisible(false);
+        bulletCount.setVisible(true);
     });
-
+    var switchMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
+    switchMachineGun.on("down", function(){
+        if (!machine){
+            if (scraps >= 15){
+                machine = true;
+                scraps -= 15;
+                weapon = 1;
+                maxAmmo = 12;
+                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
+                ammoCount = 0;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+                ////////////////////////////////////////////////////////////////////////////////////////
+                bulletCount.setVisible(false);
+                machineBulletCount.setVisible(true);
+                buyLock1.setVisible(false);
+                gbutton2.setVisible(false);
+                gbutton1.alpha = 0.5;
+                gbutton3.alpha = 0.5;
+                gbutton2 = this.add.sprite(40, 110, 'machineGun', 0);
+                //might need to include code here if we want to be able to click to switch
+            }
+        } else {
+            gbutton2.alpha = 1;
+            gbutton1.alpha = 0.5;
+            gbutton3.alpha = 0.5;
+            weapon = 1;
+            maxAmmo = 12;
+            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
+            ammoCount = 0;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
+            ////////////////////////////////////////////////////////////////////////////////////////
+            bulletCount.setVisible(false);
+            machineBulletCount.setVisible(true);
+        }
+    }, this);
+    var switchDeathGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+    switchDeathGun.on("down", function(){
+        if (!deathgun){
+            if (scraps >= 30){
+                deathgun = true;
+                scraps -= 30;
+                weapon = 2;
+                buyLock2.setVisible(false);
+                gbutton3.setVisible(false);
+                gbutton1.alpha = 0.5;
+                gbutton2.alpha = 0.5;
+                gbutton3 = this.add.sprite(40, 180, 'machineGun', 0);
+                //might need to include code here if we want to be able to click to switch
+            }
+        } else {
+            gbutton3.alpha = 1;
+            gbutton1.alpha = 0.5;
+            gbutton2.alpha = 0.5;
+            weapon = 2;
+            // Doesn't do anything really because new gun needs to be adjusted and added and all that jazz
+        }
+    }, this);
+    //
 
 //info displays
 
@@ -357,22 +459,20 @@ export default class Tutorial extends Phaser.Scene {
 
     //Create turrets
     turrets = this.add.group({ classType: Turret, runChildUpdate: true });
-    cannons = this.add.group({classType: Cannon, runChildUpdate: true});
-    lightnings = this.add.group({classType: Lightning, runChildUpdate: true});
+    cannons = this.add.group({ classType: Cannon, runChildUpdate: true });
+    lightnings = this.add.group({ classType: Lightning, runChildUpdate: true });
     this.anims.create({
         key: "lightning",
         frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
         frameRate: 10,
         repeat: 0,
-      });
+    });
 
-    //Turrent selection
-    //selected = false;
+    //Turret selection
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
         turret_selector = 0;
-        //selected = true;
         button1.alpha = 1;
         button2.alpha = 0.5;
         button3.alpha = 0.5;
@@ -381,7 +481,6 @@ export default class Tutorial extends Phaser.Scene {
     button2.alpha = 0.5;
     button2.on('pointerup', function(){
         turret_selector = 1;
-        //selected = true;
         button2.alpha = 1;
         button1.alpha = 0.5;
         button3.alpha = 0.5;
@@ -390,17 +489,39 @@ export default class Tutorial extends Phaser.Scene {
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
         turret_selector = 2;
-        //selected = true;
         button3.alpha = 1;
         button1.alpha = 0.5;
         button2.alpha = 0.5;
     });
 
-    //place turrets (ADD FOR CANNONS)
+    //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
+    //As of right now there is no click to purchase option it is just a visual indicator
+    gbutton1 = this.add.sprite(40, 40, 'machineGun', 0).setInteractive();
+    gbutton1.on('pointerover', function(){
+        console.log('gun1');
+        //description text
+        //ex: somethingtext.setVisible(true);
+    });
+    gbutton2 = this.add.sprite(40, 110, 'machineGunPrice', 0).setInteractive();
+    buyLock1 = this.add.sprite(40, 110, 'lock', 0);
+    buyLock1.alpha = 0.8;
+    gbutton2.alpha = 0.5;
+    gbutton2.on('pointerover', function(){
+        console.log('gun2');
+        //description text
+    });
+    gbutton3 = this.add.sprite(40, 180, 'machineGunPrice', 0).setInteractive();
+    buyLock2 = this.add.sprite(40, 180, 'lock', 0);
+    buyLock2.alpha = 0.8;
+    gbutton3.alpha = 0.5;
+    gbutton3.on('pointerup', function(){
+        console.log('gun3');
+        //description text
+    });
+
+    //place towers
     this.input.on('pointerdown', placeTower);
     //display where the turrets can be placed
-    /*graphics = this.add.graphics();
-    redSquare = new Phaser.Geom.Rectangle(0, 0, 64, 64);*/
     var q, w;
     var turretGhost = this.add.image(0, 0, 'turret');
     turretGhost.alpha = 0.4;
@@ -412,7 +533,7 @@ export default class Tutorial extends Phaser.Scene {
     teslaGhost.alpha = 0.4;
     teslaGhost.setVisible(false);
     this.input.on('pointermove', function(pointer) {
-        if (pause == true /*|| selected == false*/){
+        if (pause == true){
         } else {
             q = Math.floor(pointer.x/64);
             w = Math.floor(pointer.y/64);
@@ -446,12 +567,10 @@ export default class Tutorial extends Phaser.Scene {
                     teslaRange.y = teslaGhost.y;
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
-
-                /*graphics.clear();
-                graphics.lineStyle(2, 0x00FF00, 1);
-                graphics.strokeRectShape(redSquare);
-                redSquare.x = q * 64;
-                redSquare.y = w * 64;*/
+            } else if (map[w][q] == 1 || map[w][q] == 2){
+                turretGhost.setVisible(false);
+                cannonGhost.setVisible(false);
+                teslaGhost.setVisible(false);
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -460,11 +579,6 @@ export default class Tutorial extends Phaser.Scene {
                 turretIndicator.clear();
                 cannonIndicator.clear();
                 teslaIndicator.clear();
-                /*graphics.clear();
-                graphics.lineStyle(2, 0xFF0000, 1);
-                graphics.strokeRectShape(redSquare);
-                redSquare.x = q * 64;
-                redSquare.y = w * 64;*/
             }
         }
     });
@@ -488,40 +602,30 @@ export default class Tutorial extends Phaser.Scene {
     //place turrets
     this.input.on('pointerdown', placeTower);
 
-
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
-    turretIndicator.lineStyle(2, 0xFF0000, 0.5);
-    turretIndicator.fillStyle(0xFF0000, 0.3);
+    turretIndicator.fillStyle(0xFFFFFF, 0.3);
     cannonIndicator = this.add.graphics();
     cannonRange = new Phaser.Geom.Circle(0, 0, 132);
-    cannonIndicator.lineStyle(2, 0xFF0000, 0.5);
-    cannonIndicator.fillStyle(0xFF0000, 0.3);
+    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-    teslaIndicator.lineStyle(2, 0xFF0000, 0.5);
-    teslaIndicator.fillStyle(0xFF0000, 0.3);
+    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
     //turret upgrade feedback
     buttonYes = this.add.image(0, 0, 'checkmark');
     buttonYes.setInteractive();
     buttonYes.setScale(.05);
+    buttonYes.setDepth(1);
     buttonNo = this.add.image(0, 0, 'xmark');
     buttonNo.setInteractive();
     buttonNo.setScale(.05);
+    buttonNo.setDepth(1);
     buttonYes.setActive(false);
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
     buttonNo.setVisible(false);
-    /*this.input.on('pointerdown', function(){
-        if (buttonYes.isActive){
-            buttonYes.setActive(false);
-            buttonYes.setVisible(false);
-            buttonNo.setActive(false);
-            buttonNo.setVisible(false);
-        }
-    });*/
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
@@ -566,13 +670,17 @@ export default class Tutorial extends Phaser.Scene {
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
+    victoryText.setDepth(1);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
+    continueText.setDepth(1);
     //Defeat text
     defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
+    defeatText.setDepth(1);
     restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
+    restartText.setDepth(1);
 
     //various tutorial texts
     //tutorialbacking stuff
@@ -613,22 +721,17 @@ export default class Tutorial extends Phaser.Scene {
     //begin build phase
     buildPhase = true;
     //disable start text
-    startText.setVisible(false);
-    //background for text
-    graphicz.fillStyle(0x000000, 1);
     //Enable wave text
     waveText.setVisible(true);
     //Enable scrap text
     scrapText.setVisible(true);
     graphicz.fillStyle(0xFFFFFF, 0.3);
-
     // Create restart key
     this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
   } //End create
 
   update (time, delta) {
-
 // Game Phases
     //Win Condition
     if (wavesRemaining == 0){
@@ -636,6 +739,8 @@ export default class Tutorial extends Phaser.Scene {
         pause = true
 
         //Display victory text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
@@ -660,6 +765,8 @@ export default class Tutorial extends Phaser.Scene {
         pause = true;
 
         //Display defeat text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
 
@@ -671,10 +778,10 @@ export default class Tutorial extends Phaser.Scene {
 
         //Prompt player to restart the game
         restartText.setVisible(true);
-        var restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        restartKey.on("down", function(){
+        if (Phaser.Input.Keyboard.JustDown(this.restart)) {
+            this.scene.start('MenuScene')
             location.reload();
-        });
+        }
     }
 
     //Build phase
@@ -691,7 +798,6 @@ export default class Tutorial extends Phaser.Scene {
         };
 
         //ticking sound
-
         if (timeRemaining == tickTimer){
           tick.play();
           tickTimer -= 1;
@@ -713,7 +819,6 @@ export default class Tutorial extends Phaser.Scene {
             //reset enemies remaining
             enemiesRemaining = enemies.reduce((a, b) => a + b, 0);
             this.spawned = 0;
-
         }
     } //End build phase
 
@@ -819,61 +924,45 @@ export default class Tutorial extends Phaser.Scene {
         }
 
         if (Math.floor(reloadTime) >= 1){
-        if (machine == false){
-            ammoCount = maxAmmo;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-            reloadme = false;
-        } else {
-            ammoCount = maxAmmo;
-            reloadTime = 0;
-            reloading = false;
-            played = false;
-            reloadme = false;
-        }
-        }
-
-    }
-
-
-//Buy weapons
-    // Machine Gun
-    if (purchaseMachineGun){
-        // Adjust
-        var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        spaceBar.on("down", function(){
-            spacedown = true;
-        });
-        spaceBar.on("up", function(){
-            spacedown = false;
-        })
-        machine = true;
-        purchaseMachineGun = false;
-        maxAmmo = 12;
-        ammoCount = maxAmmo;
-        reloadTime = 0;
-        reloading = false;
-        played = false;
-        reloadme = false;
-        bulletCount.setVisible(false);
-        machineBulletCount.setVisible(true);
-    }
-
-    // Death machine
-
-    // Rocket Launcher
-
-    //Weapon selection
-    //Machine Gun
-    if (machine){
-        if (spacedown == true){
-            if (time - delts > frplayer && pause != true && reloading == false) {
-                delts = time
-                addBullet(player.x,player.y,Math.PI)
-                ammoCount -= 1
+            if (machine == false){
+                ammoCount = maxAmmo;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            } else {
+                ammoCount = maxAmmo;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
             }
         }
+
+    }
+
+
+//Switch between weapons (this is the shooting portion)
+    if (spacedown == true){
+        if (weapon == 0){
+        // pistol
+            if (pause != true && reloading == false){
+                // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
+                addBullet(player.x,player.y,Math.PI);
+                ammoCount -= 1;
+                spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
+            }
+        } else if (weapon == 1){
+        // Machine Gun
+            if (time - delts > frplayer && pause != true && reloading == false){
+                delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
+                addBullet(player.x,player.y,Math.PI);
+                ammoCount -= 1;
+            }
+        } /*else if (weapon == 2){
+        // Death Machine or RPG or whatever (To be added)
+
+        }*/
     }
 
 
@@ -889,9 +978,9 @@ export default class Tutorial extends Phaser.Scene {
 
     //Health and bullet updates
     waterHealth.setFrame(lifecount);
-    if (machine==false){
+    if (weapon == 0){
         bulletCount.setFrame(6 - ammoCount);
-    }else{
+    } else if (weapon == 1){
         machineBulletCount.setFrame(12 - ammoCount);
     }
 
@@ -901,15 +990,12 @@ export default class Tutorial extends Phaser.Scene {
         var speed = 6
         var wKey = this.input.keyboard.addKey('W');
         var sKey = this.input.keyboard.addKey('S');
-
         if (cursors.up.isDown || wKey.isDown) {
-        player.y -= speed;
+            player.y -= speed;
         } else if (cursors.down.isDown || sKey.isDown) {
-        player.y += speed;
-        } else {
+            player.y += speed;
         }
     }
-    //player movement but w and s
 
 
 // Tutorial Texts
@@ -984,7 +1070,7 @@ export default class Tutorial extends Phaser.Scene {
 
 }//End class export
 
-
+//ENEMIES
 var Regular = new Phaser.Class({
 
         Extends: Phaser.GameObjects.Sprite,
@@ -1287,8 +1373,8 @@ var Fast = new Phaser.Class({
         }
 
 });
-
-
+//END ENEMIES
+//TURRETS
 var Turret = new Phaser.Class({
 
     Extends: Phaser.GameObjects.Image,
@@ -1375,7 +1461,7 @@ var Cannon = new Phaser.Class({
     {
         Phaser.GameObjects.Image.call(this, scene, 0, 0, 'cannon');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 1000;
     },
@@ -1403,15 +1489,43 @@ var Cannon = new Phaser.Class({
         }
     },
 
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 20 && map[i][j] == 1){
-            scraps -= 20;
+        buttonYes.setActive(false);
+        buttonYes.setVisible(false);
+        buttonNo.setActive(false);
+        buttonNo.setVisible(false);
+        if (scraps >= 10 && map[i][j] == 1){
+            scraps -= 10;
             map[i][j] = 2;
             this.fireRate /= 2;
-            this.setTint(0xff00ff);
+            this.setTint(0x0000ff);
         }
     }
 });
@@ -1427,7 +1541,7 @@ var Lightning = new Phaser.Class({
     {
         Phaser.GameObjects.Sprite.call(this, scene, 0, 0, 'lightning');
         this.setInteractive();
-        this.on('pointerdown', this.upgrade);
+        this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
         this.fireRate = 200;
 
@@ -1455,19 +1569,47 @@ var Lightning = new Phaser.Class({
             this.nextTic = time + this.fireRate;
         }
     },
+    buttonCheck: function()
+    {
+        buttonYes.off('pointerup');
+        var i = (this.y - 32) / 64;
+        var j = (this.x - 32) / 64;
+        if (map[i][j] == 1){
+            buttonYes.setActive(true);
+            buttonNo.setActive(true);
+            buttonYes.x = this.x - 40;
+            buttonYes.y = this.y;
+            buttonNo.x = this.x + 40;
+            buttonNo.y = this.y;
+            buttonYes.setVisible(true);
+            buttonNo.setVisible(true);
+            buttonYes.on('pointerup', this.upgrade, this);
+            buttonNo.on('pointerup', function(){
+                buttonYes.setActive(false);
+                buttonYes.setVisible(false);
+                buttonNo.setActive(false);
+                buttonNo.setVisible(false);
+                buttonYes.off('pointerup');
+            });
+        }
+    },
     upgrade: function ()
     {
         var i = (this.y - 32) / 64;
         var j = (this.x - 32) / 64;
-        if (scraps >= 30 && map[i][j] == 1){
-            scraps -= 30;
+        buttonYes.setActive(false);
+        buttonYes.setVisible(false);
+        buttonNo.setActive(false);
+        buttonNo.setVisible(false);
+        if (scraps >= 10 && map[i][j] == 1){
+            scraps -= 10;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
         }
     }
 });
-
+//END TURRETS
 
 var Shell = new Phaser.Class({
 
@@ -1737,17 +1879,19 @@ function placeTower(pointer) {
                 turret.setVisible(true);
                 turret.place(i, j);
                 turret.on('pointerover', function(){
-                    turretIndicator.clear();
-                    turretRange.x = turret.x;
-                    turretRange.y = turret.y;
-                    turretIndicator.fillCircleShape(turretRange);
+                    if (pause != true){
+                        turretRange.x = turret.x;
+                        turretRange.y = turret.y;
+                        turretIndicator.fillCircleShape(turretRange);
+                    }
                 });
                 turret.on('pointerout', function(){
                     turretIndicator.clear();
                 });
                 tick.play();
             }
-            //button1.alpha = .5;
+            button1.alpha = .5;
+            turretIndicator.clear();
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -1757,17 +1901,19 @@ function placeTower(pointer) {
                 cannon.setVisible(true);
                 cannon.place(i, j);
                 cannon.on('pointerover', function(){
-                    cannonIndicator.clear();
-                    cannonRange.x = cannon.x;
-                    cannonRange.y = cannon.y;
-                    cannonIndicator.fillCircleShape(cannonRange);
+                    if (pause != true){
+                        cannonRange.x = cannon.x;
+                        cannonRange.y = cannon.y;
+                        cannonIndicator.fillCircleShape(cannonRange);
+                    }
                 });
                 cannon.on('pointerout', function(){
                     cannonIndicator.clear();
                 });
                 tick.play();
             }
-            //button2.alpha = .5;
+            button2.alpha = .5;
+            cannonIndicator.clear();
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -1776,12 +1922,18 @@ function placeTower(pointer) {
                 lightning.setActive(true);
                 lightning.setVisible(true);
                 lightning.place(i, j);
+                lightning.on('pointerover', function(){
+                    if (pause != true){
+                        teslaRange.x = lightning.x;
+                        teslaRange.y = lightning.y;
+                        teslaIndicator.fillCircleShape(teslaRange);
+                    }
+                })
             }
-            //button3.alpha = .5;
+            button3.alpha = .5;
+            teslaIndicator.clear();
         }
-        //selected = false;
-        //turret_selector = -1;
-        graphics.clear();
+        turret_selector = -1;
     }
 }
 

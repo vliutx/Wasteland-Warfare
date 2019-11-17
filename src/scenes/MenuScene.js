@@ -14,7 +14,8 @@ export default class MenuScene extends Phaser.Scene {
     this.load.image('background', './assets/titleScreen.png');
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('cannon', 'assets/cannon.png');
-    this.load.image('button', 'assets/TitleButton.png')
+
+    this.load.image('button', 'assets/TitleButton.png');
 
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
 
@@ -26,6 +27,7 @@ export default class MenuScene extends Phaser.Scene {
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
+
   }
 
   create (data) {
@@ -56,10 +58,11 @@ export default class MenuScene extends Phaser.Scene {
       this.scene.start('FullGame');
     }, this
     );
-    startText = this.add.text(this.centerX - 75, 435, "Tutorial", {fontSize: 32, color: '#FFFFFF', fontStyle: 'bold'});
-    startText = this.add.text(this.centerX - 40, 555, "Game", {fontSize: 32, color: '#FFFFFF', fontStyle: 'bold'});
+    startText  = this.add.text(this.centerX - 75, 435, "Tutorial", {fontSize: 32, color: "#FFFFFF", fontStyle: "bold"});
+    startText  = this.add.text(this.centerX - 40, 555, "Game", {fontSize: 32, color: "#FFFFFF", fontStyle: "bold"});
 
   }
+
 
   update (time, delta) {
     // Update the scene
