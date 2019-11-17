@@ -305,6 +305,32 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
 
+    //player animations
+    this.anims.create({
+        key: "play_idle",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 0, end: 0 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 1, end: 4 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_idle_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 5, end: 5 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 6, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
@@ -328,13 +354,11 @@ export default class Tutorial extends Phaser.Scene {
         gbutton3.alpha = 0.5;
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
-        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
         ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
         reloadme = false;
-        ////////////////////////////////////////////////////////////////////////////////////////
         machineBulletCount.setVisible(false);
         bulletCount.setVisible(true);
     });
@@ -346,13 +370,11 @@ export default class Tutorial extends Phaser.Scene {
                 scraps -= 15;
                 weapon = 1;
                 maxAmmo = 12;
-                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
                 ammoCount = 0;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
                 reloadme = false;
-                ////////////////////////////////////////////////////////////////////////////////////////
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
@@ -368,13 +390,11 @@ export default class Tutorial extends Phaser.Scene {
             gbutton3.alpha = 0.5;
             weapon = 1;
             maxAmmo = 12;
-            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
             ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
             reloadme = false;
-            ////////////////////////////////////////////////////////////////////////////////////////
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
         }
@@ -992,8 +1012,24 @@ export default class Tutorial extends Phaser.Scene {
         var sKey = this.input.keyboard.addKey('S');
         if (cursors.up.isDown || wKey.isDown) {
             player.y -= speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            }
         } else if (cursors.down.isDown || sKey.isDown) {
             player.y += speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            }
+        } else {
+            if (weapon == 0){
+                player.anims.play("play_idle", true);
+            } else if (weapon == 1){
+                player.anims.play("play_idle_machine", true);
+            }
         }
     }
 
