@@ -13,8 +13,8 @@
 
 
     // Counters
-    var scraps = 0;
-    var lifecount = 10;
+    var scraps = 40;
+    var lifecount = 5;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
@@ -301,7 +301,7 @@ export default class Tutorial extends Phaser.Scene {
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
         //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-        ammoCount = maxAmmo;
+        ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
@@ -319,7 +319,7 @@ export default class Tutorial extends Phaser.Scene {
                 weapon = 1;
                 maxAmmo = 12;
                 //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-                ammoCount = maxAmmo;
+                ammoCount = 0;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
@@ -341,7 +341,7 @@ export default class Tutorial extends Phaser.Scene {
             weapon = 1;
             maxAmmo = 12;
             //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-            ammoCount = maxAmmo;
+            ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
@@ -744,10 +744,10 @@ export default class Tutorial extends Phaser.Scene {
 
         //Prompt player to restart the game
         restartText.setVisible(true);
-        var restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-        restartKey.on("down", function(){
+        if (Phaser.Input.Keyboard.JustDown(this.restart)) {
+            this.scene.start('MenuScene')
             location.reload();
-        });
+        }
     }
 
     //Build phase

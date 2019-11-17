@@ -318,7 +318,7 @@ export default class FullGame extends Phaser.Scene {
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
         //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-        ammoCount = maxAmmo;
+        ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
@@ -358,7 +358,7 @@ export default class FullGame extends Phaser.Scene {
             weapon = 1;
             maxAmmo = 12;
             //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
-            ammoCount = maxAmmo;
+            ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
