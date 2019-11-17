@@ -7,6 +7,7 @@ var shells;
 
 var waterHealth;
 var bulletCount;
+var machineBulletCount;
 
 // Sounds
 var gunfire;
@@ -45,4 +46,8 @@ var waveNumber;
 
 // Upgrade Button
 var buttonYes;
+<<<<<<< HEAD
 var buttonNo;
+=======
+var buttonNo;
+>>>>>>> jarrod_dev
