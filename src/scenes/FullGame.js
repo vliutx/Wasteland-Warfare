@@ -811,11 +811,8 @@ export default class FullGame extends Phaser.Scene {
         reloading = false;
         played = false;
         reloadme = false;
-<<<<<<< HEAD
-=======
         bulletCount.setVisible(false);
         machineBulletCount.setVisible(true);
->>>>>>> jarrod_dev
     }
 
     // Death machine
@@ -829,13 +826,9 @@ export default class FullGame extends Phaser.Scene {
             if (time - delts > frplayer && pause != true && reloading == false) {
                 delts = time
                 addBullet(player.x,player.y,Math.PI)
-<<<<<<< HEAD
-                ammoCount -= 1
-=======
                 if (spacedown != false){
                     ammoCount -= 1
                 }
->>>>>>> jarrod_dev
             }
         }
     }
@@ -858,11 +851,7 @@ export default class FullGame extends Phaser.Scene {
     if (machine==false){
         bulletCount.setFrame(6 - ammoCount);
     }else{
-<<<<<<< HEAD
-        bulletCount.setFrame(Math.floor((12 - ammoCount)/2));
-=======
         machineBulletCount.setFrame(12 - ammoCount);
->>>>>>> jarrod_dev
     }
 
     //Player movement

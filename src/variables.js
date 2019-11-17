@@ -46,8 +46,4 @@ var waveNumber;
 
 // Upgrade Button
 var buttonYes;
-<<<<<<< HEAD
 var buttonNo;
-=======
-var buttonNo;
->>>>>>> jarrod_dev
