@@ -923,7 +923,7 @@ export default class Tutorial extends Phaser.Scene {
 
 
 //Reload Mechanic (Copy over reload key from constant updates)
-    if (ammoCount == 0 || reloadme == true) {
+    if (ammoCount == 0 || reloadme == true && pause == false) {
         reloading = true;
         reloadTime += delta/1000;
         if (played == false) {

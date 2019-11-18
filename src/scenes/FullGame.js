@@ -352,13 +352,11 @@ export default class FullGame extends Phaser.Scene {
         gbutton3.alpha = 0.5;
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
-        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
         ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
         reloadme = false;
-        ////////////////////////////////////////////////////////////////////////////////////////
         machineBulletCount.setVisible(false);
         bulletCount.setVisible(true);
     });
@@ -370,13 +368,11 @@ export default class FullGame extends Phaser.Scene {
                 scraps -= 15;
                 weapon = 1;
                 maxAmmo = 12;
-                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
                 ammoCount = maxAmmo;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
                 reloadme = false;
-                ////////////////////////////////////////////////////////////////////////////////////////
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
@@ -392,13 +388,11 @@ export default class FullGame extends Phaser.Scene {
             gbutton3.alpha = 0.5;
             weapon = 1;
             maxAmmo = 12;
-            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
             ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
             reloadme = false;
-            ////////////////////////////////////////////////////////////////////////////////////////
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
         }
@@ -871,7 +865,7 @@ export default class FullGame extends Phaser.Scene {
 
 
 //Reload Mechanic (Copy over reload key from constant updates)
-    if (ammoCount == 0 || reloadme == true) {
+    if (ammoCount == 0 || reloadme == true && pause == false) {
         reloading = true;
         reloadTime += delta/1000;
         if (played == false) {
