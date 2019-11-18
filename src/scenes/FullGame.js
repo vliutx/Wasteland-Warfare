@@ -135,15 +135,15 @@
     var nextEnemy = 0;
     var waveSize = 6;
     var spawned = 0;
-    enemiesRemaining = waveSize;
     waveNumber = 1;
     var spawnDelay = 400;
 
     // Enemy Spawns
-    var enemies = [5,0,0,0];
+    var enemiesRemaining
+    var enemies = [115,0,0,0];
     var empty = [0,0,0,0];
     var waves = [
-                    [6,0,0,0],
+                    [115,0,0,0],
                     [0,12,0,0],
                     [10,10,0,0],
                     [5,20,5,0],
@@ -156,7 +156,6 @@
                     [0,0,0,0],
                 ];
     var waveN = [];
-
     var test = true;
 
 
@@ -1017,6 +1016,9 @@ export default class FullGame extends Phaser.Scene {
 // Constant updates
     //Update enemies remaining test 
     enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
+    if (enemiesRemaining >= 100){
+        enemiesRemainingText.setText("Enemies:" + enemiesRemaining)
+    }
 
     //Laser firing
     if(firing){

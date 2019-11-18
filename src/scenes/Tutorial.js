@@ -793,6 +793,7 @@ export default class Tutorial extends Phaser.Scene {
         //Display defeat text
         scrapText.setVisible(false);
         waveText.setVisible(false);
+        enemiesRemainingText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
 
