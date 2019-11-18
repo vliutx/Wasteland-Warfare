@@ -187,7 +187,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
         frameHeight: 48,
         frameWidth: 48
-
+    });
     /*//LASER CODE ///////////////
     this.load.spritesheet("laser_animation", "./assets/spriteSheets/Laser.png", {
         frameHeight: 48,
@@ -216,7 +216,7 @@ export default class FullGame extends Phaser.Scene {
         frameHeight: 96,
         frameWidth: 96
     });
->>>>>>> Dev
+
     ////// END Spritesheets //////
     ////// Images //////
     // UI
