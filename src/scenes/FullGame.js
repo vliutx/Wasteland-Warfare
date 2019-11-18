@@ -964,7 +964,7 @@ export default class FullGame extends Phaser.Scene {
             if (weapon == 0){
                 player.anims.play("play_idle", true);
             } else if (weapon == 1){
-                player.anims.okay("play_idle_machine", true);
+                player.anims.play("play_idle_machine", true);
             }
         }
     }
