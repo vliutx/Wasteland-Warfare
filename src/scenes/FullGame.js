@@ -319,7 +319,7 @@ export default class FullGame extends Phaser.Scene {
     reload = this.sound.add('reload', {volume: .40});
     lasershot = this.sound.add('lasershot', {volume: .40});
     purchase = this.sound.add('purchase', {volume: .40});
-    purchaseLaser = this.sound.add('purchaseLaser', {volume: .40});
+    purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
