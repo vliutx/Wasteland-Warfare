@@ -225,9 +225,12 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     // gun selector stuff will need to be added
-    this.load.image('lock', 'assets/Lock.png')
+    this.load.image('lock', 'assets/Lock.png');
+    this.load.image('pistol', 'assets/PistolNoCost.png');
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
+    this.load.image('laser', 'assets/LaserIconNoCost.png');
+    this.load.image('laserPrice', 'assets/LaserIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
     this.load.image('laser', 'assets/laser.png');
@@ -416,7 +419,7 @@ export default class FullGame extends Phaser.Scene {
                 gbutton3.setVisible(false);
                 gbutton1.alpha = 0.5;
                 gbutton2.alpha = 0.5;
-                gbutton3 = this.add.sprite(40, 180, 'machineGun', 0);
+                gbutton3 = this.add.sprite(40, 180, 'laser', 0);
                 //might need to include code here if we want to be able to click to switch
             }
         } else {
@@ -528,7 +531,7 @@ export default class FullGame extends Phaser.Scene {
 
     //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'machineGun', 0).setInteractive();
+    gbutton1 = this.add.sprite(40, 40, 'pistol', 0).setInteractive();
     gbutton1.on('pointerover', function(){
         console.log('gun1');
         //description text
@@ -542,7 +545,7 @@ export default class FullGame extends Phaser.Scene {
         console.log('gun2');
         //description text
     });
-    gbutton3 = this.add.sprite(40, 180, 'machineGunPrice', 0).setInteractive();
+    gbutton3 = this.add.sprite(40, 180, 'laserPrice', 0).setInteractive();
     buyLock2 = this.add.sprite(40, 180, 'lock', 0);
     buyLock2.alpha = 0.8;
     gbutton3.alpha = 0.5;
