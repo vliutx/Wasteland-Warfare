@@ -72,7 +72,6 @@
     var electric;
     var reload;
     var lasershot;
-    var laserbeam
     var laserReload;
 
     // Enemies
@@ -234,7 +233,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
     this.load.image('laser', 'assets/laser.png');
-    this.load.image('laserbeam', 'assets/laserbeam.png')
+    this.load.image('laserbeam', 'assets/Laser.png')
     // player (none)
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
@@ -971,6 +970,7 @@ export default class FullGame extends Phaser.Scene {
 
 /// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         } else if (weapon == 2){ //Spartan Laser
+
             // Charge laser while holding space
             charge += delta/1000
             // Play firing animation HERE
@@ -1013,7 +1013,7 @@ export default class FullGame extends Phaser.Scene {
     if(firing){
         firetime += delta/1000;
         if(firetime<.25){
-            laserbeam.setPosition(player.x, player.y);
+            laserbeam.setPosition(player.x - 850, player.y - 10);
         } else {
             laserbeam.setVisible(false);
             firing = false;
@@ -1035,6 +1035,9 @@ export default class FullGame extends Phaser.Scene {
         bulletCount.setFrame(6 - ammoCount);
     } else if (weapon == 1){
         machineBulletCount.setFrame(12 - ammoCount);
+    } else {
+      machineBulletCount.setVisible(false);
+      bulletCount.setVisible(false);
     }
 
     //Player movement
