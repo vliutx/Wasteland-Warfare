@@ -15,7 +15,11 @@
 
 
     // Counters
+<<<<<<< HEAD
     var scraps = 0;
+=======
+    var scraps = 100;
+>>>>>>> Dev
     var lifecount = 10;
     var wavesRemaining = 10;
     var totalWaves = wavesRemaining;
@@ -32,7 +36,15 @@
     var ammoCount = maxAmmo;
     var tickTimer = 3;
     // not in tutorial things
+<<<<<<< HEAD
     var buildTimer = 10;
+=======
+    var buildTimer = 1;
+//LASER CODE
+    var chargeTime = 1.5; //Time to charge up laser
+    var charge = 0;    //Tracks time it has been charged for
+    var firetime = 0; // Tracks how long laser has been firing
+>>>>>>> Dev
 
     // Booleans
     var pause = true;
@@ -46,9 +58,14 @@
     var spacedown = false;
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
+<<<<<<< HEAD
     var deathgun = false; //did they purchase the death machine?
+=======
+var spartan = false; //did they purchase the death machine? !!!!!!!!!
+>>>>>>> Dev
     var gameOverPlayed = false
     var purchaseMachineGun = false;
+    var firing = false;
 
     // Misc
     var path;
@@ -66,6 +83,12 @@
     var explode;
     var electric;
     var reload;
+<<<<<<< HEAD
+=======
+    var lasershot;
+    var laserbeam
+    var laserReload;
+>>>>>>> Dev
 
     // Enemies
     var fast_enemies;
@@ -89,11 +112,16 @@
     var cannons;
     var lightnings;
 
+    //Guns
+    var laser;
+    var laserbeam;
+
     // Damage
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
-    var shots = 6;
+    var LASER_DAMAGE = 200;
+    var LASER_WIDTH = 50;
 
     // graphics stuff
     var turretIndicator
@@ -161,6 +189,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.spritesheet("bulletCount", "./assets/spriteSheets/BulletCount.png", {
         frameHeight: 80,
         frameWidth: 80
+<<<<<<< HEAD
     });
     this.load.spritesheet("machineBulletCount", "./assets/spriteSheets/MachineBulletCount.png", {
         frameHeight: 160,
@@ -184,6 +213,8 @@ export default class FullGame extends Phaser.Scene {
     this.load.spritesheet("regularenemy", "./assets/spriteSheets/RegularEnemy.png", {
         frameHeight: 64,
         frameWidth: 64
+=======
+>>>>>>> Dev
     });
     this.load.spritesheet("fastenemy", "./assets/spriteSheets/FastEnemy.png", {
         frameHeight: 64,
@@ -197,6 +228,45 @@ export default class FullGame extends Phaser.Scene {
         frameHeight: 96,
         frameWidth: 96
     });
+<<<<<<< HEAD
+=======
+    // player
+    this.load.spritesheet("player_animation", "./assets/spriteSheets/MainPlayer2.png", {
+        frameHeight: 48,
+        frameWidth: 48
+    });
+
+/* LASER CODE ///////////////
+    this.load.spritesheet("laser_animation", "./assets/spriteSheets/Laser.png", {
+        frameHeight: 48,
+        frameWidth: 48
+    });
+/// LASER CODE /////////*/
+
+
+    // turrets
+    this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
+    // enemies
+    this.load.spritesheet("regularenemy", "./assets/spriteSheets/RegularEnemy.png", {
+        frameHeight: 64,
+        frameWidth: 64
+    });
+    this.load.spritesheet("fastenemy", "./assets/spriteSheets/FastEnemy.png", {
+        frameHeight: 64,
+        frameWidth: 64
+    });
+    this.load.spritesheet("toughenemy", "./assets/spriteSheets/ToughEnemy.png", {
+        frameHeight: 64,
+        frameWidth: 64
+    });
+    this.load.spritesheet("bossenemy", "./assets/spriteSheets/TankBoss.png", {
+        frameHeight: 96,
+        frameWidth: 96
+    });
+>>>>>>> Dev
     ////// END Spritesheets //////
     ////// Images //////
     // UI
@@ -210,11 +280,20 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
+<<<<<<< HEAD
+=======
+    this.load.image('laser', 'assets/laser.png');
+    this.load.image('laserbeam', 'assets/laserbeam.png')
+>>>>>>> Dev
     // player (none)
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
+<<<<<<< HEAD
     //
+=======
+    // 
+>>>>>>> Dev
     this.load.image('cannon', 'assets/cannon.png');
     this.load.image('shell', 'assets/Cannonball.png');
     // enemies (none)
@@ -229,6 +308,8 @@ export default class FullGame extends Phaser.Scene {
     // player
     this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
+ ////// LASERRRRR CODEEEEE //////////
+    this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
 
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
@@ -284,6 +365,7 @@ export default class FullGame extends Phaser.Scene {
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
+    lasershot = this.sound.add('lasershot', {volume: .40}); 
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
@@ -301,7 +383,11 @@ export default class FullGame extends Phaser.Scene {
     player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> Dev
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
@@ -313,6 +399,8 @@ export default class FullGame extends Phaser.Scene {
 
     //Reload key for the player
     this.reloadKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    laserbeam = this.add.image(player.x, player.y, 'laserbeam');
+    laserbeam.setVisible(false);
 
 // Weapons
 // This first checks if the gun is bought. If it isn't it buys it and immediately switches to it
@@ -376,12 +464,23 @@ export default class FullGame extends Phaser.Scene {
             machineBulletCount.setVisible(true);
         }
     }, this);
+<<<<<<< HEAD
     var switchDeathGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
     switchDeathGun.on("down", function(){
         if (!deathgun){
             if (scraps >= 30){
                 deathgun = true;
                 scraps -= 30;
+=======
+
+//SPARTAN LASER CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    var swtichSpartanLaser = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE); 
+    swtichSpartanLaser.on("down", function(){
+        if (!spartan){
+            if (scraps >= 50){
+                spartan = true;
+                scraps -= 50;
+>>>>>>> Dev
                 weapon = 2;
                 buyLock2.setVisible(false);
                 gbutton3.setVisible(false);
@@ -396,6 +495,14 @@ export default class FullGame extends Phaser.Scene {
             gbutton2.alpha = 0.5;
             weapon = 2;
             // Doesn't do anything really because new gun needs to be adjusted and added and all that jazz
+<<<<<<< HEAD
+=======
+        // CHANGE REALOD SHIT FOR LASER //
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
+>>>>>>> Dev
         }
     }, this);
     //
@@ -882,9 +989,50 @@ export default class FullGame extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
+<<<<<<< HEAD
                 addPlayerBullet(player.x,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
+=======
+                addBullet(player.x,player.y,Math.PI);
+                ammoCount -= 1;
+                spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
+            }
+        } else if (weapon == 1){
+        // Machine Gun
+            if (time - delts > frplayer && pause != true && reloading == false){
+                delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
+                addBullet(player.x,player.y,Math.PI);
+                ammoCount -= 1;
+            }
+
+
+/// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            
+        } else if (weapon == 2){ //Spartan Laser
+            // Charge laser while holding space
+            charge += delta/1000
+            // Play firing animation HERE
+
+            // Wait until laser is fully charged, the fire
+            if (charge >= chargeTime){
+                // Get all enemies at same y position as player
+                var laserEnemies = getEnemiesHeight(player.y, LASER_WIDTH);
+                // Damage enemies
+                if (laserEnemies.length > 0){
+                    for(var i=0; i < laserEnemies.length; i++){
+                        // Enemys turn red code add later
+                        laserEnemies[i].receiveDamage(LASER_DAMAGE);
+                    }
+                    //Play firing sound
+                    lasershot.play();
+                    laserbeam.setVisible(true);
+                    firing = true;
+                    firetime = 0;
+                }
+                // Shot fired, reset and play reload
+                spacedown = false;
+                charge = 0
+>>>>>>> Dev
             }
         } else if (weapon == 1){
         // Machine Gun
@@ -901,6 +1049,16 @@ export default class FullGame extends Phaser.Scene {
 
 
 // Constant updates
+    if(firing){
+        firetime += delta/1000;
+        if(firetime<.25){
+            laserbeam.setPosition(player.x, player.y);
+        } else {
+            laserbeam.setVisible(false);
+            firing = false;
+        }
+    }
+
     // Check for reload
     if (Phaser.Input.Keyboard.JustDown(this.reloadKey)) {
         if (ammoCount != maxAmmo){
@@ -1756,6 +1914,44 @@ function getEnemies(x, y, distance) {
         if(bossUnits[i].active && Phaser.Math.Distance.Between(x, y, bossUnits[i].x, bossUnits[i].y) < distance)
             enemies.push(bossUnits[i]);
     }
+    if (enemies.length > 0){
+        return enemies
+    }else{
+        return false
+    }
+}
+
+///////  LASER CODE!!!! //////
+function getEnemiesHeight(y, width) {
+    var regularUnits = reg_enemies.getChildren();
+    var fastUnits = fast_enemies.getChildren();
+    var toughUnits = tough_enemies.getChildren();
+    var bossUnits = boss_enemies.getChildren();
+    var enemies = [];
+    //  Create lower bound for laser hitbox
+    var lower = y - width;
+    var upper = y + width;
+    for(var i = 0; i < regularUnits.length; i++) {
+        // Check if enemy y within 
+        if(regularUnits[i].active && lower < regularUnits[i].y && upper > regularUnits[i].y){
+            enemies.push(regularUnits[i]);
+        }
+    };
+    for(var i = 0; i < fastUnits.length; i++) {
+        if(fastUnits[i].active && lower < fastUnits[i].y && upper > fastUnits[i].y){
+            enemies.push(fastUnits[i]);
+        }
+    };
+    for(var i = 0; i < toughUnits.length; i++) {
+        if(toughUnits[i].active && lower < toughUnits[i].y && upper > toughUnits[i].y){
+            enemies.push(toughUnits[i]);
+        }
+    };
+    for(var i = 0; i < bossUnits.length; i++) {
+        if(bossUnits[i].active && lower < bossUnits[i].y && upper > bossUnits[i].y){
+            enemies.push(bossUnits[i]);
+        }
+    };
     if (enemies.length > 0){
         return enemies
     }else{

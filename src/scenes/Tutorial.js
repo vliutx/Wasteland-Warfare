@@ -206,7 +206,11 @@ export default class Tutorial extends Phaser.Scene {
         frameWidth: 96
       });
 
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> Dev
     // Assets for cannon class
     this.load.image('cannon', 'assets/cannon.png');
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
@@ -225,7 +229,11 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
 
+<<<<<<< HEAD
     // player
+=======
+    // player 
+>>>>>>> Dev
     this.load.image('playerBullet', 'assets/newBullet.png');
 
     // turrets
@@ -256,7 +264,11 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
     ////// END Audio //////
     ///////////////// END assets /////////////////
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> Dev
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -769,6 +781,8 @@ export default class Tutorial extends Phaser.Scene {
         pause = true;
 
         //Display defeat text
+        scrapText.setVisible(false);
+        waveText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
 
@@ -950,7 +964,11 @@ export default class Tutorial extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
+<<<<<<< HEAD
                 addPlayerBullet(player.x,player.y,Math.PI);
+=======
+                addBullet(player.x,player.y,Math.PI);
+>>>>>>> Dev
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -958,7 +976,11 @@ export default class Tutorial extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
+<<<<<<< HEAD
                 addPlayerBullet(player.x,player.y,Math.PI);
+=======
+                addBullet(player.x,player.y,Math.PI);
+>>>>>>> Dev
                 ammoCount -= 1;
             }
         } /*else if (weapon == 2){
