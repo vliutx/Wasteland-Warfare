@@ -305,6 +305,44 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
 
+    //player animations
+    this.anims.create({
+        key: "play_idle",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 0, end: 0 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 1, end: 4 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_idle_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 5, end: 5 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 6, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_idle_laser",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 10, end: 10 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk_laser",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 11, end: 14}),
+        frameRate: 10,
+        repeat: -1
+    });
+
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
@@ -996,10 +1034,32 @@ export default class Tutorial extends Phaser.Scene {
         var sKey = this.input.keyboard.addKey('S');
         if (cursors.up.isDown || wKey.isDown) {
             player.y -= speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            } else if (weapon == 2){
+                player.anims.play('play_walk_laser', true);
+            }
         } else if (cursors.down.isDown || sKey.isDown) {
             player.y += speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            } else if (weapon == 2){
+                player.anims.play('play_walk_laser', true);
+            }
+        } else {
+            if (weapon == 0){
+                player.anims.play("play_idle", true);
+            } else if (weapon == 1){
+                player.anims.play("play_idle_machine", true);
+            } else if (weapon == 2){
+                player.anims.play('play_idle_laser', true);
+            }
         }
-    }
+      }
 
 
 // Tutorial Texts
