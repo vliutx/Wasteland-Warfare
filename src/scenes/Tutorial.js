@@ -956,7 +956,7 @@ export default class Tutorial extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addBullet(player.x,player.y,Math.PI);
+                addBullet(player.x-20,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -964,7 +964,7 @@ export default class Tutorial extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addBullet(player.x,player.y,Math.PI);
+                addBullet(player.x-25,player.y-10,Math.PI);
                 ammoCount -= 1;
             }
         } /*else if (weapon == 2){
