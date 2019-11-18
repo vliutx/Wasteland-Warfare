@@ -187,12 +187,14 @@ export default class FullGame extends Phaser.Scene {
         frameHeight: 48,
         frameWidth: 48
     });
-    /*//LASER CODE ///////////////
+
+/*//LASER CODE ///////////////
     this.load.spritesheet("laser_animation", "./assets/spriteSheets/Laser.png", {
         frameHeight: 48,
         frameWidth: 48
     });
 /// LASER CODE /////////*/
+
     // turrets
     this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
         frameHeight: 96,
@@ -225,7 +227,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     // gun selector stuff will need to be added
     this.load.image('lock', 'assets/Lock.png');
-    this.load.image('pistol', 'assets/PistolNoCost.png');
+    this.load.image('pistolGun', 'assets/PistolNoCost.png');
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
     this.load.image('laser', 'assets/LaserIconNoCost.png');
@@ -392,13 +394,11 @@ export default class FullGame extends Phaser.Scene {
         gbutton3.alpha = 0.5;
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
-        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
         ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
         reloadme = false;
-        ////////////////////////////////////////////////////////////////////////////////////////
         machineBulletCount.setVisible(false);
         bulletCount.setVisible(true);
     });
@@ -410,13 +410,11 @@ export default class FullGame extends Phaser.Scene {
                 scraps -= 15;
                 weapon = 1;
                 maxAmmo = 12;
-                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
                 ammoCount = maxAmmo;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
                 reloadme = false;
-                ////////////////////////////////////////////////////////////////////////////////////////
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
@@ -432,13 +430,11 @@ export default class FullGame extends Phaser.Scene {
             gbutton3.alpha = 0.5;
             weapon = 1;
             maxAmmo = 12;
-            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
             ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
             reloadme = false;
-            ////////////////////////////////////////////////////////////////////////////////////////
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
         }
@@ -464,8 +460,7 @@ export default class FullGame extends Phaser.Scene {
             gbutton1.alpha = 0.5;
             gbutton2.alpha = 0.5;
             weapon = 2;
-            // Doesn't do anything really because new gun needs to be adjusted and added and all that jazz
-        // CHANGE REALOD SHIT FOR LASER //
+        	// CHANGE REALOD SHIT FOR LASER //
             reloadTime = 0;
             reloading = false;
             played = false;
@@ -568,7 +563,7 @@ export default class FullGame extends Phaser.Scene {
 
     //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'pistol', 0).setInteractive();
+    gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){
         console.log('gun1');
         //description text
@@ -923,7 +918,7 @@ export default class FullGame extends Phaser.Scene {
 
 
 //Reload Mechanic (Copy over reload key from constant updates)
-    if (ammoCount == 0 || reloadme == true) {
+    if (ammoCount == 0 || reloadme == true && pause == false) {
         reloading = true;
         reloadTime += delta/1000;
         if (played == false) {
@@ -956,10 +951,19 @@ export default class FullGame extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addPlayerBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-20,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
+        } else if (weapon == 1){
+        // Machine Gun
+            if (time - delts > frplayer && pause != true && reloading == false){
+                delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
+                addPlayerBullet(player.x-25,player.y-10,Math.PI);
+                ammoCount -= 1;
+            }
+
+
         } else if (weapon == 1){
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
@@ -968,9 +972,8 @@ export default class FullGame extends Phaser.Scene {
                 ammoCount -= 1;
             }
 
-/// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         } else if (weapon == 2){ //Spartan Laser
-
+        /// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // Charge laser while holding space
             charge += delta/1000
             // Play firing animation HERE
@@ -995,17 +998,7 @@ export default class FullGame extends Phaser.Scene {
                 spacedown = false;
                 charge = 0
             }
-        } else if (weapon == 1){
-        // Machine Gun
-            if (time - delts > frplayer && pause != true && reloading == false){
-                delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addPlayerBullet(player.x,player.y,Math.PI);
-                ammoCount -= 1;
-            }
-        } /*else if (weapon == 2){
-        // Death Machine or RPG or whatever (To be added)
-
-        }*/
+        }
     }
 
 

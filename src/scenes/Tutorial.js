@@ -199,19 +199,6 @@ export default class Tutorial extends Phaser.Scene {
     // UI
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
-
-    // Assets for lightning turret
-    this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
-        frameHeight: 96,
-        frameWidth: 96
-      });
-
-
-    // Assets for cannon class
-    this.load.image('cannon', 'assets/cannon.png');
-    this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
-    this.load.image('shell', 'assets/Cannonball.png');
-
     // turret selector/tutorial stuff
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
@@ -219,15 +206,14 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('tutorialBacking', 'assets/TutorialBacking.png');
     this.load.image('tutorialBacking2', 'assets/TutorialBacking.png');
     // gun selector stuff will need to be added
+    this.load.image('pistolGun', 'assets/PistolNoCost.png');
     this.load.image('lock', 'assets/Lock.png')
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
-
-    // player
+    // player 
     this.load.image('playerBullet', 'assets/newBullet.png');
-
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -366,13 +352,11 @@ export default class Tutorial extends Phaser.Scene {
         gbutton3.alpha = 0.5;
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
-        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
         ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
         reloadme = false;
-        ////////////////////////////////////////////////////////////////////////////////////////
         machineBulletCount.setVisible(false);
         bulletCount.setVisible(true);
     });
@@ -384,13 +368,11 @@ export default class Tutorial extends Phaser.Scene {
                 scraps -= 15;
                 weapon = 1;
                 maxAmmo = 12;
-                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
                 ammoCount = 0;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
                 reloadme = false;
-                ////////////////////////////////////////////////////////////////////////////////////////
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
@@ -406,13 +388,11 @@ export default class Tutorial extends Phaser.Scene {
             gbutton3.alpha = 0.5;
             weapon = 1;
             maxAmmo = 12;
-            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
             ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
             reloadme = false;
-            ////////////////////////////////////////////////////////////////////////////////////////
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
         }
@@ -534,7 +514,7 @@ export default class Tutorial extends Phaser.Scene {
 
     //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'machineGun', 0).setInteractive();
+    gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){
         console.log('gun1');
         //description text
@@ -548,7 +528,7 @@ export default class Tutorial extends Phaser.Scene {
         console.log('gun2');
         //description text
     });
-    gbutton3 = this.add.sprite(40, 180, 'machineGunPrice', 0).setInteractive();
+    gbutton3 = this.add.sprite(40, 180, 'laserGunPrice', 0).setInteractive();
     buyLock2 = this.add.sprite(40, 180, 'lock', 0);
     buyLock2.alpha = 0.8;
     gbutton3.alpha = 0.5;
@@ -957,7 +937,7 @@ export default class Tutorial extends Phaser.Scene {
 
 
 //Reload Mechanic (Copy over reload key from constant updates)
-    if (ammoCount == 0 || reloadme == true) {
+    if (ammoCount == 0 || reloadme == true && pause == false) {
         reloading = true;
         reloadTime += delta/1000;
         if (played == false) {
@@ -990,7 +970,7 @@ export default class Tutorial extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addPlayerBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-20,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -998,7 +978,7 @@ export default class Tutorial extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addPlayerBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-25,player.y-10,Math.PI);
                 ammoCount -= 1;
             }
         } /*else if (weapon == 2){
@@ -1059,8 +1039,7 @@ export default class Tutorial extends Phaser.Scene {
                 player.anims.play('play_idle_laser', true);
             }
         }
-      }
-
+    }
 
 // Tutorial Texts
     //tutorial text number 1
