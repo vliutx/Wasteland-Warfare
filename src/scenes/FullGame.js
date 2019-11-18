@@ -205,6 +205,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     // gun selector stuff will need to be added
+    this.load.image('pistolGun', 'assets/PistolNoCost.png');
     this.load.image('lock', 'assets/Lock.png')
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
@@ -301,6 +302,32 @@ export default class FullGame extends Phaser.Scene {
     player = this.physics.add.sprite(864, 32, 'player_animation');
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
+
+    //player animations
+    this.anims.create({
+        key: "play_idle",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 0, end: 0 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 1, end: 4 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_idle_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 5, end: 5 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 6, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
     
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -494,7 +521,7 @@ export default class FullGame extends Phaser.Scene {
 
     //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'machineGun', 0).setInteractive();
+    gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){
         console.log('gun1');
         //description text
@@ -921,8 +948,24 @@ export default class FullGame extends Phaser.Scene {
         var sKey = this.input.keyboard.addKey('S');
         if (cursors.up.isDown || wKey.isDown) {
             player.y -= speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            }
         } else if (cursors.down.isDown || sKey.isDown) {
             player.y += speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            }
+        } else {
+            if (weapon == 0){
+                player.anims.play("play_idle", true);
+            } else if (weapon == 1){
+                player.anims.okay("play_idle_machine", true);
+            }
         }
     }
 
