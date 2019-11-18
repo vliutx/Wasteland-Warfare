@@ -199,19 +199,6 @@ export default class Tutorial extends Phaser.Scene {
     // UI
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
-
-    // Assets for lightning turret
-    this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
-        frameHeight: 96,
-        frameWidth: 96
-      });
-
-  
-    // Assets for cannon class
-    this.load.image('cannon', 'assets/cannon.png');
-    this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
-    this.load.image('shell', 'assets/Cannonball.png');
-
     // turret selector/tutorial stuff
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
@@ -219,6 +206,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('tutorialBacking', 'assets/TutorialBacking.png');
     this.load.image('tutorialBacking2', 'assets/TutorialBacking.png');
     // gun selector stuff will need to be added
+    this.load.image('pistolGun', 'assets/PistolNoCost.png');
     this.load.image('lock', 'assets/Lock.png')
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
@@ -516,7 +504,7 @@ export default class Tutorial extends Phaser.Scene {
 
     //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'machineGun', 0).setInteractive();
+    gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){
         console.log('gun1');
         //description text
