@@ -32,7 +32,8 @@
     var ammoCount = maxAmmo;
     var tickTimer = 3;
     // not in tutorial things
-    var buildTimer = 10;
+    var buildTimer = 12;
+    var waveSize = 0;
 //LASER CODE
     var chargeTime = 1.5; //Time to charge up laser
     var charge = 0;    //Tracks time it has been charged for
@@ -73,6 +74,8 @@
     var reload;
     var lasershot;
     var laserReload;
+    var purchase;
+    var purchaseLaser;
 
     // Enemies
     var fast_enemies;
@@ -137,11 +140,11 @@
     var spawnDelay = 400;
 
     // Enemy Spawns
-    var enemies = [8,0,0,0];
+    var enemies = [5,0,0,0];
     var empty = [0,0,0,0];
     var waves = [
-                    [8,0,0,0],
-                    [0,15,0,0],
+                    [6,0,0,0],
+                    [0,12,0,0],
                     [10,10,0,0],
                     [5,20,5,0],
                     [10,10,10,0],
@@ -255,6 +258,8 @@ export default class FullGame extends Phaser.Scene {
     // player
     this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
+    this.load.audio('purchase', 'assets/sounds/purchase.mp3');
+    this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
  ////// LASERRRRR CODEEEEE //////////
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
 
@@ -313,11 +318,13 @@ export default class FullGame extends Phaser.Scene {
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
     lasershot = this.sound.add('lasershot', {volume: .40});
+    purchase = this.sound.add('purchase', {volume: .40});
+    purchaseLaser = this.sound.add('purchaseLaser', {volume: .40});
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
     tick = this.sound.add('tick');
-    theme = this.sound.add('theme', {loop: true, volume: 0.5});
+    theme = this.sound.add('theme', {loop: true, volume: 0.3});
 
     //play Sounds
     theme.play();
@@ -406,6 +413,7 @@ export default class FullGame extends Phaser.Scene {
     switchMachineGun.on("down", function(){
         if (!machine){
             if (scraps >= 15){
+                purchase.play()
                 machine = true;
                 scraps -= 15;
                 weapon = 1;
@@ -445,6 +453,8 @@ export default class FullGame extends Phaser.Scene {
     swtichSpartanLaser.on("down", function(){
         if (!spartan){
             if (scraps >= 50){
+                purchase.play();
+                purchaseLaser.play()
                 spartan = true;
                 scraps -= 50;
                 weapon = 2;
@@ -456,6 +466,7 @@ export default class FullGame extends Phaser.Scene {
                 //might need to include code here if we want to be able to click to switch
             }
         } else {
+            purchaseLaser.play();
             gbutton3.alpha = 1;
             gbutton1.alpha = 0.5;
             gbutton2.alpha = 0.5;
@@ -516,9 +527,9 @@ export default class FullGame extends Phaser.Scene {
     });
 
     this.nextEnemy = 0;
-    this.waveSize = 6;
+    waveSize = waves[0].reduce((a,b) => a + b, 0)
     this.spawned = 0;
-    enemiesRemaining = this.waveSize;
+    enemiesRemaining = waveSize;
     waveNumber = 1;
     this.spawnDelay = 400;
 
@@ -720,16 +731,16 @@ export default class FullGame extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(215, 18, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(215, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
-    waveText = this.add.text(420, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
+    waveText = this.add.text(415, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 25, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
     this.buildTime = buildTimer;
-    timeText = this.add.text(620, 18, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    timeText = this.add.text(600, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-    enemiesRemainingText = this.add.text(600, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    enemiesRemainingText = this.add.text(590, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
@@ -787,6 +798,7 @@ export default class FullGame extends Phaser.Scene {
 
         //Display defeat text
         defeatText.setVisible(true);
+        //enemiesRemainingText.setVisible(false);
         theme.stop();
         gameOverMusic = this.sound.add('gameOverMusic', {loop: false, volume: 0.5});
         if (gameOverPlayed == false) {
@@ -832,11 +844,11 @@ export default class FullGame extends Phaser.Scene {
             gameTime = 0;
             //Remove text
             timeText.setVisible(false);
-            //enemiesRemainingText.setVisible(true)
+            enemiesRemainingText.setVisible(true)
             //reset tickTimer
             tickTimer = 3;
-            //reset enemies remaining
-            enemiesRemaining = enemies.reduce((a, b) => a + b, 0);
+            //reset enemies remaining to next wave
+            enemiesRemaining = waves[waveNumber-1].reduce((a,b) => a + b, 0);
             this.spawned = 0;
         }
     } //End build phase
@@ -962,16 +974,6 @@ export default class FullGame extends Phaser.Scene {
                 addPlayerBullet(player.x-25,player.y-10,Math.PI);
                 ammoCount -= 1;
             }
-
-
-        } else if (weapon == 1){
-        // Machine Gun
-            if (time - delts > frplayer && pause != true && reloading == false){
-                delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addPlayerBullet(player.x,player.y,Math.PI);
-                ammoCount -= 1;
-            }
-
         } else if (weapon == 2){ //Spartan Laser
         /// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // Charge laser while holding space
@@ -993,6 +995,11 @@ export default class FullGame extends Phaser.Scene {
                     laserbeam.setVisible(true);
                     firing = true;
                     firetime = 0;
+                } else {
+                    lasershot.play();
+                    laserbeam.setVisible(true);
+                    firing = true;
+                    firetime = 0;
                 }
                 // Shot fired, reset and play reload
                 spacedown = false;
@@ -1000,9 +1007,18 @@ export default class FullGame extends Phaser.Scene {
             }
         }
     }
+    if (!spacedown){
+        // Player releases space
+        charge = 0;
+    }
+    
 
 
 // Constant updates
+    //Update enemies remaining test 
+    enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
+
+    //Laser firing
     if(firing){
         firetime += delta/1000;
         if(firetime<.25){
@@ -1354,7 +1370,7 @@ var Boss = new Phaser.Class({
             {
                 this.setActive(false);
                 this.setVisible(false);
-                enemiesRemaining -= 3;
+                enemiesRemaining -= 1;
                 tank.stop();
                 lifecount -= 10
             }
@@ -1474,7 +1490,7 @@ var Turret = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 700;
+        this.fireRate = 600;
     },
     place: function(i, j) {
         this.y = i * 64 + 64/2;

@@ -114,6 +114,7 @@
     var teslaRange
     var tutorialBacking1
     var tutorialBacking2
+    var buildTimer = 12;
 
     // Buttons
     var button1;
@@ -210,6 +211,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('lock', 'assets/Lock.png')
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
+    this.load.image('laserGunPrice', 'assets/LaserIconNoCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
     // player 
@@ -671,16 +673,16 @@ export default class Tutorial extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(210, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(215, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
     waveText = this.add.text(415, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 25, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 15;
-    timeText = this.add.text(615, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    this.buildTime = buildTimer;
+    timeText = this.add.text(600, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-    enemiesRemainingText = this.add.text(600, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    enemiesRemainingText = this.add.text(590, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     enemiesRemainingText.setVisible(false);
     //Create health text
 // Edited out
@@ -755,6 +757,8 @@ export default class Tutorial extends Phaser.Scene {
 
   update (time, delta) {
 // Game Phases
+    //Update enemies remaining test 
+    enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
