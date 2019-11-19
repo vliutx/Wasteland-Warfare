@@ -14,7 +14,7 @@
 
     // Counters
     var scraps = 40;
-    var lifecount = 5;
+    var lifecount = 10;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
@@ -29,12 +29,15 @@
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
+    var buildTimer = 12;
 
     // Booleans
     var pause = true;
     var buildPhase = false;
     var startGame = false;
     var restart = false;
+    var gameOverPlayed = false;
+    var played = false;
 
     // Gun stuff pew pew
     var reloading = false;
@@ -42,7 +45,12 @@
     var spacedown = false;
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
-    var deathgun = false; //did they purchase the death machine?
+    var spartan = false; //did they purchase the death machine?
+    //LASER CODE
+    var chargeTime = 1.5; //Time to charge up laser
+    var charge = 0;    //Tracks time it has been charged for
+    var firetime = 0; // Tracks how long laser has been firing
+    var firing = false;
 
     // Misc
     var path;
@@ -53,7 +61,6 @@
     var pointer3;
     var healthpointer;
     var healthtext;
-    var played = false;
     var tutorialBacking1;
     var tutorialBacking2;
 
@@ -62,10 +69,15 @@
     var wind;
     var tick;
     var theme;
+    var gameOverMusic;
     var tank;
     var explode;
     var electric;
     var reload;
+    var lasershot;
+    var laserReload;
+    var purchase;
+    var purchaseLaser;
 
     // Enemies
     var fast_enemies;
@@ -89,11 +101,16 @@
     var cannons;
     var lightnings;
 
+    //Guns
+    var laser;
+    var laserbeam;
+
     // Damage
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
-    var shots = 6;
+    var LASER_DAMAGE = 200;
+    var LASER_WIDTH = 50;
 
     // graphics stuff
     var turretIndicator
@@ -122,7 +139,7 @@
     var nextEnemy = 0;
     var waveSize = 6;
     var spawned = 0;
-    enemiesRemaining = waveSize;
+    enemiesRemaining = waveSize; //this line isn't in the fullgame?
     waveNumber = 1;
     var spawnDelay = 400;
 
@@ -189,18 +206,25 @@ export default class Tutorial extends Phaser.Scene {
     // UI
     this.load.image('desertBackground', './assets/tilesets/level1map.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
+    // turret selector/tutorial stuff
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     this.load.image('tutorialBacking', 'assets/TutorialBacking.png');
     this.load.image('tutorialBacking2', 'assets/TutorialBacking.png');
     // gun selector stuff will need to be added
+    this.load.image('pistolGun', 'assets/PistolNoCost.png');
     this.load.image('lock', 'assets/Lock.png')
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
+    this.load.image('laser', 'assets/LaserIconNoCost.png');
+    this.load.image('laserPrice', 'assets/LaserIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
-    // player (none)
+    // player 
+    this.load.image('playerBullet', 'assets/newBullet.png');
+    this.load.image('laser', 'assets/laser.png');
+    this.load.image('laserbeam', 'assets/Laser.png')
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -214,8 +238,12 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('wind', 'assets/sounds/Wind.mp3');
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
+    this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
     // player
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
+    this.load.audio('purchase', 'assets/sounds/purchase.mp3');
+    this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
+    this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
     //
@@ -228,7 +256,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('explosion', 'assets/sounds/Explode.mp3');
     ////// END Audio //////
     ///////////////// END assets /////////////////
-    
+
     // Declare variables for center of the scene
     this.centerX = this.cameras.main.width / 2;
     this.centerY = this.cameras.main.height / 2;
@@ -259,6 +287,9 @@ export default class Tutorial extends Phaser.Scene {
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
+    lasershot = this.sound.add('lasershot', {volume: .40});
+    purchase = this.sound.add('purchase', {volume: .40});
+    purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
@@ -277,6 +308,44 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 896, 640);
     player.setCollideWorldBounds(true);
 
+    //player animations
+    this.anims.create({
+        key: "play_idle",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 0, end: 0 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 1, end: 4 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_idle_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 5, end: 5 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk_machine",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 6, end: 9 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_idle_laser",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 10, end: 10 }),
+        frameRate: 1,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "play_walk_laser",
+        frames: this.anims.generateFrameNumbers("player_animation", { start: 11, end: 14}),
+        frameRate: 10,
+        repeat: -1
+    });
+
     //player can shoot
     var spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     spaceBar.on("down", function(){
@@ -288,6 +357,8 @@ export default class Tutorial extends Phaser.Scene {
 
     //Reload key for the player
     this.reloadKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    laserbeam = this.add.image(player.x, player.y, 'laserbeam');
+    laserbeam.setVisible(false);
 
 // Weapons
 // This first checks if the gun is bought. If it isn't it buys it and immediately switches to it
@@ -300,13 +371,11 @@ export default class Tutorial extends Phaser.Scene {
         gbutton3.alpha = 0.5;
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
-        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
         ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
         reloadme = false;
-        ////////////////////////////////////////////////////////////////////////////////////////
         machineBulletCount.setVisible(false);
         bulletCount.setVisible(true);
     });
@@ -318,13 +387,11 @@ export default class Tutorial extends Phaser.Scene {
                 scraps -= 15;
                 weapon = 1;
                 maxAmmo = 12;
-                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
                 ammoCount = 0;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
                 reloadme = false;
-                ////////////////////////////////////////////////////////////////////////////////////////
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
@@ -340,37 +407,43 @@ export default class Tutorial extends Phaser.Scene {
             gbutton3.alpha = 0.5;
             weapon = 1;
             maxAmmo = 12;
-            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
             ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
             reloadme = false;
-            ////////////////////////////////////////////////////////////////////////////////////////
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
         }
     }, this);
-    var switchDeathGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
-    switchDeathGun.on("down", function(){
-        if (!deathgun){
-            if (scraps >= 30){
-                deathgun = true;
-                scraps -= 30;
+//SPARTAN LASER CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    var swtichSpartanLaser = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
+    swtichSpartanLaser.on("down", function(){
+        if (!spartan){
+            if (scraps >= 50){
+                purchase.play();
+                purchaseLaser.play()
+                spartan = true;
+                scraps -= 50;
                 weapon = 2;
                 buyLock2.setVisible(false);
                 gbutton3.setVisible(false);
                 gbutton1.alpha = 0.5;
                 gbutton2.alpha = 0.5;
-                gbutton3 = this.add.sprite(40, 180, 'machineGun', 0);
+                gbutton3 = this.add.sprite(40, 180, 'laser', 0);
                 //might need to include code here if we want to be able to click to switch
             }
         } else {
+            purchaseLaser.play();
             gbutton3.alpha = 1;
             gbutton1.alpha = 0.5;
             gbutton2.alpha = 0.5;
             weapon = 2;
-            // Doesn't do anything really because new gun needs to be adjusted and added and all that jazz
+            // CHANGE REALOD SHIT FOR LASER //
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
         }
     }, this);
     //
@@ -466,9 +539,9 @@ export default class Tutorial extends Phaser.Scene {
         button2.alpha = 0.5;
     });
 
-    //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
+    //Gun selection
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'machineGun', 0).setInteractive();
+    gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){
         console.log('gun1');
         //description text
@@ -482,7 +555,7 @@ export default class Tutorial extends Phaser.Scene {
         console.log('gun2');
         //description text
     });
-    gbutton3 = this.add.sprite(40, 180, 'machineGunPrice', 0).setInteractive();
+    gbutton3 = this.add.sprite(40, 180, 'laserPrice', 0).setInteractive();
     buyLock2 = this.add.sprite(40, 180, 'lock', 0);
     buyLock2.alpha = 0.8;
     gbutton3.alpha = 0.5;
@@ -556,11 +629,11 @@ export default class Tutorial extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(100, 500, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
     var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(100, 500, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -601,6 +674,7 @@ export default class Tutorial extends Phaser.Scene {
 
 // Bullets
     bullets = this.physics.add.group({ classType: Bullet, runChildUpdate: true });
+    playerBullets = this.physics.add.group({ classType: PlayerBullet, runChildUpdate: true });
     shells = this.physics.add.group({classType: Shell, runChildUpdate: true});
 
 //Physics overlaps
@@ -610,6 +684,10 @@ export default class Tutorial extends Phaser.Scene {
     this.physics.add.overlap(fast_enemies, bullets, damageEnemyBullet.bind(this));
     this.physics.add.overlap(tough_enemies, bullets, damageEnemyBullet.bind(this));
     this.physics.add.overlap(boss_enemies, bullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(reg_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(fast_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(tough_enemies, playerBullets, damageEnemyBullet.bind(this));
+    this.physics.add.overlap(boss_enemies, playerBullets, damageEnemyBullet.bind(this));
     //Shells overlap for cannon
     this.physics.add.overlap(reg_enemies, shells, damageEnemyShell.bind(this));
     this.physics.add.overlap(fast_enemies, shells, damageEnemyShell.bind(this));
@@ -620,24 +698,18 @@ export default class Tutorial extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(210, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(215, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
     waveText = this.add.text(415, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 25, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
-    this.buildTime = 15;
-    timeText = this.add.text(615, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    this.buildTime = buildTimer;
+    timeText = this.add.text(600, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-    enemiesRemainingText = this.add.text(600, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    enemiesRemainingText = this.add.text(590, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     enemiesRemainingText.setVisible(false);
     //Create health text
-// Edited out
-    // lifecountText = this.add.text(700, 615, "Lifecount: " + lifecount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    // lifecountText.setVisible(false);
-    // //ammoCount
-    // ammoCountText = this.add.text(700, 590, "Ammo: " + ammoCount, {fontSize: 25, color: '#FF0000', fontStyle: 'bold'});
-    // ammoCountText.setVisible(false);
     //Create Victory text
     victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
@@ -692,7 +764,6 @@ export default class Tutorial extends Phaser.Scene {
     //begin build phase
     buildPhase = true;
     //disable start text
-    startText.setVisible(false);
     //Enable wave text
     waveText.setVisible(true);
     //Enable scrap text
@@ -705,6 +776,8 @@ export default class Tutorial extends Phaser.Scene {
 
   update (time, delta) {
 // Game Phases
+    //Update enemies remaining test 
+    enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
     //Win Condition
     if (wavesRemaining == 0){
         //Psuedo pause the game
@@ -721,7 +794,8 @@ export default class Tutorial extends Phaser.Scene {
         //FIX
         continueText.setVisible(true);
         if (Phaser.Input.Keyboard.JustDown(this.continue)) {
-          this.scene.start('FullGame')
+            //might need to clear the background or close the scene here
+            this.scene.start('FullGame')
         }
         //var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         //continueKey.on("down", function(){
@@ -739,8 +813,15 @@ export default class Tutorial extends Phaser.Scene {
         //Display defeat text
         scrapText.setVisible(false);
         waveText.setVisible(false);
+        enemiesRemainingText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
+
+        gameOverMusic = this.sound.add('gameOverMusic', {loop: false, volume: 0.5});
+        if (gameOverPlayed == false) {
+          gameOverMusic.play();
+          gameOverPlayed = true
+        }
 
         //Prompt player to restart the game
         restartText.setVisible(true);
@@ -881,7 +962,7 @@ export default class Tutorial extends Phaser.Scene {
 
 
 //Reload Mechanic (Copy over reload key from constant updates)
-    if (ammoCount == 0 || reloadme == true) {
+    if (ammoCount == 0 || reloadme == true && pause == false) {
         reloading = true;
         reloadTime += delta/1000;
         if (played == false) {
@@ -914,7 +995,7 @@ export default class Tutorial extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-20,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -922,17 +1003,49 @@ export default class Tutorial extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-25,player.y-10,Math.PI);
                 ammoCount -= 1;
             }
-        } /*else if (weapon == 2){
-        // Death Machine or RPG or whatever (To be added)
-
-        }*/
+        } else if (weapon == 2){
+        // spartan laser
+            charge += delta/1000
+            if (charge >= chargeTime){
+                var laserEnemies = getEnemiesHeight(player.y, LASER_WIDTH);
+                if (laserEnemies.length > 0){
+                    for (var i = 0; i < laserEnemies.length; i++){
+                        laserEnemies[i].receiveDamage(LASER_DAMAGE);
+                    }
+                    lasershot.play();
+                    laserbeam.setVisible(true);
+                    firing = true;
+                    firetime = 0;
+                } else {
+                    lasershot.play();
+                    laserbeam.setVisible(true);
+                    firing = true;
+                    firetime = 0;
+                }
+                spacedown = false;
+                charge = 0;
+            }
+        }
+    }
+    if (!spacedown){
+        charge = 0;
     }
 
-
 // Constant updates
+    //Laser firing
+    if(firing){
+        firetime += delta/1000;
+        if(firetime<.25){
+            laserbeam.setPosition(player.x - 850, player.y - 10);
+        } else {
+            laserbeam.setVisible(false);
+            firing = false;
+        }
+    }
+
     // Check for reload
     if (Phaser.Input.Keyboard.JustDown(this.reloadKey)) {
         if (ammoCount != maxAmmo){
@@ -958,11 +1071,32 @@ export default class Tutorial extends Phaser.Scene {
         var sKey = this.input.keyboard.addKey('S');
         if (cursors.up.isDown || wKey.isDown) {
             player.y -= speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            } else if (weapon == 2){
+                player.anims.play('play_walk_laser', true);
+            }
         } else if (cursors.down.isDown || sKey.isDown) {
             player.y += speed;
+            if (weapon == 0){
+                player.anims.play("play_walk", true);
+            } else if (weapon == 1){
+                player.anims.play("play_walk_machine", true);
+            } else if (weapon == 2){
+                player.anims.play('play_walk_laser', true);
+            }
+        } else {
+            if (weapon == 0){
+                player.anims.play("play_idle", true);
+            } else if (weapon == 1){
+                player.anims.play("play_idle_machine", true);
+            } else if (weapon == 2){
+                player.anims.play('play_idle_laser', true);
+            }
         }
     }
-
 
 // Tutorial Texts
     //tutorial text number 1
@@ -1676,6 +1810,54 @@ var Bullet = new Phaser.Class({
 
 });
 
+var PlayerBullet = new Phaser.Class({
+
+    Extends: Phaser.GameObjects.Image,
+
+    initialize:
+
+    function Bullet (scene)
+    {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, 'playerBullet');
+
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+
+        this.speed = Phaser.Math.GetSpeed(4000, 1);
+    },
+
+    fire: function (x, y, angle)
+    {
+        this.setActive(true);
+        this.setVisible(true);
+        //  Bullets fire from the middle of the screen to the given x/y
+        this.setPosition(x, y);
+
+    //  we don't need to rotate the bullets as they are round
+    //    this.setRotation(angle);
+
+        this.dx = Math.cos(angle);
+        this.dy = Math.sin(angle);
+
+        this.lifespan = 1000;
+    },
+
+    update: function (time, delta)
+    {
+        this.lifespan -= delta;
+
+        this.x += this.dx * (this.speed * delta);
+        this.y += this.dy * (this.speed * delta);
+
+        if (this.lifespan <= 0)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+
+});
 
 function getEnemy(x, y, distance) {
     var regularUnits = reg_enemies.getChildren();
@@ -1723,6 +1905,44 @@ function getEnemies(x, y, distance) {
         if(bossUnits[i].active && Phaser.Math.Distance.Between(x, y, bossUnits[i].x, bossUnits[i].y) < distance)
             enemies.push(bossUnits[i]);
     }
+    if (enemies.length > 0){
+        return enemies
+    }else{
+        return false
+    }
+}
+
+///////  LASER CODE!!!! //////
+function getEnemiesHeight(y, width) {
+    var regularUnits = reg_enemies.getChildren();
+    var fastUnits = fast_enemies.getChildren();
+    var toughUnits = tough_enemies.getChildren();
+    var bossUnits = boss_enemies.getChildren();
+    var enemies = [];
+    //  Create lower bound for laser hitbox
+    var lower = y - width;
+    var upper = y + width;
+    for(var i = 0; i < regularUnits.length; i++) {
+        // Check if enemy y within
+        if(regularUnits[i].active && lower < regularUnits[i].y && upper > regularUnits[i].y){
+            enemies.push(regularUnits[i]);
+        }
+    };
+    for(var i = 0; i < fastUnits.length; i++) {
+        if(fastUnits[i].active && lower < fastUnits[i].y && upper > fastUnits[i].y){
+            enemies.push(fastUnits[i]);
+        }
+    };
+    for(var i = 0; i < toughUnits.length; i++) {
+        if(toughUnits[i].active && lower < toughUnits[i].y && upper > toughUnits[i].y){
+            enemies.push(toughUnits[i]);
+        }
+    };
+    for(var i = 0; i < bossUnits.length; i++) {
+        if(bossUnits[i].active && lower < bossUnits[i].y && upper > bossUnits[i].y){
+            enemies.push(bossUnits[i]);
+        }
+    };
     if (enemies.length > 0){
         return enemies
     }else{
@@ -1891,6 +2111,15 @@ function addBullet(x, y, angle) {
     if (bullet)
     {
         bullet.fire(x, y, angle);
+        gunfire.play()
+    }
+}
+
+function addPlayerBullet(x, y, angle) {
+    var playerbullet = playerBullets.get();
+    if (playerbullet)
+    {
+        playerbullet.fire(x, y, angle);
         gunfire.play()
     }
 }

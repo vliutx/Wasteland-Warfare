@@ -2,6 +2,7 @@
 var path;
 
 var bullets;
+var playerBullets;
 var player;
 var shells;
 
