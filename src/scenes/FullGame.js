@@ -1,6 +1,5 @@
 /*global Phaser*/
 
-
     var map =      [[ 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                     [ 0, 0,-1, 0,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1],
                     [ 0, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
@@ -11,7 +10,6 @@
                     [-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
                     [-1,-1,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1],
                     [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
-
 
 
     // Counters
@@ -31,19 +29,15 @@
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
-    // not in tutorial things
     var buildTimer = 12;
-    var waveSize = 0;
-//LASER CODE
-    var chargeTime = 1.5; //Time to charge up laser
-    var charge = 0;    //Tracks time it has been charged for
-    var firetime = 0; // Tracks how long laser has been firing
 
     // Booleans
     var pause = true;
     var buildPhase = false;
     var startGame = false;
     var restart = false;
+    var gameOverPlayed = false;
+    var played = false;
 
     // Gun stuff pew pew
     var reloading = false;
@@ -52,15 +46,17 @@
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
     var spartan = false; //did they purchase the death machine? !!!!!!!!!
-    var gameOverPlayed = false
-    var purchaseMachineGun = false;
+    //LASER CODE
+    var chargeTime = 1.5; //Time to charge up laser
+    var charge = 0;    //Tracks time it has been charged for
+    var firetime = 0; // Tracks how long laser has been firing
     var firing = false;
 
     // Misc
     var path;
     var tick;
     var death;
-    var played = false;
+    
 
     // Sounds
     var cannonshot;
@@ -236,9 +232,10 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('laserPrice', 'assets/LaserIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
+    // player
+    this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.image('laser', 'assets/laser.png');
     this.load.image('laserbeam', 'assets/Laser.png')
-    // player (none)
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -253,9 +250,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
     this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
-
     // player
-    this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
     this.load.audio('purchase', 'assets/sounds/purchase.mp3');
     this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
@@ -446,7 +441,6 @@ export default class FullGame extends Phaser.Scene {
             machineBulletCount.setVisible(true);
         }
     }, this);
-
 //SPARTAN LASER CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var swtichSpartanLaser = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
     swtichSpartanLaser.on("down", function(){
@@ -571,7 +565,7 @@ export default class FullGame extends Phaser.Scene {
         button2.alpha = 0.5;
     });
 
-    //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
+    //Gun selection
     //As of right now there is no click to purchase option it is just a visual indicator
     gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){
@@ -1002,7 +996,7 @@ export default class FullGame extends Phaser.Scene {
                 }
                 // Shot fired, reset and play reload
                 spacedown = false;
-                charge = 0
+                charge = 0;
             }
         }
     }
