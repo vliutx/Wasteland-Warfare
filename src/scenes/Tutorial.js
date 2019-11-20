@@ -1744,8 +1744,8 @@ var Cannon = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
-        if (scraps >= 10 && map[i][j] == 1){
-            scraps -= 10;
+        if (scraps >= 20 && map[i][j] == 1){
+            scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1826,8 +1826,8 @@ var Lightning = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
-        if (scraps >= 10 && map[i][j] == 1){
-            scraps -= 10;
+        if (scraps >= 30 && map[i][j] == 1){
+            scraps -= 30;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
