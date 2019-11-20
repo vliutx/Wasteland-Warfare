@@ -1629,26 +1629,28 @@ var Cannon = new Phaser.Class({
 
     buttonCheck: function()
     {
-        buttonYes.off('pointerup');
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
-        if (map[i][j] == 1){
-            buttonYes.setActive(true);
-            buttonNo.setActive(true);
-            buttonYes.x = this.x - 40;
-            buttonYes.y = this.y;
-            buttonNo.x = this.x + 40;
-            buttonNo.y = this.y;
-            buttonYes.setVisible(true);
-            buttonNo.setVisible(true);
-            buttonYes.on('pointerup', this.upgrade, this);
-            buttonNo.on('pointerup', function(){
-                buttonYes.setActive(false);
-                buttonYes.setVisible(false);
-                buttonNo.setActive(false);
-                buttonNo.setVisible(false);
-                buttonYes.off('pointerup');
-            });
+        if (pause == false){
+            buttonYes.off('pointerup');
+            var i = (this.y - 32) / 64;
+            var j = (this.x - 32) / 64;
+            if (map[i][j] == 1){
+                buttonYes.setActive(true);
+                buttonNo.setActive(true);
+                buttonYes.x = this.x - 40;
+                buttonYes.y = this.y;
+                buttonNo.x = this.x + 40;
+                buttonNo.y = this.y;
+                buttonYes.setVisible(true);
+                buttonNo.setVisible(true);
+                buttonYes.on('pointerup', this.upgrade, this);
+                buttonNo.on('pointerup', function(){
+                    buttonYes.setActive(false);
+                    buttonYes.setVisible(false);
+                    buttonNo.setActive(false);
+                    buttonNo.setVisible(false);
+                    buttonYes.off('pointerup');
+                });
+            }
         }
     },
     upgrade: function ()
@@ -1709,26 +1711,28 @@ var Lightning = new Phaser.Class({
     },
     buttonCheck: function()
     {
-        buttonYes.off('pointerup');
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
-        if (map[i][j] == 1){
-            buttonYes.setActive(true);
-            buttonNo.setActive(true);
-            buttonYes.x = this.x - 40;
-            buttonYes.y = this.y;
-            buttonNo.x = this.x + 40;
-            buttonNo.y = this.y;
-            buttonYes.setVisible(true);
-            buttonNo.setVisible(true);
-            buttonYes.on('pointerup', this.upgrade, this);
-            buttonNo.on('pointerup', function(){
-                buttonYes.setActive(false);
-                buttonYes.setVisible(false);
-                buttonNo.setActive(false);
-                buttonNo.setVisible(false);
-                buttonYes.off('pointerup');
-            });
+        if (pause == false){
+            buttonYes.off('pointerup');
+            var i = (this.y - 32) / 64;
+            var j = (this.x - 32) / 64;
+            if (map[i][j] == 1){
+                buttonYes.setActive(true);
+                buttonNo.setActive(true);
+                buttonYes.x = this.x - 40;
+                buttonYes.y = this.y;
+                buttonNo.x = this.x + 40;
+                buttonNo.y = this.y;
+                buttonYes.setVisible(true);
+                buttonNo.setVisible(true);
+                buttonYes.on('pointerup', this.upgrade, this);
+                buttonNo.on('pointerup', function(){
+                    buttonYes.setActive(false);
+                    buttonYes.setVisible(false);
+                    buttonNo.setActive(false);
+                    buttonNo.setVisible(false);
+                    buttonYes.off('pointerup');
+                });
+            }
         }
     },
     upgrade: function ()
@@ -2116,36 +2120,6 @@ function placeTower(pointer) {
 }
 
 
-function placeCannon(pointer) {
-    if (scraps >= 0){
-        scraps -= 0;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
-            var cannon = cannons.get();
-            if (cannon){
-                cannon.setActive(true);
-                cannon.setVisible(true);
-                cannon.place(i, j);
-                lightning.on('pointerover', function(){
-                	if (pause != true){
-                    	teslaRange.x = lightning.x;
-                        teslaRange.y = lightning.y;
-
-                    	teslaIndicator.fillCircleShape(teslaRange);
-                    }
-                });
-                lightning.on('pointerout', function(){
-                    teslaIndicator.clear();
-                });
-                tick.play();
-            }
-        }
-    }
-}
-
-
-
 function addBullet(x, y, angle) {
     var bullet = bullets.get();
     if (bullet)
@@ -2154,6 +2128,7 @@ function addBullet(x, y, angle) {
         gunfire.play()
     }
 }
+
 
 function addPlayerBullet(x, y, angle) {
     var playerbullet = playerBullets.get();
