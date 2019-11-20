@@ -893,8 +893,6 @@ export default class FullGame extends Phaser.Scene {
         pause = true
 
         //Display victory text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();

@@ -778,14 +778,20 @@ export default class Tutorial extends Phaser.Scene {
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
 
     //turret upgrade feedback
+    confirmText = this.add.text(0, 0, "Upgrade?");
+    confirmText.setVisible(false);
+    confirmText.setDepth(2);
+    confirmBox = this.add.graphics();
+    confirmBox.setDepth(1);
+    blackBox = new Phaser.Geom.Rectangle(0, 0, 81, 20);
     buttonYes = this.add.image(0, 0, 'checkmark');
     buttonYes.setInteractive();
     buttonYes.setScale(.05);
-    buttonYes.setDepth(1);
+    buttonYes.setDepth(2);
     buttonNo = this.add.image(0, 0, 'xmark');
     buttonNo.setInteractive();
     buttonNo.setScale(.05);
-    buttonNo.setDepth(1);
+    buttonNo.setDepth(2);
     buttonYes.setActive(false);
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
@@ -830,7 +836,7 @@ export default class Tutorial extends Phaser.Scene {
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(250, 5, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText = this.add.text(250, 250, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     victoryText.setDepth(1);
     continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
@@ -903,8 +909,6 @@ export default class Tutorial extends Phaser.Scene {
         pause = true
 
         //Display victory text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
@@ -1641,14 +1645,23 @@ var Turret = new Phaser.Class({
                 buttonYes.y = this.y;
                 buttonNo.x = this.x + 40;
                 buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
                 buttonYes.setVisible(true);
                 buttonNo.setVisible(true);
+                confirmText.setVisible(true);
                 buttonYes.on('pointerup', this.upgrade, this);
                 buttonNo.on('pointerup', function(){
                     buttonYes.setActive(false);
                     buttonYes.setVisible(false);
                     buttonNo.setActive(false);
                     buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
                     buttonYes.off('pointerup');
                 });
             }
@@ -1662,6 +1675,8 @@ var Turret = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;
@@ -1723,14 +1738,23 @@ var Cannon = new Phaser.Class({
                 buttonYes.y = this.y;
                 buttonNo.x = this.x + 40;
                 buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
                 buttonYes.setVisible(true);
                 buttonNo.setVisible(true);
+                confirmText.setVisible(true);
                 buttonYes.on('pointerup', this.upgrade, this);
                 buttonNo.on('pointerup', function(){
                     buttonYes.setActive(false);
                     buttonYes.setVisible(false);
                     buttonNo.setActive(false);
                     buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
                     buttonYes.off('pointerup');
                 });
             }
@@ -1744,6 +1768,8 @@ var Cannon = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 20 && map[i][j] == 1){
             scraps -= 20;
             map[i][j] = 2;
@@ -1805,14 +1831,23 @@ var Lightning = new Phaser.Class({
                 buttonYes.y = this.y;
                 buttonNo.x = this.x + 40;
                 buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
                 buttonYes.setVisible(true);
                 buttonNo.setVisible(true);
+                confirmText.setVisible(true);
                 buttonYes.on('pointerup', this.upgrade, this);
                 buttonNo.on('pointerup', function(){
                     buttonYes.setActive(false);
                     buttonYes.setVisible(false);
                     buttonNo.setActive(false);
                     buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
                     buttonYes.off('pointerup');
                 });
             }
@@ -1826,6 +1861,8 @@ var Lightning = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 30 && map[i][j] == 1){
             scraps -= 30;
             map[i][j] = 2;
@@ -2193,7 +2230,10 @@ function placeTower(pointer) {
                         teslaRange.y = lightning.y;
                         teslaIndicator.fillCircleShape(teslaRange);
                     }
-                })
+                });
+                lightning.on('pointerout', function(){
+                    teslaIndicator.clear();
+                });
             }
             button3.alpha = .5;
             teslaIndicator.clear();
