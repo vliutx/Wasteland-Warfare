@@ -2234,6 +2234,7 @@ function placeTower(pointer) {
                 lightning.on('pointerout', function(){
                     teslaIndicator.clear();
                 });
+                tick.play();
             }
             button3.alpha = .5;
             teslaIndicator.clear();

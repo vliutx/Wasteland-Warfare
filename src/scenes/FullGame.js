@@ -804,14 +804,20 @@ export default class FullGame extends Phaser.Scene {
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
 
     //turret upgrade feedback
+    confirmText = this.add.text(0, 0, "Upgrade?");
+    confirmText.setVisible(false);
+    confirmText.setDepth(2);
+    confirmBox = this.add.graphics();
+    confirmBox.setDepth(1);
+    blackBox = new Phaser.Geom.Rectangle(0, 0, 81, 20);
     buttonYes = this.add.image(0, 0, 'checkmark');
     buttonYes.setInteractive();
     buttonYes.setScale(.05);
-    buttonYes.setDepth(1);
+    buttonYes.setDepth(2);
     buttonNo = this.add.image(0, 0, 'xmark');
     buttonNo.setInteractive();
     buttonNo.setScale(.05);
-    buttonNo.setDepth(1);
+    buttonNo.setDepth(2);
     buttonYes.setActive(false);
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
@@ -1639,14 +1645,23 @@ var Turret = new Phaser.Class({
                 buttonYes.y = this.y;
                 buttonNo.x = this.x + 40;
                 buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
                 buttonYes.setVisible(true);
                 buttonNo.setVisible(true);
+                confirmText.setVisible(true);
                 buttonYes.on('pointerup', this.upgrade, this);
                 buttonNo.on('pointerup', function(){
                     buttonYes.setActive(false);
                     buttonYes.setVisible(false);
                     buttonNo.setActive(false);
                     buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
                     buttonYes.off('pointerup');
                 });
             }
@@ -1660,6 +1675,8 @@ var Turret = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;
@@ -1721,14 +1738,23 @@ var Cannon = new Phaser.Class({
                 buttonYes.y = this.y;
                 buttonNo.x = this.x + 40;
                 buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
                 buttonYes.setVisible(true);
                 buttonNo.setVisible(true);
+                confirmText.setVisible(true);
                 buttonYes.on('pointerup', this.upgrade, this);
                 buttonNo.on('pointerup', function(){
                     buttonYes.setActive(false);
                     buttonYes.setVisible(false);
                     buttonNo.setActive(false);
                     buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
                     buttonYes.off('pointerup');
                 });
             }
@@ -1742,6 +1768,8 @@ var Cannon = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 20 && map[i][j] == 1){
             scraps -= 20;
             map[i][j] = 2;
@@ -1803,14 +1831,23 @@ var Lightning = new Phaser.Class({
                 buttonYes.y = this.y;
                 buttonNo.x = this.x + 40;
                 buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
                 buttonYes.setVisible(true);
                 buttonNo.setVisible(true);
+                confirmText.setVisible(true);
                 buttonYes.on('pointerup', this.upgrade, this);
                 buttonNo.on('pointerup', function(){
                     buttonYes.setActive(false);
                     buttonYes.setVisible(false);
                     buttonNo.setActive(false);
                     buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
                     buttonYes.off('pointerup');
                 });
             }
@@ -1824,6 +1861,8 @@ var Lightning = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 30 && map[i][j] == 1){
             scraps -= 30;
             map[i][j] = 2;
