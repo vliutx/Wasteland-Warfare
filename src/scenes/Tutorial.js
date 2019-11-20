@@ -1,15 +1,15 @@
 /*global Phaser*/
 
-    var map =      [[ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [-1, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1,-1],
-                    [-1, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1,-1],
-                    [-1, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1,-1],
-                    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
+    var map =      [[ 3, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 3],
+                    [ 3, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1, 3],
+                    [ 3, 0,-1, 0, 0, 0,-1,-1,-1, 0, 0, 0,-1, 3],
+                    [ 3, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1, 3],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1, 3],
+                    [ 0, 0,-1, 0, 0, 0,-1, 0,-1, 0, 0, 0,-1, 3],
+                    [ 3, 0,-1,-1,-1,-1,-1, 0,-1, 0, 0, 0,-1, 3],
+                    [ 3, 0, 0, 0, 0, 0, 0, 0,-1, 0, 0, 0,-1, 3],
+                    [ 3, 0, 0, 0, 0, 0, 0, 0,-1,-1,-1,-1,-1, 3],
+                    [ 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3]];
 
 
     // Counters
@@ -398,7 +398,9 @@ export default class Tutorial extends Phaser.Scene {
                 gbutton2.setVisible(false);
                 gbutton1.alpha = 0.5;
                 gbutton3.alpha = 0.5;
-                gbutton2 = this.add.sprite(40, 110, 'machineGun', 0);
+                gbutton2 = this.add.sprite(40, 110, 'machineGun', 0).setInteractive();
+                gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
+                gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
                 //might need to include code here if we want to be able to click to switch
             }
         } else {
@@ -430,7 +432,9 @@ export default class Tutorial extends Phaser.Scene {
                 gbutton3.setVisible(false);
                 gbutton1.alpha = 0.5;
                 gbutton2.alpha = 0.5;
-                gbutton3 = this.add.sprite(40, 180, 'laser', 0);
+                gbutton3 = this.add.sprite(40, 180, 'laser', 0).setInteractive();
+                gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
+                gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
                 //might need to include code here if we want to be able to click to switch
             }
         } else {
@@ -541,28 +545,29 @@ export default class Tutorial extends Phaser.Scene {
 
     //Gun selection
     //As of right now there is no click to purchase option it is just a visual indicator
+    //Descriptions of guns
+    var gb1Text = this.add.text(100, 10, "Pistol: Moderate\nsemi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    gb1Text.setVisible(false);
+    var gb2Text = this.add.text(100, 80, "Machine Gun: Moderate\nfully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    gb2Text.setVisible(false);
+    var gb3Text = this.add.text(100, 150, "Laser: Massive\ndamage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    gb3Text.setVisible(false);
+    //icons
     gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
-    gbutton1.on('pointerover', function(){
-        console.log('gun1');
-        //description text
-        //ex: somethingtext.setVisible(true);
-    });
+    gbutton1.on('pointerover', function(){gb1Text.setVisible(true)});
+    gbutton1.on('pointerout', function(){gb1Text.setVisible(false)});
     gbutton2 = this.add.sprite(40, 110, 'machineGunPrice', 0).setInteractive();
     buyLock1 = this.add.sprite(40, 110, 'lock', 0);
     buyLock1.alpha = 0.8;
     gbutton2.alpha = 0.5;
-    gbutton2.on('pointerover', function(){
-        console.log('gun2');
-        //description text
-    });
+    gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
+    gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
     gbutton3 = this.add.sprite(40, 180, 'laserPrice', 0).setInteractive();
     buyLock2 = this.add.sprite(40, 180, 'lock', 0);
     buyLock2.alpha = 0.8;
     gbutton3.alpha = 0.5;
-    gbutton3.on('pointerup', function(){
-        console.log('gun3');
-        //description text
-    });
+    gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
+    gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
 
     //place towers
     this.input.on('pointerdown', placeTower);
@@ -585,13 +590,13 @@ export default class Tutorial extends Phaser.Scene {
             if (canPlaceTurret(w, q)) {
                 if (turret_selector == 0){
                     //turret
-                    console.log("turret")
                     turretGhost.x = q * 64 + 32;
                     turretGhost.y = w * 64 + 32;
                     turretGhost.setVisible(true);
                     turretIndicator.clear();
                     turretRange.x = turretGhost.x;
                     turretRange.y = turretGhost.y;
+                    turretIndicator.fillStyle(0xFFFFFF, 0.3);
                     turretIndicator.fillCircleShape(turretRange);
                 } else if (turret_selector == 1){
                     //cannon
@@ -601,6 +606,7 @@ export default class Tutorial extends Phaser.Scene {
                     cannonIndicator.clear();
                     cannonRange.x = cannonGhost.x;
                     cannonRange.y = cannonGhost.y;
+                    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
                     cannonIndicator.fillCircleShape(cannonRange);
                 } else if (turret_selector == 2){
                     //tesla
@@ -610,12 +616,45 @@ export default class Tutorial extends Phaser.Scene {
                     teslaIndicator.clear();
                     teslaRange.x = teslaGhost.x;
                     teslaRange.y = teslaGhost.y;
+                    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
             } else if (map[w][q] == 1 || map[w][q] == 2){
                 turretGhost.setVisible(false);
                 cannonGhost.setVisible(false);
                 teslaGhost.setVisible(false);
+            } else if (map[w][q] == -1){
+                if (turret_selector == 0){
+                    //turret
+                    turretGhost.x = q * 64 + 32;
+                    turretGhost.y = w * 64 + 32;
+                    turretGhost.setVisible(true);
+                    turretIndicator.clear();
+                    turretRange.x = turretGhost.x;
+                    turretRange.y = turretGhost.y;
+                    turretIndicator.fillStyle(0xFF0000, 0.3);
+                    turretIndicator.fillCircleShape(turretRange);
+                } else if (turret_selector == 1){
+                    //cannon
+                    cannonGhost.x = q * 64 + 32;
+                    cannonGhost.y = w * 64 + 32;
+                    cannonGhost.setVisible(true);
+                    cannonIndicator.clear();
+                    cannonRange.x = cannonGhost.x;
+                    cannonRange.y = cannonGhost.y;
+                    cannonIndicator.fillStyle(0xFF0000, 0.3);
+                    cannonIndicator.fillCircleShape(cannonRange);
+                } else if (turret_selector == 2){
+                    //tesla
+                    teslaGhost.x = q * 64 + 32;
+                    teslaGhost.y = w * 64 + 32;
+                    teslaGhost.setVisible(true);
+                    teslaIndicator.clear();
+                    teslaRange.x = teslaGhost.x;
+                    teslaRange.y = teslaGhost.y;
+                    teslaIndicator.fillStyle(0xFF0000, 0.3);
+                    teslaIndicator.fillCircleShape(teslaRange);
+                }
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -650,13 +689,10 @@ export default class Tutorial extends Phaser.Scene {
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
-    turretIndicator.fillStyle(0xFFFFFF, 0.3);
     cannonIndicator = this.add.graphics();
     cannonRange = new Phaser.Geom.Circle(0, 0, 132);
-    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
     //turret upgrade feedback
     buttonYes = this.add.image(0, 0, 'checkmark');
@@ -1511,26 +1547,28 @@ var Turret = new Phaser.Class({
     },
     buttonCheck: function()
     {
-        buttonYes.off('pointerup');
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
-        if (map[i][j] == 1){
-            buttonYes.setActive(true);
-            buttonNo.setActive(true);
-            buttonYes.x = this.x - 40;
-            buttonYes.y = this.y;
-            buttonNo.x = this.x + 40;
-            buttonNo.y = this.y;
-            buttonYes.setVisible(true);
-            buttonNo.setVisible(true);
-            buttonYes.on('pointerup', this.upgrade, this);
-            buttonNo.on('pointerup', function(){
-                buttonYes.setActive(false);
-                buttonYes.setVisible(false);
-                buttonNo.setActive(false);
-                buttonNo.setVisible(false);
-                buttonYes.off('pointerup');
-            });
+        if (pause == false){
+            buttonYes.off('pointerup');
+            var i = (this.y - 32) / 64;
+            var j = (this.x - 32) / 64;
+            if (map[i][j] == 1){
+                buttonYes.setActive(true);
+                buttonNo.setActive(true);
+                buttonYes.x = this.x - 40;
+                buttonYes.y = this.y;
+                buttonNo.x = this.x + 40;
+                buttonNo.y = this.y;
+                buttonYes.setVisible(true);
+                buttonNo.setVisible(true);
+                buttonYes.on('pointerup', this.upgrade, this);
+                buttonNo.on('pointerup', function(){
+                    buttonYes.setActive(false);
+                    buttonYes.setVisible(false);
+                    buttonNo.setActive(false);
+                    buttonNo.setVisible(false);
+                    buttonYes.off('pointerup');
+                });
+            }
         }
     },
     upgrade: function ()
@@ -2030,6 +2068,7 @@ function placeTower(pointer) {
             }
             button1.alpha = .5;
             turretIndicator.clear();
+            turret_selector = -1;
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -2052,6 +2091,7 @@ function placeTower(pointer) {
             }
             button2.alpha = .5;
             cannonIndicator.clear();
+            turret_selector = -1;
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -2070,8 +2110,8 @@ function placeTower(pointer) {
             }
             button3.alpha = .5;
             teslaIndicator.clear();
+            turret_selector = -1;
         }
-        turret_selector = -1;
     }
 }
 
