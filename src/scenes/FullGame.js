@@ -582,18 +582,101 @@ export default class FullGame extends Phaser.Scene {
     gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){gb1Text.setVisible(true)});
     gbutton1.on('pointerout', function(){gb1Text.setVisible(false)});
+    gbutton1.on('pointerup', function(){
+        //Doesn't need a buy option
+        gbutton1.alpha = 1;
+        gbutton2.alpha = 0.5;
+        gbutton3.alpha = 0.5;
+        weapon = 0; //we don't need to check for purchase because default
+        maxAmmo = 6;
+        ammoCount = 0;
+        reloadTime = 0;
+        reloading = false;
+        played = false;
+        reloadme = false;
+        machineBulletCount.setVisible(false);
+        bulletCount.setVisible(true);
+    });
     gbutton2 = this.add.sprite(40, 110, 'machineGunPrice', 0).setInteractive();
     buyLock1 = this.add.sprite(40, 110, 'lock', 0);
     buyLock1.alpha = 0.8;
     gbutton2.alpha = 0.5;
     gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
     gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
+    gbutton2.on('pointerup', function(){
+        //buy gun
+        if (scraps >= 15){
+            machine = true;
+            scraps -= 15;
+            weapon = 1;
+            maxAmmo = 12;
+            ammoCount = 0;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
+            bulletCount.setVisible(false);
+            machineBulletCount.setVisible(true);
+            buyLock1.setVisible(false);
+            gbutton2.setVisible(false);
+            gbutton1.alpha = 0.5;
+            gbutton3.alpha = 0.5;
+            gbutton2 = this.add.sprite(40, 110, 'machineGun', 0).setInteractive();
+            gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
+            gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
+            gbutton2.on('pointerup', function(){
+                //gun is bought
+                gbutton2.alpha = 1;
+                gbutton1.alpha = 0.5;
+                gbutton3.alpha = 0.5;
+                weapon = 1;
+                maxAmmo = 12;
+                ammoCount = 0;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+                bulletCount.setVisible(false);
+                machineBulletCount.setVisible(true);
+            });
+        }
+    }, this);
     gbutton3 = this.add.sprite(40, 180, 'laserPrice', 0).setInteractive();
     buyLock2 = this.add.sprite(40, 180, 'lock', 0);
     buyLock2.alpha = 0.8;
     gbutton3.alpha = 0.5;
     gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
     gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
+    gbutton3.on('pointerup', function(){
+        //buy the gun
+        if (scraps >= 50){
+            purchase.play();
+            purchaseLaser.play()
+            spartan = true;
+            scraps -= 50;
+            weapon = 2;
+            buyLock2.setVisible(false);
+            gbutton3.setVisible(false);
+            gbutton1.alpha = 0.5;
+            gbutton2.alpha = 0.5;
+            gbutton3 = this.add.sprite(40, 180, 'laser', 0).setInteractive();
+            gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
+            gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
+            gbutton3.on('pointerup', function(){
+                //gun is bought
+                purchaseLaser.play();
+                gbutton3.alpha = 1;
+                gbutton1.alpha = 0.5;
+                gbutton2.alpha = 0.5;
+                weapon = 2;
+                // CHANGE REALOD SHIT FOR LASER //
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            })
+        }
+    }, this);
 
     //place towers
     this.input.on('pointerdown', placeTower);

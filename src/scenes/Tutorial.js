@@ -558,11 +558,19 @@ export default class Tutorial extends Phaser.Scene {
     gbutton1.on('pointerout', function(){gb1Text.setVisible(false)});
     gbutton1.on('pointerup', function(){
         //Doesn't need a buy option
-        weapon = 0;
         gbutton1.alpha = 1;
         gbutton2.alpha = 0.5;
         gbutton3.alpha = 0.5;
-    })
+        weapon = 0; //we don't need to check for purchase because default
+        maxAmmo = 6;
+        ammoCount = 0;
+        reloadTime = 0;
+        reloading = false;
+        played = false;
+        reloadme = false;
+        machineBulletCount.setVisible(false);
+        bulletCount.setVisible(true);
+    });
     gbutton2 = this.add.sprite(40, 110, 'machineGunPrice', 0).setInteractive();
     buyLock1 = this.add.sprite(40, 110, 'lock', 0);
     buyLock1.alpha = 0.8;
