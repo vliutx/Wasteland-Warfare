@@ -426,7 +426,20 @@ export default class FullGame extends Phaser.Scene {
                 gbutton2 = this.add.sprite(40, 110, 'machineGun', 0).setInteractive();
                 gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
                 gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
-                //might need to include code here if we want to be able to click to switch
+                gbutton2.on('pointerup', function(){
+                    gbutton2.alpha = 1;
+                    gbutton1.alpha = 0.5;
+                    gbutton3.alpha = 0.5;
+                    weapon = 1;
+                    maxAmmo = 12;
+                    ammoCount = 0;
+                    reloadTime = 0;
+                    reloading = false;
+                    played = false;
+                    reloadme = false;
+                    bulletCount.setVisible(false);
+                    machineBulletCount.setVisible(true);
+                });
             }
         } else {
             gbutton2.alpha = 1;
@@ -460,7 +473,18 @@ export default class FullGame extends Phaser.Scene {
                 gbutton3 = this.add.sprite(40, 180, 'laser', 0).setInteractive();
                 gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
                 gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
-                //might need to include code here if we want to be able to click to switch
+                gbutton3.on('pointerup', function(){
+                    purchaseLaser.play();
+                    gbutton3.alpha = 1;
+                    gbutton1.alpha = 0.5;
+                    gbutton2.alpha = 0.5;
+                    weapon = 2;
+                    // CHANGE REALOD SHIT FOR LASER //
+                    reloadTime = 0;
+                    reloading = false;
+                    played = false;
+                    reloadme = false;
+                });
             }
         } else {
             purchaseLaser.play();

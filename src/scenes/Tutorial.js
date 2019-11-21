@@ -401,7 +401,20 @@ export default class Tutorial extends Phaser.Scene {
                 gbutton2 = this.add.sprite(40, 110, 'machineGun', 0).setInteractive();
                 gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
                 gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
-                //might need to include code here if we want to be able to click to switch
+                gbutton2.on('pointerup', function(){
+                    gbutton2.alpha = 1;
+                    gbutton1.alpha = 0.5;
+                    gbutton3.alpha = 0.5;
+                    weapon = 1;
+                    maxAmmo = 12;
+                    ammoCount = 0;
+                    reloadTime = 0;
+                    reloading = false;
+                    played = false;
+                    reloadme = false;
+                    bulletCount.setVisible(false);
+                    machineBulletCount.setVisible(true);
+                });
             }
         } else {
             gbutton2.alpha = 1;
@@ -435,7 +448,18 @@ export default class Tutorial extends Phaser.Scene {
                 gbutton3 = this.add.sprite(40, 180, 'laser', 0).setInteractive();
                 gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
                 gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
-                //might need to include code here if we want to be able to click to switch
+                gbutton3.on('pointerup', function(){
+                    purchaseLaser.play();
+                    gbutton3.alpha = 1;
+                    gbutton1.alpha = 0.5;
+                    gbutton2.alpha = 0.5;
+                    weapon = 2;
+                    // CHANGE REALOD SHIT FOR LASER //
+                    reloadTime = 0;
+                    reloading = false;
+                    played = false;
+                    reloadme = false;
+                });
             }
         } else {
             purchaseLaser.play();
@@ -548,10 +572,13 @@ export default class Tutorial extends Phaser.Scene {
     //Descriptions of guns
     var gb1Text = this.add.text(100, 10, "Pistol: Moderate\nsemi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb1Text.setVisible(false);
+    gb1Text.setDepth(1);
     var gb2Text = this.add.text(100, 80, "Machine Gun: Moderate\nfully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb2Text.setVisible(false);
+    gb2Text.setDepth(1);
     var gb3Text = this.add.text(100, 150, "Laser: Massive\ndamage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb3Text.setVisible(false);
+    gb3Text.setDepth(1);
     //icons
     gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){gb1Text.setVisible(true)});
@@ -753,10 +780,13 @@ export default class Tutorial extends Phaser.Scene {
     //Descriptions of turrets
     var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
+    b1Text.setDepth(1);
     var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
+    b2Text.setDepth(1);
     var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
+    b3Text.setDepth(1);
 
     //Display turret descriptions when hovering over icon
     button1.on('pointerover', function(){b1Text.setVisible(true)});
@@ -838,17 +868,17 @@ export default class Tutorial extends Phaser.Scene {
     //Create Victory text
     victoryText = this.add.text(250, 250, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
-    victoryText.setDepth(1);
-    continueText = this.add.text(195, 90, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText.setDepth(4);
+    continueText = this.add.text(195, 345, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
-    continueText.setDepth(1);
+    continueText.setDepth(4);
     //Defeat text
     defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
-    defeatText.setDepth(1);
+    defeatText.setDepth(4);
     restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
-    restartText.setDepth(1);
+    restartText.setDepth(4);
 
     //various tutorial texts
     //tutorialbacking stuff
