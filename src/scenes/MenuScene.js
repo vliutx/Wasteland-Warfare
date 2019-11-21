@@ -32,7 +32,7 @@ export default class MenuScene extends Phaser.Scene {
 
   create (data) {
     //Create the scene
-    var titleTheme = this.sound.add('theme', {loop: true, volume: 0.5});
+    var titleTheme = this.sound.add('theme', {loop: true, volume: 0.3});
     titleTheme.play();
     var background = this.add.image(this.centerX, this.centerY, "background");
     background.setScale(6.4);

@@ -2,7 +2,7 @@
 var path;
 
 var bullets;
-var playerBullets
+var playerBullets;
 var player;
 var shells;
 
@@ -40,7 +40,6 @@ var enemiesRemainingText
 
 
 // Trackers
-
 var timeRemaining;
 var enemiesRemaining;
 var waveNumber;
@@ -48,3 +47,6 @@ var waveNumber;
 // Upgrade Button
 var buttonYes;
 var buttonNo;
+var confirmText;
+var confirmBox;
+var blackBox;
