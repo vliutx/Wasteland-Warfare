@@ -1,17 +1,15 @@
 /*global Phaser*/
 
-
-    var map =      [[ 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                    [ 0, 0,-1, 0,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
-                    [ 0, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1, 0,-1,-1],
-                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0,-1, 0,-1,-1],
-                    [ 0, 0,-1, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1,-1],
-                    [ 0, 0,-1, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1,-1],
-                    [-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1,-1],
-                    [-1,-1,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1,-1],
-                    [-1,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]];
-
+    var map =      [[ 3, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, 3],
+                    [ 3, 0,-1, 0,-1,-1,-1, 0,-1,-1,-1, 0,-1, 3],
+                    [ 3, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1, 3],
+                    [ 0, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1, 0,-1, 3],
+                    [ 0, 0,-1,-1,-1,-1,-1, 0,-1, 0,-1, 0,-1, 3],
+                    [ 0, 0,-1, 0, 0, 0, 0, 0,-1, 0,-1, 0,-1, 3],
+                    [ 0, 0,-1, 0,-1,-1,-1, 0,-1, 0,-1, 0,-1, 3],
+                    [ 3,-1,-1, 0,-1, 0,-1, 0,-1, 0,-1, 0,-1, 3],
+                    [ 3,-1,-1,-1,-1, 0,-1,-1,-1, 0,-1,-1,-1, 3],
+                    [ 3,-1,-1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3]];
 
 
     // Counters
@@ -31,18 +29,15 @@
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
-    // not in tutorial things
-    var buildTimer = 10;
-//LASER CODE
-    var chargeTime = 1.5; //Time to charge up laser
-    var charge = 0;    //Tracks time it has been charged for
-    var firetime = 0; // Tracks how long laser has been firing
+    var buildTimer = 12;
 
     // Booleans
     var pause = true;
     var buildPhase = false;
     var startGame = false;
     var restart = false;
+    var gameOverPlayed = false;
+    var played = false;
 
     // Gun stuff pew pew
     var reloading = false;
@@ -51,15 +46,17 @@
     var weapon = 0; //selected weapon. 0 is pistol, 1 is machine gun, 2 is whatever we decide to add after.
     var machine = false; //did they purchase the machine gun?
     var spartan = false; //did they purchase the death machine? !!!!!!!!!
-    var gameOverPlayed = false
-    var purchaseMachineGun = false;
+    //LASER CODE
+    var chargeTime = 1.5; //Time to charge up laser
+    var charge = 0;    //Tracks time it has been charged for
+    var firetime = 0; // Tracks how long laser has been firing
     var firing = false;
 
     // Misc
     var path;
     var tick;
     var death;
-    var played = false;
+    
 
     // Sounds
     var cannonshot;
@@ -73,6 +70,8 @@
     var reload;
     var lasershot;
     var laserReload;
+    var purchase;
+    var purchaseLaser;
 
     // Enemies
     var fast_enemies;
@@ -132,16 +131,16 @@
     var nextEnemy = 0;
     var waveSize = 6;
     var spawned = 0;
-    enemiesRemaining = waveSize;
     waveNumber = 1;
     var spawnDelay = 400;
 
     // Enemy Spawns
-    var enemies = [8,0,0,0];
+    var enemiesRemaining
+    var enemies = [115,0,0,0];
     var empty = [0,0,0,0];
     var waves = [
-                    [8,0,0,0],
-                    [0,15,0,0],
+                    [115,0,0,0],
+                    [0,12,0,0],
                     [10,10,0,0],
                     [5,20,5,0],
                     [10,10,10,0],
@@ -153,7 +152,6 @@
                     [0,0,0,0],
                 ];
     var waveN = [];
-
     var test = true;
 
 
@@ -187,12 +185,14 @@ export default class FullGame extends Phaser.Scene {
         frameHeight: 48,
         frameWidth: 48
     });
-    /*//LASER CODE ///////////////
+
+/*//LASER CODE ///////////////
     this.load.spritesheet("laser_animation", "./assets/spriteSheets/Laser.png", {
         frameHeight: 48,
         frameWidth: 48
     });
 /// LASER CODE /////////*/
+
     // turrets
     this.load.spritesheet("lightning", "./assets/spriteSheets/Tesla Tower.png", {
         frameHeight: 96,
@@ -225,16 +225,17 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
     // gun selector stuff will need to be added
     this.load.image('lock', 'assets/Lock.png');
-    this.load.image('pistol', 'assets/PistolNoCost.png');
+    this.load.image('pistolGun', 'assets/PistolNoCost.png');
     this.load.image('machineGun', 'assets/MachineGunIconNoCost.png');
     this.load.image('machineGunPrice', 'assets/MachineGunIconWithCost.png');
     this.load.image('laser', 'assets/LaserIconNoCost.png');
     this.load.image('laserPrice', 'assets/LaserIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
+    // player
+    this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.image('laser', 'assets/laser.png');
     this.load.image('laserbeam', 'assets/Laser.png')
-    // player (none)
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
     this.load.image('bullet', 'assets/Bullet.png');
@@ -249,10 +250,10 @@ export default class FullGame extends Phaser.Scene {
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
     this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
-
     // player
-    this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
+    this.load.audio('purchase', 'assets/sounds/purchase.mp3');
+    this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
  ////// LASERRRRR CODEEEEE //////////
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
 
@@ -311,11 +312,13 @@ export default class FullGame extends Phaser.Scene {
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
     lasershot = this.sound.add('lasershot', {volume: .40});
+    purchase = this.sound.add('purchase', {volume: .40});
+    purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
     tick = this.sound.add('tick');
-    theme = this.sound.add('theme', {loop: true, volume: 0.5});
+    theme = this.sound.add('theme', {loop: true, volume: 0.3});
 
     //play Sounds
     theme.play();
@@ -392,13 +395,11 @@ export default class FullGame extends Phaser.Scene {
         gbutton3.alpha = 0.5;
         weapon = 0; //we don't need to check for purchase because default
         maxAmmo = 6;
-        //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
         ammoCount = 0;
         reloadTime = 0;
         reloading = false;
         played = false;
         reloadme = false;
-        ////////////////////////////////////////////////////////////////////////////////////////
         machineBulletCount.setVisible(false);
         bulletCount.setVisible(true);
     });
@@ -406,25 +407,39 @@ export default class FullGame extends Phaser.Scene {
     switchMachineGun.on("down", function(){
         if (!machine){
             if (scraps >= 15){
+                purchase.play()
                 machine = true;
                 scraps -= 15;
                 weapon = 1;
                 maxAmmo = 12;
-                //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
                 ammoCount = maxAmmo;
                 reloadTime = 0;
                 reloading = false;
                 played = false;
                 reloadme = false;
-                ////////////////////////////////////////////////////////////////////////////////////////
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
                 buyLock1.setVisible(false);
                 gbutton2.setVisible(false);
                 gbutton1.alpha = 0.5;
                 gbutton3.alpha = 0.5;
-                gbutton2 = this.add.sprite(40, 110, 'machineGun', 0);
-                //might need to include code here if we want to be able to click to switch
+                gbutton2 = this.add.sprite(40, 110, 'machineGun', 0).setInteractive();
+                gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
+                gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
+                gbutton2.on('pointerup', function(){
+                    gbutton2.alpha = 1;
+                    gbutton1.alpha = 0.5;
+                    gbutton3.alpha = 0.5;
+                    weapon = 1;
+                    maxAmmo = 12;
+                    ammoCount = 0;
+                    reloadTime = 0;
+                    reloading = false;
+                    played = false;
+                    reloadme = false;
+                    bulletCount.setVisible(false);
+                    machineBulletCount.setVisible(true);
+                });
             }
         } else {
             gbutton2.alpha = 1;
@@ -432,23 +447,22 @@ export default class FullGame extends Phaser.Scene {
             gbutton3.alpha = 0.5;
             weapon = 1;
             maxAmmo = 12;
-            //AS OF RIGHT NOW THIS BLOCK OF CODE MAKES IT OP TO SWITCH BACK AND FORTH BETWEEN GUNS//
             ammoCount = 0;
             reloadTime = 0;
             reloading = false;
             played = false;
             reloadme = false;
-            ////////////////////////////////////////////////////////////////////////////////////////
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
         }
     }, this);
-
 //SPARTAN LASER CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     var swtichSpartanLaser = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
     swtichSpartanLaser.on("down", function(){
         if (!spartan){
             if (scraps >= 50){
+                purchase.play();
+                purchaseLaser.play()
                 spartan = true;
                 scraps -= 50;
                 weapon = 2;
@@ -456,16 +470,29 @@ export default class FullGame extends Phaser.Scene {
                 gbutton3.setVisible(false);
                 gbutton1.alpha = 0.5;
                 gbutton2.alpha = 0.5;
-                gbutton3 = this.add.sprite(40, 180, 'laser', 0);
-                //might need to include code here if we want to be able to click to switch
+                gbutton3 = this.add.sprite(40, 180, 'laser', 0).setInteractive();
+                gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
+                gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
+                gbutton3.on('pointerup', function(){
+                    purchaseLaser.play();
+                    gbutton3.alpha = 1;
+                    gbutton1.alpha = 0.5;
+                    gbutton2.alpha = 0.5;
+                    weapon = 2;
+                    // CHANGE REALOD SHIT FOR LASER //
+                    reloadTime = 0;
+                    reloading = false;
+                    played = false;
+                    reloadme = false;
+                });
             }
         } else {
+            purchaseLaser.play();
             gbutton3.alpha = 1;
             gbutton1.alpha = 0.5;
             gbutton2.alpha = 0.5;
             weapon = 2;
-            // Doesn't do anything really because new gun needs to be adjusted and added and all that jazz
-        // CHANGE REALOD SHIT FOR LASER //
+        	// CHANGE REALOD SHIT FOR LASER //
             reloadTime = 0;
             reloading = false;
             played = false;
@@ -521,9 +548,9 @@ export default class FullGame extends Phaser.Scene {
     });
 
     this.nextEnemy = 0;
-    this.waveSize = 6;
+    waveSize = waves[0].reduce((a,b) => a + b, 0)
     this.spawned = 0;
-    enemiesRemaining = this.waveSize;
+    enemiesRemaining = waveSize;
     waveNumber = 1;
     this.spawnDelay = 400;
 
@@ -566,30 +593,114 @@ export default class FullGame extends Phaser.Scene {
         button2.alpha = 0.5;
     });
 
-    //Gun selection (ICONS NEED TO BE UPDATED IM REUSING MACHINE GUN FOR NOW)
+    //Gun selection
     //As of right now there is no click to purchase option it is just a visual indicator
-    gbutton1 = this.add.sprite(40, 40, 'pistol', 0).setInteractive();
-    gbutton1.on('pointerover', function(){
-        console.log('gun1');
-        //description text
-        //ex: somethingtext.setVisible(true);
+    //Descriptions of guns
+    var gb1Text = this.add.text(100, 10, "Pistol: Moderate\nsemi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    gb1Text.setVisible(false);
+    var gb2Text = this.add.text(100, 80, "Machine Gun: Moderate\nfully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    gb2Text.setVisible(false);
+    var gb3Text = this.add.text(100, 150, "Laser: Massive\ndamage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    gb3Text.setVisible(false);
+    //icons
+    gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
+    gbutton1.on('pointerover', function(){gb1Text.setVisible(true)});
+    gbutton1.on('pointerout', function(){gb1Text.setVisible(false)});
+    gbutton1.on('pointerup', function(){
+        //Doesn't need a buy option
+        gbutton1.alpha = 1;
+        gbutton2.alpha = 0.5;
+        gbutton3.alpha = 0.5;
+        weapon = 0; //we don't need to check for purchase because default
+        maxAmmo = 6;
+        ammoCount = 0;
+        reloadTime = 0;
+        reloading = false;
+        played = false;
+        reloadme = false;
+        machineBulletCount.setVisible(false);
+        bulletCount.setVisible(true);
     });
     gbutton2 = this.add.sprite(40, 110, 'machineGunPrice', 0).setInteractive();
     buyLock1 = this.add.sprite(40, 110, 'lock', 0);
     buyLock1.alpha = 0.8;
     gbutton2.alpha = 0.5;
-    gbutton2.on('pointerover', function(){
-        console.log('gun2');
-        //description text
-    });
+    gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
+    gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
+    gbutton2.on('pointerup', function(){
+        //buy gun
+        if (scraps >= 15){
+            machine = true;
+            scraps -= 15;
+            weapon = 1;
+            maxAmmo = 12;
+            ammoCount = 0;
+            reloadTime = 0;
+            reloading = false;
+            played = false;
+            reloadme = false;
+            bulletCount.setVisible(false);
+            machineBulletCount.setVisible(true);
+            buyLock1.setVisible(false);
+            gbutton2.setVisible(false);
+            gbutton1.alpha = 0.5;
+            gbutton3.alpha = 0.5;
+            gbutton2 = this.add.sprite(40, 110, 'machineGun', 0).setInteractive();
+            gbutton2.on('pointerover', function(){gb2Text.setVisible(true)});
+            gbutton2.on('pointerout', function(){gb2Text.setVisible(false)});
+            gbutton2.on('pointerup', function(){
+                //gun is bought
+                gbutton2.alpha = 1;
+                gbutton1.alpha = 0.5;
+                gbutton3.alpha = 0.5;
+                weapon = 1;
+                maxAmmo = 12;
+                ammoCount = 0;
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+                bulletCount.setVisible(false);
+                machineBulletCount.setVisible(true);
+            });
+        }
+    }, this);
     gbutton3 = this.add.sprite(40, 180, 'laserPrice', 0).setInteractive();
     buyLock2 = this.add.sprite(40, 180, 'lock', 0);
     buyLock2.alpha = 0.8;
     gbutton3.alpha = 0.5;
+    gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
+    gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
     gbutton3.on('pointerup', function(){
-        console.log('gun3');
-        //description text
-    });
+        //buy the gun
+        if (scraps >= 50){
+            purchase.play();
+            purchaseLaser.play()
+            spartan = true;
+            scraps -= 50;
+            weapon = 2;
+            buyLock2.setVisible(false);
+            gbutton3.setVisible(false);
+            gbutton1.alpha = 0.5;
+            gbutton2.alpha = 0.5;
+            gbutton3 = this.add.sprite(40, 180, 'laser', 0).setInteractive();
+            gbutton3.on('pointerover', function(){gb3Text.setVisible(true)});
+            gbutton3.on('pointerout', function(){gb3Text.setVisible(false)});
+            gbutton3.on('pointerup', function(){
+                //gun is bought
+                purchaseLaser.play();
+                gbutton3.alpha = 1;
+                gbutton1.alpha = 0.5;
+                gbutton2.alpha = 0.5;
+                weapon = 2;
+                // CHANGE REALOD SHIT FOR LASER //
+                reloadTime = 0;
+                reloading = false;
+                played = false;
+                reloadme = false;
+            })
+        }
+    }, this);
 
     //place towers
     this.input.on('pointerdown', placeTower);
@@ -618,6 +729,7 @@ export default class FullGame extends Phaser.Scene {
                     turretIndicator.clear();
                     turretRange.x = turretGhost.x;
                     turretRange.y = turretGhost.y;
+                    turretIndicator.fillStyle(0xFFFFFF, 0.3);
                     turretIndicator.fillCircleShape(turretRange);
                 } else if (turret_selector == 1){
                     //cannon
@@ -627,6 +739,7 @@ export default class FullGame extends Phaser.Scene {
                     cannonIndicator.clear();
                     cannonRange.x = cannonGhost.x;
                     cannonRange.y = cannonGhost.y;
+                    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
                     cannonIndicator.fillCircleShape(cannonRange);
                 } else if (turret_selector == 2){
                     //tesla
@@ -636,12 +749,45 @@ export default class FullGame extends Phaser.Scene {
                     teslaIndicator.clear();
                     teslaRange.x = teslaGhost.x;
                     teslaRange.y = teslaGhost.y;
+                    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
                     teslaIndicator.fillCircleShape(teslaRange);
                 }
             } else if (map[w][q] == 1 || map[w][q] == 2) { //if there's a turret there
             	turretGhost.setVisible(false);
                 cannonGhost.setVisible(false);
                 teslaGhost.setVisible(false);
+            } else if (map[w][q] == -1){
+                if (turret_selector == 0){
+                    //turret
+                    turretGhost.x = q * 64 + 32;
+                    turretGhost.y = w * 64 + 32;
+                    turretGhost.setVisible(true);
+                    turretIndicator.clear();
+                    turretRange.x = turretGhost.x;
+                    turretRange.y = turretGhost.y;
+                    turretIndicator.fillStyle(0xFF0000, 0.3);
+                    turretIndicator.fillCircleShape(turretRange);
+                } else if (turret_selector == 1){
+                    //cannon
+                    cannonGhost.x = q * 64 + 32;
+                    cannonGhost.y = w * 64 + 32;
+                    cannonGhost.setVisible(true);
+                    cannonIndicator.clear();
+                    cannonRange.x = cannonGhost.x;
+                    cannonRange.y = cannonGhost.y;
+                    cannonIndicator.fillStyle(0xFF0000, 0.3);
+                    cannonIndicator.fillCircleShape(cannonRange);
+                } else if (turret_selector == 2){
+                    //tesla
+                    teslaGhost.x = q * 64 + 32;
+                    teslaGhost.y = w * 64 + 32;
+                    teslaGhost.setVisible(true);
+                    teslaIndicator.clear();
+                    teslaRange.x = teslaGhost.x;
+                    teslaRange.y = teslaGhost.y;
+                    teslaIndicator.fillStyle(0xFF0000, 0.3);
+                    teslaIndicator.fillCircleShape(teslaRange);
+                }
             } else {
                 //might need to check for turret_indicator for efficiency?
                 turretGhost.setVisible(false);
@@ -676,23 +822,26 @@ export default class FullGame extends Phaser.Scene {
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
     turretRange = new Phaser.Geom.Circle(0, 0, 132);
-    turretIndicator.fillStyle(0xFFFFFF, 0.3);
     cannonIndicator = this.add.graphics();
     cannonRange = new Phaser.Geom.Circle(0, 0, 132);
-    cannonIndicator.fillStyle(0xFFFFFF, 0.3);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-    teslaIndicator.fillStyle(0xFFFFFF, 0.3);
 
     //turret upgrade feedback
+    confirmText = this.add.text(0, 0, "Upgrade?");
+    confirmText.setVisible(false);
+    confirmText.setDepth(2);
+    confirmBox = this.add.graphics();
+    confirmBox.setDepth(1);
+    blackBox = new Phaser.Geom.Rectangle(0, 0, 81, 20);
     buttonYes = this.add.image(0, 0, 'checkmark');
     buttonYes.setInteractive();
     buttonYes.setScale(.05);
-    buttonYes.setDepth(1);
+    buttonYes.setDepth(2);
     buttonNo = this.add.image(0, 0, 'xmark');
     buttonNo.setInteractive();
     buttonNo.setScale(.05);
-    buttonNo.setDepth(1);
+    buttonNo.setDepth(2);
     buttonYes.setActive(false);
     buttonYes.setVisible(false);
     buttonNo.setActive(false);
@@ -725,16 +874,16 @@ export default class FullGame extends Phaser.Scene {
 //Create game texts
 
     //Add scrap text
-    scrapText = this.add.text(215, 18, this.scraptext, {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    scrapText = this.add.text(215, 18, this.scraptext, {fontSize: 25, color: "#FFFFFF", fontStyle: "bold"});
     scrapText.setVisible(false);
     //Create wave text
-    waveText = this.add.text(420, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 30, color: '#ffffff', fontStyle: 'bold', depth: 10});
+    waveText = this.add.text(415, 18, "Wave: " + waveNumber + '/' + totalWaves, {fontSize: 25, color: '#ffffff', fontStyle: 'bold', depth: 10});
     waveText.setVisible(false);
     //Create timer variable and display text
     this.buildTime = buildTimer;
-    timeText = this.add.text(620, 18, timeRemaining, {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    timeText = this.add.text(600, 18, timeRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     //Add enemies remaining text
-    enemiesRemainingText = this.add.text(600, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
+    enemiesRemainingText = this.add.text(590, 18, "Enemies: " + enemiesRemaining, {fontSize: 25, color: '#FFFFFF', fontStyle: 'bold'});
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
@@ -774,8 +923,6 @@ export default class FullGame extends Phaser.Scene {
         pause = true
 
         //Display victory text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
@@ -792,6 +939,7 @@ export default class FullGame extends Phaser.Scene {
 
         //Display defeat text
         defeatText.setVisible(true);
+        //enemiesRemainingText.setVisible(false);
         theme.stop();
         gameOverMusic = this.sound.add('gameOverMusic', {loop: false, volume: 0.5});
         if (gameOverPlayed == false) {
@@ -837,11 +985,11 @@ export default class FullGame extends Phaser.Scene {
             gameTime = 0;
             //Remove text
             timeText.setVisible(false);
-            //enemiesRemainingText.setVisible(true)
+            enemiesRemainingText.setVisible(true)
             //reset tickTimer
             tickTimer = 3;
-            //reset enemies remaining
-            enemiesRemaining = enemies.reduce((a, b) => a + b, 0);
+            //reset enemies remaining to next wave
+            enemiesRemaining = waves[waveNumber-1].reduce((a,b) => a + b, 0);
             this.spawned = 0;
         }
     } //End build phase
@@ -923,7 +1071,7 @@ export default class FullGame extends Phaser.Scene {
 
 
 //Reload Mechanic (Copy over reload key from constant updates)
-    if (ammoCount == 0 || reloadme == true) {
+    if (ammoCount == 0 || reloadme == true && pause == false) {
         reloading = true;
         reloadTime += delta/1000;
         if (played == false) {
@@ -956,7 +1104,7 @@ export default class FullGame extends Phaser.Scene {
         // pistol
             if (pause != true && reloading == false){
                 // might need to add a delay to the semi auto-ness because right now they can theoretically shoot faster than machine gun if they mash
-                addPlayerBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-20,player.y,Math.PI);
                 ammoCount -= 1;
                 spacedown = false; //need to set this so that they need to let go of spacebar before they can shoot again
             }
@@ -964,13 +1112,11 @@ export default class FullGame extends Phaser.Scene {
         // Machine Gun
             if (time - delts > frplayer && pause != true && reloading == false){
                 delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addPlayerBullet(player.x,player.y,Math.PI);
+                addPlayerBullet(player.x-25,player.y-10,Math.PI);
                 ammoCount -= 1;
             }
-
-/// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         } else if (weapon == 2){ //Spartan Laser
-
+        /// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // Charge laser while holding space
             charge += delta/1000
             // Play firing animation HERE
@@ -990,26 +1136,33 @@ export default class FullGame extends Phaser.Scene {
                     laserbeam.setVisible(true);
                     firing = true;
                     firetime = 0;
+                } else {
+                    lasershot.play();
+                    laserbeam.setVisible(true);
+                    firing = true;
+                    firetime = 0;
                 }
                 // Shot fired, reset and play reload
                 spacedown = false;
-                charge = 0
+                charge = 0;
             }
-        } else if (weapon == 1){
-        // Machine Gun
-            if (time - delts > frplayer && pause != true && reloading == false){
-                delts = time; //if we're building the 3rd weapon the same way need to consider changing this variable or having multiple similar
-                addPlayerBullet(player.x,player.y,Math.PI);
-                ammoCount -= 1;
-            }
-        } /*else if (weapon == 2){
-        // Death Machine or RPG or whatever (To be added)
-
-        }*/
+        }
     }
+    if (!spacedown){
+        // Player releases space
+        charge = 0;
+    }
+    
 
 
 // Constant updates
+    //Update enemies remaining test 
+    enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
+    if (enemiesRemaining >= 100){
+        enemiesRemainingText.setText("Enemies:" + enemiesRemaining)
+    }
+
+    //Laser firing
     if(firing){
         firetime += delta/1000;
         if(firetime<.25){
@@ -1361,7 +1514,7 @@ var Boss = new Phaser.Class({
             {
                 this.setActive(false);
                 this.setVisible(false);
-                enemiesRemaining -= 3;
+                enemiesRemaining -= 1;
                 tank.stop();
                 lifecount -= 10
             }
@@ -1481,7 +1634,7 @@ var Turret = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 700;
+        this.fireRate = 600;
     },
     place: function(i, j) {
         this.y = i * 64 + 64/2;
@@ -1505,26 +1658,37 @@ var Turret = new Phaser.Class({
     },
     buttonCheck: function()
     {
-        buttonYes.off('pointerup');
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
-        if (map[i][j] == 1){
-            buttonYes.setActive(true);
-            buttonNo.setActive(true);
-            buttonYes.x = this.x - 40;
-            buttonYes.y = this.y;
-            buttonNo.x = this.x + 40;
-            buttonNo.y = this.y;
-            buttonYes.setVisible(true);
-            buttonNo.setVisible(true);
-            buttonYes.on('pointerup', this.upgrade, this);
-            buttonNo.on('pointerup', function(){
-                buttonYes.setActive(false);
-                buttonYes.setVisible(false);
-                buttonNo.setActive(false);
-                buttonNo.setVisible(false);
-                buttonYes.off('pointerup');
-            });
+        if (pause == false){
+            buttonYes.off('pointerup');
+            var i = (this.y - 32) / 64;
+            var j = (this.x - 32) / 64;
+            if (map[i][j] == 1){
+                buttonYes.setActive(true);
+                buttonNo.setActive(true);
+                buttonYes.x = this.x - 40;
+                buttonYes.y = this.y;
+                buttonNo.x = this.x + 40;
+                buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
+                buttonYes.setVisible(true);
+                buttonNo.setVisible(true);
+                confirmText.setVisible(true);
+                buttonYes.on('pointerup', this.upgrade, this);
+                buttonNo.on('pointerup', function(){
+                    buttonYes.setActive(false);
+                    buttonYes.setVisible(false);
+                    buttonNo.setActive(false);
+                    buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
+                    buttonYes.off('pointerup');
+                });
+            }
         }
     },
     upgrade: function ()
@@ -1535,6 +1699,8 @@ var Turret = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
+        confirmText.setVisible(false);
+        confirmBox.clear();
         if (scraps >= 10 && map[i][j] == 1){
             scraps -= 10;
             map[i][j] = 2;
@@ -1585,26 +1751,37 @@ var Cannon = new Phaser.Class({
 
     buttonCheck: function()
     {
-        buttonYes.off('pointerup');
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
-        if (map[i][j] == 1){
-            buttonYes.setActive(true);
-            buttonNo.setActive(true);
-            buttonYes.x = this.x - 40;
-            buttonYes.y = this.y;
-            buttonNo.x = this.x + 40;
-            buttonNo.y = this.y;
-            buttonYes.setVisible(true);
-            buttonNo.setVisible(true);
-            buttonYes.on('pointerup', this.upgrade, this);
-            buttonNo.on('pointerup', function(){
-                buttonYes.setActive(false);
-                buttonYes.setVisible(false);
-                buttonNo.setActive(false);
-                buttonNo.setVisible(false);
-                buttonYes.off('pointerup');
-            });
+        if (pause == false){
+            buttonYes.off('pointerup');
+            var i = (this.y - 32) / 64;
+            var j = (this.x - 32) / 64;
+            if (map[i][j] == 1){
+                buttonYes.setActive(true);
+                buttonNo.setActive(true);
+                buttonYes.x = this.x - 40;
+                buttonYes.y = this.y;
+                buttonNo.x = this.x + 40;
+                buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
+                buttonYes.setVisible(true);
+                buttonNo.setVisible(true);
+                confirmText.setVisible(true);
+                buttonYes.on('pointerup', this.upgrade, this);
+                buttonNo.on('pointerup', function(){
+                    buttonYes.setActive(false);
+                    buttonYes.setVisible(false);
+                    buttonNo.setActive(false);
+                    buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
+                    buttonYes.off('pointerup');
+                });
+            }
         }
     },
     upgrade: function ()
@@ -1615,8 +1792,10 @@ var Cannon = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
-        if (scraps >= 10 && map[i][j] == 1){
-            scraps -= 10;
+        confirmText.setVisible(false);
+        confirmBox.clear();
+        if (scraps >= 20 && map[i][j] == 1){
+            scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -1665,26 +1844,37 @@ var Lightning = new Phaser.Class({
     },
     buttonCheck: function()
     {
-        buttonYes.off('pointerup');
-        var i = (this.y - 32) / 64;
-        var j = (this.x - 32) / 64;
-        if (map[i][j] == 1){
-            buttonYes.setActive(true);
-            buttonNo.setActive(true);
-            buttonYes.x = this.x - 40;
-            buttonYes.y = this.y;
-            buttonNo.x = this.x + 40;
-            buttonNo.y = this.y;
-            buttonYes.setVisible(true);
-            buttonNo.setVisible(true);
-            buttonYes.on('pointerup', this.upgrade, this);
-            buttonNo.on('pointerup', function(){
-                buttonYes.setActive(false);
-                buttonYes.setVisible(false);
-                buttonNo.setActive(false);
-                buttonNo.setVisible(false);
-                buttonYes.off('pointerup');
-            });
+        if (pause == false){
+            buttonYes.off('pointerup');
+            var i = (this.y - 32) / 64;
+            var j = (this.x - 32) / 64;
+            if (map[i][j] == 1){
+                buttonYes.setActive(true);
+                buttonNo.setActive(true);
+                buttonYes.x = this.x - 40;
+                buttonYes.y = this.y;
+                buttonNo.x = this.x + 40;
+                buttonNo.y = this.y;
+                confirmText.x = this.x-37;
+                confirmText.y = this.y-44;
+                confirmBox.x = this.x-40;
+                confirmBox.y = this.y-45;
+                confirmBox.fillStyle(0x000000);
+                confirmBox.fillRectShape(blackBox);
+                buttonYes.setVisible(true);
+                buttonNo.setVisible(true);
+                confirmText.setVisible(true);
+                buttonYes.on('pointerup', this.upgrade, this);
+                buttonNo.on('pointerup', function(){
+                    buttonYes.setActive(false);
+                    buttonYes.setVisible(false);
+                    buttonNo.setActive(false);
+                    buttonNo.setVisible(false);
+                    confirmText.setVisible(false);
+                    confirmBox.clear();
+                    buttonYes.off('pointerup');
+                });
+            }
         }
     },
     upgrade: function ()
@@ -1695,8 +1885,10 @@ var Lightning = new Phaser.Class({
         buttonYes.setVisible(false);
         buttonNo.setActive(false);
         buttonNo.setVisible(false);
-        if (scraps >= 10 && map[i][j] == 1){
-            scraps -= 10;
+        confirmText.setVisible(false);
+        confirmBox.clear();
+        if (scraps >= 30 && map[i][j] == 1){
+            scraps -= 30;
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
@@ -2024,6 +2216,7 @@ function placeTower(pointer) {
             }
             button1.alpha = .5;
             turretIndicator.clear();
+            turret_selector = -1;
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -2046,6 +2239,7 @@ function placeTower(pointer) {
             }
             button2.alpha = .5;
             cannonIndicator.clear();
+            turret_selector = -1;
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -2068,39 +2262,10 @@ function placeTower(pointer) {
             }
             button3.alpha = .5;
             teslaIndicator.clear();
-        }
-        turret_selector = -1;
-    }
-}
-
-
-function placeCannon(pointer) {
-    if (scraps >= 0){
-        scraps -= 0;
-        var i = Math.floor(pointer.y/64);
-        var j = Math.floor(pointer.x/64);
-        if(canPlaceTurret(i, j)) {
-            var cannon = cannons.get();
-            if (cannon){
-                cannon.setActive(true);
-                cannon.setVisible(true);
-                cannon.place(i, j);
-                lightning.on('pointerover', function(){
-                    teslaIndicator.clear();
-                    teslaRange.x = lightning.x;
-                    teslaRange.y = lightning.y;
-                    graphicz.fillStyle(0xFFFFFF, 0.3);
-                    teslaIndicator.fillCircleShape(teslaRange);
-                });
-                lightning.on('pointerout', function(){
-                    teslaIndicator.clear();
-                });
-                tick.play();
-            }
+            turret_selector = -1;
         }
     }
 }
-
 
 
 function addBullet(x, y, angle) {
