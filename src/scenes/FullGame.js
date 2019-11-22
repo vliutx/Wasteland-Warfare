@@ -69,6 +69,7 @@
     var electric;
     var reload;
     var lasershot;
+    var lasercharge;
     var laserReload;
     var purchase;
     var purchaseLaser;
@@ -136,10 +137,10 @@
 
     // Enemy Spawns
     var enemiesRemaining
-    var enemies = [115,0,0,0];
+    var enemies = [6,0,0,0];
     var empty = [0,0,0,0];
     var waves = [
-                    [115,0,0,0],
+                    [6,0,0,0],
                     [0,12,0,0],
                     [10,10,0,0],
                     [5,20,5,0],
@@ -256,6 +257,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
  ////// LASERRRRR CODEEEEE //////////
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
+    this.load.audio('lasercharge', 'assets/sounds/lasershot.wav'); ////////ADD SOUND///////
 
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
@@ -312,6 +314,7 @@ export default class FullGame extends Phaser.Scene {
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
     lasershot = this.sound.add('lasershot', {volume: .40});
+    lasercharge = this.sound.add('lasercharge', {volume: .40});
     purchase = this.sound.add('purchase', {volume: .40});
     purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
 
@@ -596,11 +599,11 @@ export default class FullGame extends Phaser.Scene {
     //Gun selection
     //As of right now there is no click to purchase option it is just a visual indicator
     //Descriptions of guns
-    var gb1Text = this.add.text(100, 10, "Pistol: Moderate\nsemi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var gb1Text = this.add.text(100, 575, "Pistol: \nModerate semi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb1Text.setVisible(false);
-    var gb2Text = this.add.text(100, 80, "Machine Gun: Moderate\nfully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var gb2Text = this.add.text(100, 575, "Machine Gun: \nModerate fully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb2Text.setVisible(false);
-    var gb3Text = this.add.text(100, 150, "Laser: Massive\ndamage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var gb3Text = this.add.text(100, 575, "Laser: \nMassive damage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb3Text.setVisible(false);
     //icons
     gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
@@ -801,11 +804,11 @@ export default class FullGame extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 575, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
-    var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b2Text = this.add.text(100, 575, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 575, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
 
     //Display turret descriptions when hovering over icon
@@ -912,6 +915,8 @@ export default class FullGame extends Phaser.Scene {
     //Create restart key
     this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     graphicz.fillStyle(0xFFFFFF, 0.3);
+    // Create key to start wave early
+    this.sendWave = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
 
   } //End create
 
@@ -974,6 +979,11 @@ export default class FullGame extends Phaser.Scene {
           tick.play();
           tickTimer -= 1;
         };
+
+        // Add button to begin next wave
+        if (Phaser.Input.Keyboard.JustDown(this.sendWave)) {
+            timeRemaining = 0;
+        }
 
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
@@ -1119,8 +1129,8 @@ export default class FullGame extends Phaser.Scene {
         /// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // Charge laser while holding space
             charge += delta/1000
-            // Play firing animation HERE
-
+            // Play firing animation and sound 
+            lasercharge.play();
             // Wait until laser is fully charged, the fire
             if (charge >= chargeTime){
                 // Get all enemies at same y position as player
@@ -1151,6 +1161,8 @@ export default class FullGame extends Phaser.Scene {
     if (!spacedown){
         // Player releases space
         charge = 0;
+        // End charging sound
+        lasercharge.stop();
     }
     
 
