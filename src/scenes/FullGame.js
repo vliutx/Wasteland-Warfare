@@ -56,7 +56,7 @@
     var path;
     var tick;
     var death;
-    
+
 
     // Sounds
     var cannonshot;
@@ -175,6 +175,11 @@ export default class FullGame extends Phaser.Scene {
     this.load.spritesheet("machineBulletCount", "./assets/spriteSheets/MachineBulletCount.png", {
         frameHeight: 160,
         frameWidth: 160
+    });
+
+    this.load.spritesheet("laserCharge", './assets/spriteSheets/LaserCharge.png', {
+        frameHeight: 128,
+        frameWidth: 128
     });
     this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
         frameHeight: 96,
@@ -401,6 +406,7 @@ export default class FullGame extends Phaser.Scene {
         played = false;
         reloadme = false;
         machineBulletCount.setVisible(false);
+        laserCharge.setVisible(false);
         bulletCount.setVisible(true);
     });
     var switchMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
@@ -419,6 +425,7 @@ export default class FullGame extends Phaser.Scene {
                 reloadme = false;
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
+                laserCharge.setVisible(false);
                 buyLock1.setVisible(false);
                 gbutton2.setVisible(false);
                 gbutton1.alpha = 0.5;
@@ -439,6 +446,7 @@ export default class FullGame extends Phaser.Scene {
                     reloadme = false;
                     bulletCount.setVisible(false);
                     machineBulletCount.setVisible(true);
+                    laserCharge.setVisible(false);
                 });
             }
         } else {
@@ -454,6 +462,7 @@ export default class FullGame extends Phaser.Scene {
             reloadme = false;
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
+            laserCharge.setVisible(false);
         }
     }, this);
 //SPARTAN LASER CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -479,6 +488,7 @@ export default class FullGame extends Phaser.Scene {
                     gbutton1.alpha = 0.5;
                     gbutton2.alpha = 0.5;
                     weapon = 2;
+                    laserCharge.setVisible(true);
                     // CHANGE REALOD SHIT FOR LASER //
                     reloadTime = 0;
                     reloading = false;
@@ -510,6 +520,9 @@ export default class FullGame extends Phaser.Scene {
     machineBulletCount = this.add.sprite(760, 605, 'machineBulletCount');
     machineBulletCount.setScale(0.65);
     machineBulletCount.setVisible(false);
+    laserCharge = this.add.sprite(780, 594, 'laserCharge');
+    laserCharge.setScale(0.65);
+    laserCharge.setVisible(false);
 
 //Enemies
 
@@ -641,6 +654,7 @@ export default class FullGame extends Phaser.Scene {
             reloadme = false;
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
+            laserCharge.setVisible(false);
             buyLock1.setVisible(false);
             gbutton2.setVisible(false);
             gbutton1.alpha = 0.5;
@@ -662,6 +676,7 @@ export default class FullGame extends Phaser.Scene {
                 reloadme = false;
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
+                laserCharge.setVisible(false);
             });
         }
     }, this);
@@ -1120,6 +1135,20 @@ export default class FullGame extends Phaser.Scene {
             // Charge laser while holding space
             charge += delta/1000
             // Play firing animation HERE
+            if (charge > 0.25 && charge < 0.5) {
+              laserCharge.setFrame(1)
+            } else if (charge >= 0.5 && charge < 0.75) {
+              laserCharge.setFrame(2)
+            } else if (charge >= 0.75 && charge < 1) {
+              laserCharge.setFrame(3)
+            } else if (charge >= 1 && charge < 1.25) {
+              laserCharge.setFrame(4)
+            } else if (charge >= 1.25 && charge < 1.45) {
+              laserCharge.setFrame(5)
+            //Need this last line to briefly show charge is ready
+            } else if (charge >= 1.45 && charge < 1.5) {
+              laserCharge.setFrame(6)
+            };
 
             // Wait until laser is fully charged, the fire
             if (charge >= chargeTime){
@@ -1151,12 +1180,13 @@ export default class FullGame extends Phaser.Scene {
     if (!spacedown){
         // Player releases space
         charge = 0;
+        laserCharge.setFrame(0);
     }
-    
+
 
 
 // Constant updates
-    //Update enemies remaining test 
+    //Update enemies remaining test
     enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
     if (enemiesRemaining >= 100){
         enemiesRemainingText.setText("Enemies:" + enemiesRemaining)
@@ -1191,6 +1221,7 @@ export default class FullGame extends Phaser.Scene {
     } else {
       machineBulletCount.setVisible(false);
       bulletCount.setVisible(false);
+      laserCharge.setVisible(true);
     }
 
     //Player movement

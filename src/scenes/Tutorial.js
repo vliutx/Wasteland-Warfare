@@ -170,6 +170,10 @@ export default class Tutorial extends Phaser.Scene {
         frameHeight: 160,
         frameWidth: 160
     });
+    this.load.spritesheet("laserCharge", './assets/spriteSheets/LaserCharge.png', {
+        frameHeight: 128,
+        frameWidth: 128
+    });
     this.load.spritesheet("waterHealth", "./assets/spriteSheets/WaterHealth.png", {
         frameHeight: 96,
         frameWidth: 96
@@ -221,7 +225,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.image('laserPrice', 'assets/LaserIconWithCost.png');
     this.load.image('checkmark', 'assets/checkmark.png');
     this.load.image('xmark', 'assets/xmark.png');
-    // player 
+    // player
     this.load.image('playerBullet', 'assets/newBullet.png');
     this.load.image('laser', 'assets/laser.png');
     this.load.image('laserbeam', 'assets/Laser.png')
@@ -377,6 +381,7 @@ export default class Tutorial extends Phaser.Scene {
         played = false;
         reloadme = false;
         machineBulletCount.setVisible(false);
+        laserCharge.setVisible(false);
         bulletCount.setVisible(true);
     });
     var switchMachineGun = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.TWO);
@@ -394,6 +399,7 @@ export default class Tutorial extends Phaser.Scene {
                 reloadme = false;
                 bulletCount.setVisible(false);
                 machineBulletCount.setVisible(true);
+                laserCharge.setVisible(false);
                 buyLock1.setVisible(false);
                 gbutton2.setVisible(false);
                 gbutton1.alpha = 0.5;
@@ -414,6 +420,7 @@ export default class Tutorial extends Phaser.Scene {
                     reloadme = false;
                     bulletCount.setVisible(false);
                     machineBulletCount.setVisible(true);
+                    laserCharge.setVisible(false);
                 });
             }
         } else {
@@ -429,6 +436,7 @@ export default class Tutorial extends Phaser.Scene {
             reloadme = false;
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
+            laserCharge.setVisible(false);
         }
     }, this);
 //SPARTAN LASER CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -454,6 +462,7 @@ export default class Tutorial extends Phaser.Scene {
                     gbutton1.alpha = 0.5;
                     gbutton2.alpha = 0.5;
                     weapon = 2;
+                    laserCharge.setVisible(true);
                     // CHANGE REALOD SHIT FOR LASER //
                     reloadTime = 0;
                     reloading = false;
@@ -484,6 +493,9 @@ export default class Tutorial extends Phaser.Scene {
     machineBulletCount = this.add.sprite(760, 605, 'machineBulletCount');
     machineBulletCount.setScale(0.65);
     machineBulletCount.setVisible(false);
+    laserCharge = this.add.sprite(780, 594, 'laserCharge');
+    laserCharge.setScale(0.65);
+    laserCharge.setVisible(false);
 
 //Enemies
 
@@ -596,6 +608,7 @@ export default class Tutorial extends Phaser.Scene {
         played = false;
         reloadme = false;
         machineBulletCount.setVisible(false);
+        laserCharge.setVisible(false);
         bulletCount.setVisible(true);
     });
     gbutton2 = this.add.sprite(40, 110, 'machineGunPrice', 0).setInteractive();
@@ -618,6 +631,7 @@ export default class Tutorial extends Phaser.Scene {
             reloadme = false;
             bulletCount.setVisible(false);
             machineBulletCount.setVisible(true);
+            laserCharge.setVisible(false);
             buyLock1.setVisible(false);
             gbutton2.setVisible(false);
             gbutton1.alpha = 0.5;
@@ -931,7 +945,7 @@ export default class Tutorial extends Phaser.Scene {
 
   update (time, delta) {
 // Game Phases
-    //Update enemies remaining test 
+    //Update enemies remaining test
     enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
     //Win Condition
     if (wavesRemaining == 0){
@@ -1162,6 +1176,21 @@ export default class Tutorial extends Phaser.Scene {
         } else if (weapon == 2){
         // spartan laser
             charge += delta/1000
+            //laser charging
+            if (charge > 0.25 && charge < 0.5) {
+              laserCharge.setFrame(1)
+            } else if (charge >= 0.5 && charge < 0.75) {
+              laserCharge.setFrame(2)
+            } else if (charge >= 0.75 && charge < 1) {
+              laserCharge.setFrame(3)
+            } else if (charge >= 1 && charge < 1.25) {
+              laserCharge.setFrame(4)
+            } else if (charge >= 1.25 && charge < 1.45) {
+              laserCharge.setFrame(5)
+            //Need this last line to briefly show charge is ready
+            } else if (charge >= 1.45 && charge < 1.5) {
+              laserCharge.setFrame(6)
+            };
             if (charge >= chargeTime){
                 var laserEnemies = getEnemiesHeight(player.y, LASER_WIDTH);
                 if (laserEnemies.length > 0){
@@ -1185,6 +1214,7 @@ export default class Tutorial extends Phaser.Scene {
     }
     if (!spacedown){
         charge = 0;
+        laserCharge.setFrame(0);
     }
 
 // Constant updates
@@ -1214,6 +1244,10 @@ export default class Tutorial extends Phaser.Scene {
         bulletCount.setFrame(6 - ammoCount);
     } else if (weapon == 1){
         machineBulletCount.setFrame(12 - ammoCount);
+    } else {
+        machineBulletCount.setVisible(false);
+        bulletCount.setVisible(false);
+        laserCharge.setVisible(true);
     }
 
     //Player movement

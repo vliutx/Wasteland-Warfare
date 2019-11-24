@@ -9,6 +9,7 @@ var shells;
 var waterHealth;
 var bulletCount;
 var machineBulletCount;
+var laserCharge;
 
 // Sounds
 var gunfire;
