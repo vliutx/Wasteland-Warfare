@@ -13,7 +13,7 @@
 
 
     // Counters
-    var scraps = 40;
+    var scraps = 0;
     var lifecount = 10;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
@@ -100,6 +100,8 @@
     var turrets;
     var cannons;
     var lightnings;
+    var buildTower;
+
 
     //Guns
     var laser;
@@ -246,6 +248,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');
     //
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
     //
@@ -290,11 +293,17 @@ export default class Tutorial extends Phaser.Scene {
     lasershot = this.sound.add('lasershot', {volume: .40});
     purchase = this.sound.add('purchase', {volume: .40});
     purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
+    buildTower =  this.sound.add('buildTower', {volume: .40});
+
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
     tick = this.sound.add('tick');
     theme = this.sound.add('theme', {loop: true, volume: 0.5});
+
+    //Uncomment to mute
+    theme = this.sound.add('theme', {loop: true, volume: 0.0});
+
 
     //play Sounds
     theme.play();
@@ -866,19 +875,20 @@ export default class Tutorial extends Phaser.Scene {
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(250, 250, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
-    victoryText.setVisible(false);
-    victoryText.setDepth(4);
-    continueText = this.add.text(195, 345, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
-    continueText.setVisible(false);
-    continueText.setDepth(4);
+    victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText.setVisible(true);
+    victoryText.setDepth(1);
+    continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
+    continueText.setVisible(true);
+    continueText.setDepth(1);
     //Defeat text
-    defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
+    defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
-    defeatText.setDepth(4);
-    restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    defeatText.setDepth(1);
+    restartText = this.add.text(135, 265, "(Press \"ENTER\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
-    restartText.setDepth(4);
+    restartText.setDepth(1);
+
 
     //various tutorial texts
     //tutorialbacking stuff
@@ -2223,6 +2233,7 @@ function placeTower(pointer) {
             button1.alpha = .5;
             turretIndicator.clear();
             turret_selector = -1;
+            buildTower.play();
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -2246,6 +2257,7 @@ function placeTower(pointer) {
             button2.alpha = .5;
             cannonIndicator.clear();
             turret_selector = -1;
+            buildTower.play();
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -2269,6 +2281,7 @@ function placeTower(pointer) {
             button3.alpha = .5;
             teslaIndicator.clear();
             turret_selector = -1;
+            buildTower.play();
         }
     }
 }
