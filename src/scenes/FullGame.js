@@ -1829,7 +1829,7 @@ var Cannon = new Phaser.Class({
             scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
-            this.setTint(0x0000ff);
+            this.setTint(0xff0000);
         }
     }
 });
