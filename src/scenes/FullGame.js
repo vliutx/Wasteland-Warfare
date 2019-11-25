@@ -73,6 +73,7 @@
     var laserReload;
     var purchase;
     var purchaseLaser;
+    var upgradeTower;
 
     // Enemies
     var fast_enemies;
@@ -267,7 +268,9 @@ export default class FullGame extends Phaser.Scene {
     //
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
     //
-    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');    
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3'); 
+    //
+    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3');   
 
     // enemies
     this.load.audio('death', 'assets/sounds/death.mp3');
@@ -309,27 +312,28 @@ export default class FullGame extends Phaser.Scene {
     path.lineTo(800, -50);
 
     //Add sounds
-    gunfire = this.sound.add('gunshot', {volume: 0.20});
-    cannonshot = this.sound.add('cannonshot');
+    gunfire = this.sound.add('gunshot', {volume: 0.075});
+    cannonshot = this.sound.add('cannonshot', {volume: .20});
     death = this.sound.add('death', {volume: 0.1});
-    explode = this.sound.add('explosion', {volume: 0.7});
+    explode = this.sound.add('explosion', {volume: 0.5});
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
-    lasershot = this.sound.add('lasershot', {volume: .40});
-    lasercharge = this.sound.add('lasercharge', {volume: .40});
-    purchase = this.sound.add('purchase', {volume: .40});
-    purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
-    buildTower =  this.sound.add('buildTower', {volume: .40});
+    lasershot = this.sound.add('lasershot', {volume: .10});
+    lasercharge = this.sound.add('lasercharge', {volume: .10});
+    purchase = this.sound.add('purchase', {volume: .10});
+    purchaseLaser = this.sound.add('purchaseLaser', {volume: .3});
+    buildTower =  this.sound.add('buildTower', {volume: .30});
+    upgradeTower =  this.sound.add('upgradeTower', {volume: .30});
+
 
     //ambient wind and ticking
-    wind = this.sound.add('wind', {loop: true, volume: 0.1});
-    tick = this.sound.add('tick');
-    theme = this.sound.add('theme', {loop: true, volume: 0.4});
+    wind = this.sound.add('wind', {loop: true, volume: 0.2});
+    tick = this.sound.add('tick', {volume: .4});
+    theme = this.sound.add('theme', {loop: true, volume: 0.2});
 
     //Uncomment to mute
-    theme = this.sound.add('theme', {loop: true, volume: 0.0});
-
+    //theme = this.sound.add('theme', {loop: true, volume: 0.0});
 
     //play Sounds
     theme.play();
@@ -1729,6 +1733,7 @@ var Turret = new Phaser.Class({
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
+            upgradeTower.play();
         }
     }
 });
@@ -1822,6 +1827,7 @@ var Cannon = new Phaser.Class({
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
+            upgradeTower.play();
         }
     }
 });
@@ -1915,6 +1921,7 @@ var Lightning = new Phaser.Class({
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
+            upgradeTower.play();
         }
     }
 });
