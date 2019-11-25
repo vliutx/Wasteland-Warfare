@@ -262,7 +262,9 @@ export default class Tutorial extends Phaser.Scene {
     //
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
     //
-    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3');   
+    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3'); 
+    //
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');  
 
 
     // enemies
