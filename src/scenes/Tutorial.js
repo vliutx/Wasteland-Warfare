@@ -75,6 +75,7 @@
     var electric;
     var reload;
     var lasershot;
+    var lasercharge;
     var laserReload;
     var purchase;
     var purchaseLaser;
@@ -246,6 +247,8 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('purchase', 'assets/sounds/purchase.mp3');
     this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
+    this.load.audio('lasercharge', 'assets/sounds/lasercharge.wav'); ////////ADD SOUND///////
+
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
     this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');
@@ -291,6 +294,7 @@ export default class Tutorial extends Phaser.Scene {
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
     lasershot = this.sound.add('lasershot', {volume: .40});
+    lasercharge = this.sound.add('lasercharge', {volume: .40});
     purchase = this.sound.add('purchase', {volume: .40});
     purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
     buildTower =  this.sound.add('buildTower', {volume: .40});
@@ -876,10 +880,10 @@ export default class Tutorial extends Phaser.Scene {
     //Create health text
     //Create Victory text
     victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
-    victoryText.setVisible(true);
+    victoryText.setVisible(false);
     victoryText.setDepth(1);
     continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
-    continueText.setVisible(true);
+    continueText.setVisible(false);
     continueText.setDepth(1);
     //Defeat text
     defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
@@ -1170,6 +1174,9 @@ export default class Tutorial extends Phaser.Scene {
                 ammoCount -= 1;
             }
         } else if (weapon == 2){
+            if (charge==0){
+                lasercharge.play();
+            };
         // spartan laser
             charge += delta/1000
             if (charge >= chargeTime){
@@ -1195,6 +1202,7 @@ export default class Tutorial extends Phaser.Scene {
     }
     if (!spacedown){
         charge = 0;
+        lasercharge.stop();
     }
 
 // Constant updates

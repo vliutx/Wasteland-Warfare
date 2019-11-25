@@ -47,7 +47,7 @@
     var machine = false; //did they purchase the machine gun?
     var spartan = false; //did they purchase the death machine? !!!!!!!!!
     //LASER CODE
-    var chargeTime = 1.5; //Time to charge up laser
+    var chargeTime = 2; //Time to charge up laser
     var charge = 0;    //Tracks time it has been charged for
     var firetime = 0; // Tracks how long laser has been firing
     var firing = false;
@@ -258,7 +258,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
  ////// LASERRRRR CODEEEEE //////////
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
-    this.load.audio('lasercharge', 'assets/sounds/lasershot.wav'); ////////ADD SOUND///////
+    this.load.audio('lasercharge', 'assets/sounds/lasercharge.wav'); ////////ADD SOUND///////
 
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
@@ -899,10 +899,10 @@ export default class FullGame extends Phaser.Scene {
     //Create health text
     //Create Victory text
     victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
-    victoryText.setVisible(true);
+    victoryText.setVisible(false);
     victoryText.setDepth(1);
     continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
-    continueText.setVisible(true);
+    continueText.setVisible(false);
     continueText.setDepth(1);
     //Defeat text
     defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
@@ -1135,10 +1135,13 @@ export default class FullGame extends Phaser.Scene {
             }
         } else if (weapon == 2){ //Spartan Laser
         /// LASER CODE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if (charge==0){
+                lasercharge.play();
+            }
             // Charge laser while holding space
             charge += delta/1000
+            
             // Play firing animation and sound 
-            lasercharge.play();
             // Wait until laser is fully charged, the fire
             if (charge >= chargeTime){
                 // Get all enemies at same y position as player
