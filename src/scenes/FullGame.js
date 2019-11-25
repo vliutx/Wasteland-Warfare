@@ -1160,18 +1160,18 @@ export default class FullGame extends Phaser.Scene {
             // Charge laser while holding space
             charge += delta/1000
             // Play firing animation HERE
-            if (charge > 0.25 && charge < 0.5) {
+            if (charge > 0.29 && charge < 0.62) {
               laserCharge.setFrame(1)
-            } else if (charge >= 0.5 && charge < 0.75) {
+            } else if (charge >= 0.62 && charge < 0.95) {
               laserCharge.setFrame(2)
-            } else if (charge >= 0.75 && charge < 1) {
+            } else if (charge >= 0.95 && charge < 1.28) {
               laserCharge.setFrame(3)
-            } else if (charge >= 1 && charge < 1.25) {
+            } else if (charge >= 1.28 && charge < 1.61) {
               laserCharge.setFrame(4)
-            } else if (charge >= 1.25 && charge < 1.45) {
+            } else if (charge >= 1.61 && charge < 1.75) {
               laserCharge.setFrame(5)
             //Need this last line to briefly show charge is ready
-            } else if (charge >= 1.45 && charge < 1.5) {
+            } else if (charge >= 1.75 && charge < 2) {
               laserCharge.setFrame(6)
             };
 
