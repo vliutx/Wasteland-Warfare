@@ -29,7 +29,7 @@
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
-    var buildTimer = 12;
+    var buildTimer = 20;
 
     // Booleans
     var pause = true;

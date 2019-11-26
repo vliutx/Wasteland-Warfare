@@ -13,7 +13,7 @@
 
 
     // Counters
-    var scraps = 100;
+    var scraps = 0;
     var lifecount = 10;
     var wavesRemaining = 10;
     var totalWaves = wavesRemaining;
@@ -29,7 +29,7 @@
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
-    var buildTimer = 12;
+    var buildTimer = 10;
 
     // Booleans
     var pause = true;
