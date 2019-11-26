@@ -13,7 +13,7 @@
 
 
     // Counters
-    var scraps = 40;
+    var scraps = 0;
     var lifecount = 10;
     var wavesRemaining = 4;
     var totalWaves = wavesRemaining;
@@ -75,6 +75,7 @@
     var electric;
     var reload;
     var lasershot;
+    var lasercharge;
     var laserReload;
     var purchase;
     var purchaseLaser;
@@ -100,6 +101,9 @@
     var turrets;
     var cannons;
     var lightnings;
+    var buildTower;
+    var upgradeTower;
+
 
     //Guns
     var laser;
@@ -248,12 +252,21 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('purchase', 'assets/sounds/purchase.mp3');
     this.load.audio('purchaseLaser', 'assets/sounds/purchaseLaser.mp3');
     this.load.audio('lasershot', 'assets/sounds/lasershot.wav');
+    this.load.audio('lasercharge', 'assets/sounds/lasercharge.wav'); ////////ADD SOUND///////
+
     // turrets
     this.load.audio('gunshot', 'assets/sounds/gunshot.mp3');
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');
     //
     this.load.audio('cannonshot', 'assets/sounds/cannonshot.mp3');
     //
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
+    //
+    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3'); 
+    //
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');  
+
+
     // enemies
     this.load.audio('death', 'assets/sounds/death.mp3');
     this.load.audio('tankSounds', 'assets/sounds/Tank.mp3');
@@ -284,21 +297,29 @@ export default class Tutorial extends Phaser.Scene {
     path.lineTo(800, -50);
 
     //Add sounds
-    gunfire = this.sound.add('gunshot', {volume: 0.20});
-    cannonshot = this.sound.add('cannonshot');
+    gunfire = this.sound.add('gunshot', {volume: 0.075});
+    cannonshot = this.sound.add('cannonshot', {volume: .20});
     death = this.sound.add('death', {volume: 0.1});
-    explode = this.sound.add('explosion', {volume: 0.7});
+    explode = this.sound.add('explosion', {volume: 0.5});
     tank = this.sound.add('tankSounds', {loop: true});
     electric = this.sound.add('electricity',{volume: 0.1, loop: false});
     reload = this.sound.add('reload', {volume: .40});
-    lasershot = this.sound.add('lasershot', {volume: .40});
-    purchase = this.sound.add('purchase', {volume: .40});
-    purchaseLaser = this.sound.add('purchaseLaser', {volume: 1});
+    lasershot = this.sound.add('lasershot', {volume: .10});
+    lasercharge = this.sound.add('lasercharge', {volume: .10});
+    purchase = this.sound.add('purchase', {volume: .10});
+    purchaseLaser = this.sound.add('purchaseLaser', {volume: .3});
+    buildTower =  this.sound.add('buildTower', {volume: .30});
+    upgradeTower =  this.sound.add('upgradeTower', {volume: .30});
+
 
     //ambient wind and ticking
     wind = this.sound.add('wind', {loop: true, volume: 0.1});
     tick = this.sound.add('tick');
     theme = this.sound.add('theme', {loop: true, volume: 0.5});
+
+    //Uncomment to mute
+    theme = this.sound.add('theme', {loop: true, volume: 0.0});
+
 
     //play Sounds
     theme.play();
@@ -880,19 +901,20 @@ export default class Tutorial extends Phaser.Scene {
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(250, 250, "VICTORY!", {fontSize: 100, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
-    victoryText.setDepth(4);
-    continueText = this.add.text(195, 345, "(Press \"P\" to continue to game)", {fontSize: 30, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText.setDepth(1);
+    continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
-    continueText.setDepth(4);
+    continueText.setDepth(1);
     //Defeat text
-    defeatText = this.add.text(250, 250, "¡DEFEAT!", {fontSize: 100, color: '#FF0000', fontStyle: 'bold'});
+    defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
-    defeatText.setDepth(4);
-    restartText = this.add.text(195, 345, "(Press \"ENTER\" to restart the game)", {fontSize: 30, color: '#FF0000', fontStyle: 'bold'});
+    defeatText.setDepth(1);
+    restartText = this.add.text(135, 265, "(Press \"ENTER\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
-    restartText.setDepth(4);
+    restartText.setDepth(1);
+
 
     //various tutorial texts
     //tutorialbacking stuff
@@ -1174,6 +1196,9 @@ export default class Tutorial extends Phaser.Scene {
                 ammoCount -= 1;
             }
         } else if (weapon == 2){
+            if (charge==0){
+                lasercharge.play();
+            };
         // spartan laser
             charge += delta/1000
             //laser charging
@@ -1215,6 +1240,7 @@ export default class Tutorial extends Phaser.Scene {
     if (!spacedown){
         charge = 0;
         laserCharge.setFrame(0);
+        lasercharge.stop(); 
     }
 
 // Constant updates
@@ -1746,6 +1772,7 @@ var Turret = new Phaser.Class({
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
+            upgradeTower.play();
         }
     }
 });
@@ -1838,7 +1865,12 @@ var Cannon = new Phaser.Class({
             scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
+<<<<<<< HEAD
             this.setTint(0xff0000);
+=======
+            this.setTint(0x0000ff);
+            upgradeTower.play();
+>>>>>>> Dev
         }
     }
 });
@@ -1932,6 +1964,7 @@ var Lightning = new Phaser.Class({
             map[i][j] = 2;
             this.fireRate /= 2;
             this.setTint(0x0000ff);
+            upgradeTower.play();
         }
     }
 });
@@ -2257,6 +2290,7 @@ function placeTower(pointer) {
             button1.alpha = .5;
             turretIndicator.clear();
             turret_selector = -1;
+            buildTower.play();
         }
         else if (turret_selector == 1 && scraps >= 10){
             scraps -= 10;
@@ -2280,6 +2314,7 @@ function placeTower(pointer) {
             button2.alpha = .5;
             cannonIndicator.clear();
             turret_selector = -1;
+            buildTower.play();
         }
         else if (turret_selector == 2 && scraps >= 15){
             scraps -= 15;
@@ -2303,6 +2338,7 @@ function placeTower(pointer) {
             button3.alpha = .5;
             teslaIndicator.clear();
             turret_selector = -1;
+            buildTower.play();
         }
     }
 }
