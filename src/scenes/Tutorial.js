@@ -262,9 +262,9 @@ export default class Tutorial extends Phaser.Scene {
     //
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
     //
-    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3'); 
+    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3');
     //
-    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');  
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');
 
 
     // enemies
@@ -1240,7 +1240,7 @@ export default class Tutorial extends Phaser.Scene {
     if (!spacedown){
         charge = 0;
         laserCharge.setFrame(0);
-        lasercharge.stop(); 
+        lasercharge.stop();
     }
 
 // Constant updates
@@ -1865,12 +1865,8 @@ var Cannon = new Phaser.Class({
             scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
-<<<<<<< HEAD
-            this.setTint(0xff0000);
-=======
-            this.setTint(0x0000ff);
             upgradeTower.play();
->>>>>>> Dev
+            this.setTint(0xff0000);
         }
     }
 });

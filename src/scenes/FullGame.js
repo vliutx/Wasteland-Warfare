@@ -273,9 +273,9 @@ export default class FullGame extends Phaser.Scene {
     //
     this.load.audio('electricity', 'assets/sounds/Electric.mp3');
     //
-    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3'); 
+    this.load.audio('buildTower', 'assets/sounds/buildTower.mp3');
     //
-    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3');   
+    this.load.audio('upgradeTower', 'assets/sounds/upgradeTower.mp3');
 
     // enemies
     this.load.audio('death', 'assets/sounds/death.mp3');
@@ -1857,12 +1857,8 @@ var Cannon = new Phaser.Class({
             scraps -= 20;
             map[i][j] = 2;
             this.fireRate /= 2;
-<<<<<<< HEAD
             this.setTint(0xff0000);
-=======
-            this.setTint(0x0000ff);
             upgradeTower.play();
->>>>>>> Dev
         }
     }
 });
