@@ -320,7 +320,7 @@ export default class Tutorial extends Phaser.Scene {
     theme = this.sound.add('theme', {loop: true, volume: 0.5});
 
     //Uncomment to mute
-    theme = this.sound.add('theme', {loop: true, volume: 0.0});
+    //theme = this.sound.add('theme', {loop: true, volume: 0.0});
 
 
     //play Sounds
