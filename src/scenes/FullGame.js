@@ -25,11 +25,11 @@
     var BC = 1;
     var timeRemaining;
     var enemiesRemaining;
-    var waveNumber;
+    var waveNumber = 1;
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
-    var buildTimer = 10;
+    var buildTimer = 15;
 
     // Booleans
     var pause = true;
@@ -56,6 +56,7 @@
     var path;
     var tick;
     var death;
+    var menuText;
 
 
     // Sounds
@@ -134,7 +135,6 @@
     var nextEnemy = 0;
     var waveSize = 6;
     var spawned = 0;
-    waveNumber = 1;
     var spawnDelay = 400;
 
     // Enemy Spawns
@@ -144,18 +144,19 @@
     var waves = [
                     [6,0,0,0],
                     [0,12,0,0],
-                    [10,10,0,0],
-                    [5,20,5,0],
+                    [8,8,0,0],
+                    [5,15,5,0],
                     [10,10,10,0],
                     [15,15,15,0],
                     [25,0,20,0],
                     [0,150,0,0],
                     [20,20,40,0],
-                    [30,50,30,1],
-                    [0,0,0,0],
+                    [5,0,0,0],
+                    [50,50,30,0],
                 ];
     var waveN = [];
     var test = true;
+    //[30,50,30,1],
 
 
 export default class FullGame extends Phaser.Scene {
@@ -484,11 +485,11 @@ export default class FullGame extends Phaser.Scene {
     var swtichSpartanLaser = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
     swtichSpartanLaser.on("down", function(){
         if (!spartan){
-            if (scraps >= 50){
+            if (scraps >= 75){
                 purchase.play();
                 purchaseLaser.play()
                 spartan = true;
-                scraps -= 50;
+                scraps -= 75;
                 weapon = 2;
                 buyLock2.setVisible(false);
                 gbutton3.setVisible(false);
@@ -576,10 +577,9 @@ export default class FullGame extends Phaser.Scene {
     });
 
     this.nextEnemy = 0;
-    waveSize = waves[0].reduce((a,b) => a + b, 0)
+    waveSize = waves[waveNumber].reduce((a,b) => a + b, 0)
     this.spawned = 0;
     enemiesRemaining = waveSize;
-    waveNumber = 1;
     this.spawnDelay = 400;
 
 // Turrets
@@ -851,9 +851,9 @@ export default class FullGame extends Phaser.Scene {
 
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
-    turretRange = new Phaser.Geom.Circle(0, 0, 132);
+    turretRange = new Phaser.Geom.Circle(0, 0, 196);
     cannonIndicator = this.add.graphics();
-    cannonRange = new Phaser.Geom.Circle(0, 0, 132);
+    cannonRange = new Phaser.Geom.Circle(0, 0, 196);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
 
@@ -917,17 +917,20 @@ export default class FullGame extends Phaser.Scene {
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText = this.add.text(155, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     victoryText.setDepth(1);
-    continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
+    continueText = this.add.text(125, 275, "(Press \"ENTER\" to continue the game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
     continueText.setDepth(1);
+    menuText = this.add.text(145, 325, "(Press \"ESCAPE\" to return to menu)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
+    menuText.setVisible(false);
+    menuText.setDepth(1);
     //Defeat text
     defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
     defeatText.setDepth(1);
-    restartText = this.add.text(135, 265, "(Press \"ENTER\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
+    restartText = this.add.text(135, 265, "(Press \"ESCAPE\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     restartText.setDepth(1);
 
@@ -940,7 +943,7 @@ export default class FullGame extends Phaser.Scene {
     //Enable scrap text
     scrapText.setVisible(true);
     //Create restart key
-    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     graphicz.fillStyle(0xFFFFFF, 0.3);
     // Create key to start wave early
     this.sendWave = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
@@ -959,9 +962,38 @@ export default class FullGame extends Phaser.Scene {
         timeText.setVisible(false);
         theme.stop();
 
-        //Prompt user to continue
-        //FIX
+        //Prompt user to 
         continueText.setVisible(true);
+        //Prompt user to return to menu
+        menuText.setVisible(true);
+        //Change waveText
+        waveText.setText("Wave: " + 10 + '/' + 10);
+        //User chooses continue
+        if (Phaser.Input.Keyboard.JustDown(this.sendWave)) {
+            continueText.setVisible(false);
+            victoryText.setVisible(false);
+            menuText.setVisible(false);
+            pause = false
+            wavesRemaining=-1;
+            timeText.setVisible(true);
+            waveText.setText("Wave: " + waveNumber);
+            waveText.setPosition(430, 18);
+            //Adjust enemy values
+            //Health values
+            REG_HEALTH += 80
+            FAST_HEALTH += 80
+            TOUGH_HEALTH += 120
+            BOSS_HEALTH += 1000
+            //Speed Values
+            REG_SPEED *= 1.25
+            FAST_SPEED *= 1.25
+            TOUGH_SPEED *= 1.25
+            BOSS_SPEED *= 1.25
+        }
+        //User chooses return to menu
+        if (Phaser.Input.Keyboard.JustDown(this.restart)) {
+            location.reload();
+        }
     }
 
     //Loss condition
@@ -983,7 +1015,6 @@ export default class FullGame extends Phaser.Scene {
         restartText.setVisible(true);
 
         if (Phaser.Input.Keyboard.JustDown(this.restart)) {
-            this.scene.start('MenuScene')
             location.reload();
         }
     }
@@ -1036,6 +1067,9 @@ export default class FullGame extends Phaser.Scene {
     if (buildPhase == false && pause != true && lifecount > 0){
         //Set timer
         gameTime += delta;
+        if (waveNumber<=10){
+            enemies = waves[waveNumber-1];
+        } 
 
         //Spawn in ememies
         if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){
@@ -1094,10 +1128,38 @@ export default class FullGame extends Phaser.Scene {
             this.nextEnemy = 0;
             //Increment wave number and remaining waves
             waveNumber += 1;
-            waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
+            if (waveNumber<=11){
+                waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
+            } else {
+                waveText.setText("Wave: " + waveNumber);
+            }
             wavesRemaining -= 1;
             //Increment wave size
-            enemies = waves[waveNumber-1];
+            if (waveNumber<=10){
+                enemies = waves[waveNumber-1];
+            } else { //Enedless Survival
+                //Reg enemies
+                enemies[0] += 30
+                //Fast enemies
+                enemies[1] += 30
+                //Tough enemies
+                enemies[2] += 20
+                //Boss enemies + adjust health/speed values every 3 waves
+                if ((waveNumber-10)%3==0){
+                    //Health values
+                    REG_HEALTH += 80
+                    FAST_HEALTH += 80
+                    TOUGH_HEALTH += 120
+                    BOSS_HEALTH += 1000
+                    //Speed Values
+                    REG_SPEED *= 1.25
+                    FAST_SPEED *= 1.25
+                    TOUGH_SPEED *= 1.25
+                    BOSS_SPEED *= 1.25
+                    //Increment boss counter
+                    enemies[3] += 2
+                }
+            }
             //Increment spawn delay
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
@@ -1692,7 +1754,7 @@ var Turret = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 600;
+        this.fireRate = 500;
     },
     place: function(i, j) {
         this.y = i * 64 + 64/2;
@@ -1782,7 +1844,7 @@ var Cannon = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 1000;
+        this.fireRate = 700;
     },
     place: function(i, j) {
 

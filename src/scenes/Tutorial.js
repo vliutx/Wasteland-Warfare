@@ -15,7 +15,7 @@
     // Counters
     var scraps = 0;
     var lifecount = 10;
-    var wavesRemaining = 4;
+    var wavesRemaining = 5;
     var totalWaves = wavesRemaining;
     var gameTime = 0;
     var turret_selector = -1;
@@ -29,7 +29,7 @@
     var maxAmmo = 6;
     var ammoCount = maxAmmo;
     var tickTimer = 3;
-    var buildTimer = 20;
+    var buildTimer = 15;
 
     // Booleans
     var pause = true;
@@ -63,6 +63,8 @@
     var healthtext;
     var tutorialBacking1;
     var tutorialBacking2;
+    var switchWeaponText;
+    var startNextWaveText;
 
     // Sounds
     var cannonshot;
@@ -87,7 +89,7 @@
 
     var reg_enemies;
     var REG_SPEED = 1/17500;
-    var REG_HEALTH = 160;
+    var REG_HEALTH = 120;
 
     var tough_enemies;
     var TOUGH_SPEED = 1/20000;
@@ -283,7 +285,7 @@ export default class Tutorial extends Phaser.Scene {
 
     //Add background to level
     this.add.image(this.centerX, this.centerY, "desertBackground");
-    this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    this.continue = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     var graphicz = this.add.graphics();
 
     //Create the path
@@ -558,7 +560,7 @@ export default class Tutorial extends Phaser.Scene {
     this.waveSize = 6;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
-    waveNumber = 1;
+    waveNumber = 5;
     this.spawnDelay = 400;
 
 // Turrets
@@ -836,9 +838,9 @@ export default class Tutorial extends Phaser.Scene {
 
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
-    turretRange = new Phaser.Geom.Circle(0, 0, 132);
+    turretRange = new Phaser.Geom.Circle(0, 0, 196);
     cannonIndicator = this.add.graphics();
-    cannonRange = new Phaser.Geom.Circle(0, 0, 132);
+    cannonRange = new Phaser.Geom.Circle(0, 0, 196);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
 
@@ -901,10 +903,10 @@ export default class Tutorial extends Phaser.Scene {
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText = this.add.text(155, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     victoryText.setDepth(1);
-    continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
+    continueText = this.add.text(115, 265, "(Press \"ESCAPE\" to return to the menu)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
     continueText.setDepth(1);
     //Defeat text
@@ -949,6 +951,10 @@ export default class Tutorial extends Phaser.Scene {
     costText.setVisible(false);
     purchaseWeaponText = this.add.text(230, 65, "Purchase a machine gun by pressing \"2\"", {fontSize: 22, color: '#ffffff', depth: 10});
     purchaseWeaponText.setVisible(false);
+    switchWeaponText = this.add.text(235, 100, "Switch between weapons using  1  2  3", {fontSize: 22, color:  '#ffffff', depth:  10});
+    switchWeaponText.setVisible(false);
+    startNextWaveText = this.add.text(245, 65, "Send waves early by pressing \"ENTER\"", {fontSize: 22, color: '#ffffff', depth: 10});
+    startNextWaveText.setVisible(false);
 
 //Start the game
     pause = false
@@ -962,21 +968,24 @@ export default class Tutorial extends Phaser.Scene {
     graphicz.fillStyle(0xFFFFFF, 0.3);
     // Create restart key
     this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    // Create key to send waves early
+    this.sendWave = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
   } //End create
 
   update (time, delta) {
 // Game Phases
+
     //Update enemies remaining test
     enemiesRemainingText.setText("Enemies: " + enemiesRemaining)
     //Win Condition
-    if (wavesRemaining == 0){
+    if (waveNumber == 6){
         //Psuedo pause the game
         pause = true
 
         //Display victory text
         victoryText.setVisible(true);
-        timeText.setVisible(false);
+        timeText.setVisible(true);
         theme.stop();
 
         //Prompt user to continue
@@ -984,7 +993,8 @@ export default class Tutorial extends Phaser.Scene {
         continueText.setVisible(true);
         if (Phaser.Input.Keyboard.JustDown(this.continue)) {
             //might need to clear the background or close the scene here
-            this.scene.start('FullGame')
+            this.scene.start('menuScene')
+            location.reload();
         }
         //var continueKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         //continueKey.on("down", function(){
@@ -1038,6 +1048,12 @@ export default class Tutorial extends Phaser.Scene {
           tick.play();
           tickTimer -= 1;
         };
+
+        // Add button to begin next wave
+        if (Phaser.Input.Keyboard.JustDown(this.sendWave)) {
+            timeRemaining = 0;
+        }
+
 
         //When buildtime runs out, spawn the next wave
         if (timeRemaining == 0){
@@ -1127,19 +1143,11 @@ export default class Tutorial extends Phaser.Scene {
             if (waveNumber == 2){
                 enemies = [6,6,0,0];
             } else if (waveNumber ==3){
-                enemies = [6,6,3,0];
+                enemies = [6,10,0,0];
             } else if (waveNumber == 4){
-                enemies = [8,6,4,1];
-            } else {    // Endless survival
-                for(var i = 0; i<enemies.length; i++){
-                    if (waveNumber%3 != 0){
-                        if (i<3){
-                            enemies[i] += 3;
-                        }
-                    } else {
-                        enemies[i] += 1;
-                    }
-                }
+                enemies = [8,6,4,0];
+            } else if (waveNumber ==5){
+                enemies = [8,8,6,0];
             }
             //Increment spawn delay
             if(this.spawnDelay>100){
@@ -1371,13 +1379,27 @@ export default class Tutorial extends Phaser.Scene {
     //tutorial text number 4
     if (buildPhase == true && waveNumber == 4){
       tutorialBacking1.setVisible(true);
+      tutorialBacking2.setVisible(true);
       purchaseWeaponText.setVisible(true);
+      switchWeaponText.setVisible(true);
     }
     if (buildPhase == false && waveNumber == 4){
       tutorialBacking1.setVisible(false);
+      tutorialBacking2.setVisible(false);
       purchaseWeaponText.setVisible(false);
+      switchWeaponText.setVisible(false);
 
     }
+
+    //tutorial text number 5
+    if (buildPhase == true && waveNumber == 5){
+        tutorialBacking1.setVisible(true);
+        startNextWaveText.setVisible(true);
+      }
+      if (buildPhase == false && waveNumber == 5){
+        tutorialBacking1.setVisible(false);
+        startNextWaveText.setVisible(false);
+      }
 
   } //End update()
 
