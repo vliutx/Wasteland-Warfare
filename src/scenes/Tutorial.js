@@ -560,7 +560,7 @@ export default class Tutorial extends Phaser.Scene {
     this.waveSize = 6;
     this.spawned = 0;
     enemiesRemaining = this.waveSize;
-    waveNumber = 5;
+    waveNumber = 1;
     this.spawnDelay = 400;
 
 // Turrets
@@ -577,43 +577,47 @@ export default class Tutorial extends Phaser.Scene {
     });
 
     //Turret selection
+
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
-        turret_selector = 0;
-        button1.alpha = 1;
-        button2.alpha = 0.5;
-        button3.alpha = 0.5;
+        if (scraps >= 5){
+            turret_selector = 0;
+            button1.alpha = 1;
+            button2.alpha = 0.5;
+            button3.alpha = 0.5;
+        }
     });
     button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
     button2.alpha = 0.5;
     button2.on('pointerup', function(){
-        turret_selector = 1;
-        button2.alpha = 1;
-        button1.alpha = 0.5;
-        button3.alpha = 0.5;
+        if (scraps >= 10){
+            turret_selector = 1;
+            button2.alpha = 1;
+            button1.alpha = 0.5;
+            button3.alpha = 0.5;
+        }
     });
     button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
-        turret_selector = 2;
-        button3.alpha = 1;
-        button1.alpha = 0.5;
-        button2.alpha = 0.5;
+        if (scraps >= 15){
+            turret_selector = 2;
+            button3.alpha = 1;
+            button1.alpha = 0.5;
+            button2.alpha = 0.5;
+        }
     });
 
     //Gun selection
     //As of right now there is no click to purchase option it is just a visual indicator
     //Descriptions of guns
-    var gb1Text = this.add.text(100, 10, "Pistol: Moderate\nsemi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var gb1Text = this.add.text(100, 575, "Pistol: \nModerate semi-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb1Text.setVisible(false);
-    gb1Text.setDepth(1);
-    var gb2Text = this.add.text(100, 80, "Machine Gun: Moderate\nfully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var gb2Text = this.add.text(100, 575, "Machine Gun: \nModerate fully-automatic damage", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb2Text.setVisible(false);
-    gb2Text.setDepth(1);
-    var gb3Text = this.add.text(100, 150, "Laser: Massive\ndamage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var gb3Text = this.add.text(100, 575, "Laser: \nMassive damage, charge to fire", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     gb3Text.setVisible(false);
-    gb3Text.setDepth(1);
     //icons
     gbutton1 = this.add.sprite(40, 40, 'pistolGun', 0).setInteractive();
     gbutton1.on('pointerover', function(){gb1Text.setVisible(true)});
@@ -815,15 +819,12 @@ export default class Tutorial extends Phaser.Scene {
     });
 
     //Descriptions of turrets
-    var b1Text = this.add.text(100, 430, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b1Text = this.add.text(100, 575, "Turret:\nMedium damage, high fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b1Text.setVisible(false);
-    b1Text.setDepth(1);
-    var b2Text = this.add.text(100, 500, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b2Text = this.add.text(100, 575, "Cannon:\nHigh damage, low fire-rate", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b2Text.setVisible(false);
-    b2Text.setDepth(1);
-    var b3Text = this.add.text(100, 570, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
+    var b3Text = this.add.text(100, 575, "Tesla Coil:\nLow damage continuous AOE", {fontSize: 30, color: "#FFFFFF", fontStyle: "bold"});
     b3Text.setVisible(false);
-    b3Text.setDepth(1);
 
     //Display turret descriptions when hovering over icon
     button1.on('pointerover', function(){b1Text.setVisible(true)});
@@ -913,7 +914,7 @@ export default class Tutorial extends Phaser.Scene {
     defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
     defeatText.setDepth(1);
-    restartText = this.add.text(135, 265, "(Press \"ENTER\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
+    restartText = this.add.text(135, 265, "(Press \"ESCAPE\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     restartText.setDepth(1);
 
@@ -927,7 +928,7 @@ export default class Tutorial extends Phaser.Scene {
     //texts
     movetext = this.add.text(295, 65, "Move with up and down arrow.", {fontSize: 23, color: '#ffffff', depth: 10});
     movetext.setVisible(false);
-    firetext = this.add.text(370, 100, "Fire with space", {fontSize: 23, color: '#ffffff', depth: 10});
+    firetext = this.add.text(235, 100, "Fire with space, press \"R\" to reload", {fontSize: 23, color: '#ffffff', depth: 10});
     firetext.setVisible(false);
     pointer = this.add.image(800, 30, 'pointer');
     pointer.setVisible(false);
@@ -1010,9 +1011,6 @@ export default class Tutorial extends Phaser.Scene {
         pause = true;
 
         //Display defeat text
-        scrapText.setVisible(false);
-        waveText.setVisible(false);
-        enemiesRemainingText.setVisible(false);
         defeatText.setVisible(true);
         theme.stop();
 
@@ -1024,7 +1022,7 @@ export default class Tutorial extends Phaser.Scene {
 
         //Prompt player to restart the game
         restartText.setVisible(true);
-        if (Phaser.Input.Keyboard.JustDown(this.restart)) {
+        if (Phaser.Input.Keyboard.JustDown(this.continue)) {
             this.scene.start('MenuScene')
             location.reload();
         }

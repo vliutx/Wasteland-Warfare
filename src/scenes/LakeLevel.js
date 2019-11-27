@@ -601,26 +601,32 @@ export default class LakeLevel extends Phaser.Scene {
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
-        turret_selector = 0;
-        button1.alpha = 1;
-        button2.alpha = 0.5;
-        button3.alpha = 0.5;
+        if (scraps >= 5){
+            turret_selector = 0;
+            button1.alpha = 1;
+            button2.alpha = 0.5;
+            button3.alpha = 0.5;
+        }
     });
     button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
     button2.alpha = 0.5;
     button2.on('pointerup', function(){
-        turret_selector = 1;
-        button2.alpha = 1;
-        button1.alpha = 0.5;
-        button3.alpha = 0.5;
+        if (scraps >= 10){
+            turret_selector = 1;
+            button2.alpha = 1;
+            button1.alpha = 0.5;
+            button3.alpha = 0.5;
+        }
     });
     button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
-        turret_selector = 2;
-        button3.alpha = 1;
-        button1.alpha = 0.5;
-        button2.alpha = 0.5;
+        if (scraps >= 15){
+            turret_selector = 2;
+            button3.alpha = 1;
+            button1.alpha = 0.5;
+            button2.alpha = 0.5;
+        }
     });
 
     //Gun selection

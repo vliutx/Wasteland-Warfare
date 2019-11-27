@@ -57,7 +57,8 @@
     var tick;
     var death;
     var menuText;
-
+    var laserText;
+    var laserPointer;
 
     // Sounds
     var cannonshot;
@@ -144,18 +145,19 @@
     var waves = [
                     [6,0,0,0],
                     [0,12,0,0],
-                    [8,8,0,0],
-                    [5,15,5,0],
+                    [10,10,0,0],
+                    [10,7,5,0],
+                    [10,10,7,0],
                     [10,10,10,0],
-                    [15,15,15,0],
-                    [25,0,20,0],
+                    [20,0,15,0],
                     [0,150,0,0],
-                    [20,20,40,0],
-                    [5,0,0,0],
-                    [50,50,30,0],
+                    [25,20,30,0],
+                    [30,50,30,1],
+                    [50,50,50,0],
                 ];
     var waveN = [];
     var test = true;
+    var scrapMultiplier = 1;
     //[30,50,30,1],
 
 
@@ -232,6 +234,7 @@ export default class FullGame extends Phaser.Scene {
     this.load.image('turreticon', 'assets/Turret1-Icon.png');
     this.load.image('cannonicon', 'assets/Cannon-Icon.png');
     this.load.image('lightningicon', 'assets/Tesla-Icon.png');
+    this.load.image('pointer', './assets/ArrowPointer.png');
     // gun selector stuff will need to be added
     this.load.image('lock', 'assets/Lock.png');
     this.load.image('pistolGun', 'assets/PistolNoCost.png');
@@ -485,11 +488,11 @@ export default class FullGame extends Phaser.Scene {
     var swtichSpartanLaser = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.THREE);
     swtichSpartanLaser.on("down", function(){
         if (!spartan){
-            if (scraps >= 75){
+            if (scraps >= 50){
                 purchase.play();
                 purchaseLaser.play()
                 spartan = true;
-                scraps -= 75;
+                scraps -= 50;
                 weapon = 2;
                 buyLock2.setVisible(false);
                 gbutton3.setVisible(false);
@@ -511,7 +514,10 @@ export default class FullGame extends Phaser.Scene {
                     played = false;
                     reloadme = false;
                 });
-            }
+                //Display tutorial text
+                laserText.setVisible(true)
+                laserPointer.setVisible(true)
+           }
         } else {
             purchaseLaser.play();
             gbutton3.alpha = 1;
@@ -599,26 +605,32 @@ export default class FullGame extends Phaser.Scene {
     button1 = this.add.sprite(40, 460, 'turreticon', 0).setInteractive();
     button1.alpha = 0.5;
     button1.on('pointerup', function(){
-        turret_selector = 0;
-        button1.alpha = 1;
-        button2.alpha = 0.5;
-        button3.alpha = 0.5;
+        if (scraps >= 5){
+            turret_selector = 0;
+            button1.alpha = 1;
+            button2.alpha = 0.5;
+            button3.alpha = 0.5;
+        }
     });
     button2 = this.add.sprite(40, 530, 'cannonicon', 0).setInteractive();
     button2.alpha = 0.5;
     button2.on('pointerup', function(){
-        turret_selector = 1;
-        button2.alpha = 1;
-        button1.alpha = 0.5;
-        button3.alpha = 0.5;
+        if (scraps >= 10){
+            turret_selector = 1;
+            button2.alpha = 1;
+            button1.alpha = 0.5;
+            button3.alpha = 0.5;
+        }
     });
     button3 = this.add.sprite(40, 600, 'lightningicon', 0).setInteractive();
     button3.alpha = 0.5;
     button3.on('pointerup', function(){
-        turret_selector = 2;
-        button3.alpha = 1;
-        button1.alpha = 0.5;
-        button2.alpha = 0.5;
+        if (scraps >= 15){
+            turret_selector = 2;
+            button3.alpha = 1;
+            button1.alpha = 0.5;
+            button2.alpha = 0.5;
+        }
     });
 
     //Gun selection
@@ -933,6 +945,12 @@ export default class FullGame extends Phaser.Scene {
     restartText = this.add.text(135, 265, "(Press \"ESCAPE\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     restartText.setDepth(1);
+    //Laser tutorial text
+    laserText = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    laserPointer = this.add.image(715, 600, 'pointer');
+    laserText.setVisible(false);
+    laserPointer.setVisible(false);
+
 
 //Start the game
     pause = false
@@ -1057,7 +1075,7 @@ export default class FullGame extends Phaser.Scene {
             //reset tickTimer
             tickTimer = 3;
             //reset enemies remaining to next wave
-            enemiesRemaining = waves[waveNumber-1].reduce((a,b) => a + b, 0);
+            enemiesRemaining = enemies.reduce((a,b) => a + b, 0);
             this.spawned = 0;
         }
     } //End build phase
@@ -1161,11 +1179,25 @@ export default class FullGame extends Phaser.Scene {
                 }
             }
             //Increment spawn delay
-            if(this.spawnDelay>100){
+            if (waveNumber == 5){
+                scrapMultiplier = .65;
+            if (waveNumber == 7){
+                this.spawnDelay = 40;
+                scrapMultiplier = .5
+            }
+            if (waveNumber == 8){
+                this.spawnDelay = 90;
+            }
+            if (waveNumber == 11){
+                scrapMultiplier = .4;
+            }
+            } else if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            scraps += (3 + waveNumber-2);
+            scraps += 2*(waveNumber - 1);
         }
+        laserText.setVisible(false)
+        laserPointer.setVisible(false)
     } //End combat phase
 
 
@@ -1299,7 +1331,7 @@ export default class FullGame extends Phaser.Scene {
         }
     }
     //Adjust scrap text
-    scrapText.setText("Scraps: " + scraps);
+    scrapText.setText("Scraps: " + Math.floor(scraps));
 
     //Health and bullet updates
     waterHealth.setFrame(lifecount);
@@ -1387,7 +1419,7 @@ var Regular = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
-                scraps += 1;
+                scraps += 1*scrapMultiplier;
                 enemiesRemaining -= 1;
                 death.play();
             }
@@ -1484,7 +1516,7 @@ var Tough = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
-            scraps += 2;
+            scraps += 2*scrapMultiplier;
             death.play();
             enemiesRemaining -= 1;
         }
@@ -1580,7 +1612,7 @@ var Boss = new Phaser.Class({
             this.setVisible(false);
             tank.stop();
             explode.play()
-            scraps += 10;
+            scraps += 10*scrapMultiplier;
             enemiesRemaining -= 1;;
         }
     },
@@ -1678,7 +1710,7 @@ var Fast = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
-                scraps += 1;
+                scraps += 1*scrapMultiplier;
                 death.play();
                 enemiesRemaining -= 1;
             }
@@ -1844,7 +1876,7 @@ var Cannon = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 700;
+        this.fireRate = 800;
     },
     place: function(i, j) {
 
