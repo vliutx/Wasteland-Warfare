@@ -15,6 +15,7 @@ var laserCharge;
 var gunfire;
 var cannonshot;
 var wind;
+var victorySong;
 
 // Texts
 var timeText;

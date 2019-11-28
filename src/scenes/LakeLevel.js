@@ -37,6 +37,7 @@
     var startGame = false;
     var restart = false;
     var gameOverPlayed = false;
+    var victoryPlayed = false;
     var played = false;
 
     // Gun stuff pew pew
@@ -258,6 +259,7 @@ export default class LakeLevel extends Phaser.Scene {
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
     this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
+    this.load.audio('victoryMusic', 'assets/sounds/VictorySong.wav');
     // player
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
     this.load.audio('purchase', 'assets/sounds/purchase.mp3');
@@ -966,6 +968,11 @@ export default class LakeLevel extends Phaser.Scene {
         victoryText.setVisible(true);
         timeText.setVisible(false);
         theme.stop();
+        victorySong = this.sound.add('victoryMusic', {loop: false, volume: 0.5});
+        if (victoryPlayed == false) {
+          victorySong.play();
+          victoryPlayed = true
+        };
 
         //Prompt user to continue
         //FIX
