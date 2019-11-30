@@ -109,7 +109,7 @@
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
-    var LASER_DAMAGE = 200;
+    var LASER_DAMAGE = 120;
     var LASER_WIDTH = 50;
 
     // graphics stuff
@@ -132,7 +132,7 @@
 
     // time between fires
     var delts = 0;
-    var frplayer = 200; // might need multiple variables for diff guns
+    var frplayer = 150; // might need multiple variables for diff guns
 
     var nextEnemy = 0;
     var waveSize = 6;
@@ -146,12 +146,12 @@
     var waves = [
                     [6,0,0,0],
                     [0,12,0,0],
-                    [10,10,0,0],
-                    [10,7,5,0],
-                    [10,10,7,0],
-                    [10,10,10,0],
-                    [20,0,15,0],
-                    [0,150,0,0],
+                    [5,7,0,0],
+                    [5,5,3,0],
+                    [5,10,5,0],
+                    [10,20,10,0],
+                    [0,115,0,0],
+                    [25,0,25,0],
                     [25,20,30,0],
                     [30,50,30,1],
                     [50,50,50,0],
@@ -1094,7 +1094,9 @@ export default class FullGame extends Phaser.Scene {
         gameTime += delta;
         if (waveNumber<=10){
             enemies = waves[waveNumber-1];
+            
         }
+        
 
         //Spawn in ememies
         if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){
@@ -1186,22 +1188,33 @@ export default class FullGame extends Phaser.Scene {
                 }
             }
             //Increment spawn delay
-            if (waveNumber == 5){
-                scrapMultiplier = .65;
+            if (waveNumber == 4){
+                scrapMultiplier = .75;
+            }
+            if (waveNumber == 6){
+                scrapMultiplier = .75
+            }
             if (waveNumber == 7){
-                this.spawnDelay = 40;
+                this.spawnDelay = 65;
                 scrapMultiplier = .5
             }
             if (waveNumber == 8){
                 this.spawnDelay = 90;
+                scrapMultiplier = .25
+                REG_HEALTH += 40
+                FAST_HEALTH += 40
+                TOUGH_HEALTH += 40
             }
             if (waveNumber == 11){
-                scrapMultiplier = .4;
+                scrapMultiplier = .25;
+                this.spawnDelay = 85;
             }
-            } else if(this.spawnDelay>100){
+            if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
             scraps += 2*(waveNumber - 1);
+            console.log(this.spawnDelay)
+            console.log(scrapMultiplier);
         }
         laserText.setVisible(false)
         laserPointer.setVisible(false)
@@ -1717,7 +1730,7 @@ var Fast = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
-                scraps += 1*scrapMultiplier;
+                scraps += .75*scrapMultiplier;
                 death.play();
                 enemiesRemaining -= 1;
             }
@@ -2051,7 +2064,7 @@ var Lightning = new Phaser.Class({
         if (scraps >= 30 && map[i][j] == 1){
             scraps -= 30;
             map[i][j] = 2;
-            this.fireRate /= 2;
+            this.fireRate /= 1.5;
             this.setTint(0x0000ff);
             upgradeTower.play();
         }

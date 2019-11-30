@@ -995,6 +995,8 @@ export default class Tutorial extends Phaser.Scene {
           victorySong.play();
           victoryPlayed = true
         };
+        waveText.setText("Wave: 5/5");
+
 
         //Prompt user to continue
         //FIX
