@@ -57,7 +57,7 @@
     var path;
     var tick;
     var death;
-
+    var menuText;
 
     // Sounds
     var cannonshot;
@@ -145,12 +145,12 @@
     var waves = [
                     [6,0,0,0],
                     [0,12,0,0],
-                    [10,10,0,0],
+                    [8,8,0,0],
                     [5,20,5,0],
-                    [10,10,10,0],
-                    [15,15,15,0],
-                    [25,0,20,0],
-                    [0,150,0,0],
+                    [10,10,5,0],
+                    [15,15,10,0],
+                    [15,0,15,0],
+                    [0,40,10,0],
                     [20,20,40,0],
                     [30,50,30,1],
                     [0,0,0,0],
@@ -929,17 +929,20 @@ export default class LakeLevel extends Phaser.Scene {
     enemiesRemainingText.setVisible(false);
     //Create health text
     //Create Victory text
-    victoryText = this.add.text(135, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
+    victoryText = this.add.text(155, 155, "!VICTORY!", {fontSize: 120, color: '#FFFFFF', fontStyle: 'bold'});
     victoryText.setVisible(false);
     victoryText.setDepth(1);
-    continueText = this.add.text(150, 265, "(Press \"P\" to continue to game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
+    continueText = this.add.text(125, 275, "(Press \"ENTER\" to continue the game)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
     continueText.setVisible(false);
     continueText.setDepth(1);
+    menuText = this.add.text(145, 325, "(Press \"ESCAPE\" to return to menu)", {fontSize: 33, color: '#FFFFFF', fontStyle: 'bold'});
+    menuText.setVisible(false);
+    menuText.setDepth(1);
     //Defeat text
     defeatText = this.add.text(200, 155, "¡DEFEAT!", {fontSize: 120, color: '#FF0000', fontStyle: 'bold'});
     defeatText.setVisible(false);
     defeatText.setDepth(1);
-    restartText = this.add.text(135, 265, "(Press \"ENTER\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
+    restartText = this.add.text(135, 265, "(Press \"ESCAPE\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     restartText.setDepth(1);
 
@@ -952,7 +955,7 @@ export default class LakeLevel extends Phaser.Scene {
     //Enable scrap text
     scrapText.setVisible(true);
     //Create restart key
-    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.restart = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     graphicz.fillStyle(0xFFFFFF, 0.3);
     // Create key to start wave early
     this.sendWave = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
@@ -976,9 +979,38 @@ export default class LakeLevel extends Phaser.Scene {
           victoryPlayed = true
         };
 
-        //Prompt user to continue
-        //FIX
+        //Prompt user to
         continueText.setVisible(true);
+        //Prompt user to return to menu
+        menuText.setVisible(true);
+        //Change waveText
+        waveText.setText("Wave: " + 10 + '/' + 10);
+        //User chooses continue
+        if (Phaser.Input.Keyboard.JustDown(this.sendWave)) {
+            continueText.setVisible(false);
+            victoryText.setVisible(false);
+            menuText.setVisible(false);
+            pause = false
+            wavesRemaining=-1;
+            timeText.setVisible(true);
+            waveText.setText("Wave: " + waveNumber);
+            waveText.setPosition(430, 18);
+            //Adjust enemy values
+            //Health values
+            REG_HEALTH += 80
+            FAST_HEALTH += 80
+            TOUGH_HEALTH += 120
+            BOSS_HEALTH += 1000
+            //Speed Values
+            REG_SPEED *= 1.25
+            FAST_SPEED *= 1.25
+            TOUGH_SPEED *= 1.25
+            BOSS_SPEED *= 1.25
+        }
+        //User chooses return to menu
+        if (Phaser.Input.Keyboard.JustDown(this.restart)) {
+            location.reload();
+        }
     }
 
     //Loss condition
@@ -1688,6 +1720,7 @@ var Fast = new Phaser.Class({
 });
 //END ENEMIES
 //TURRETS
+//TURRETS
 var Turret = new Phaser.Class({
 
     Extends: Phaser.GameObjects.Image,
@@ -1700,7 +1733,7 @@ var Turret = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 600;
+        this.fireRate = 500;
     },
     place: function(i, j) {
         this.y = i * 64 + 64/2;
@@ -1790,7 +1823,7 @@ var Cannon = new Phaser.Class({
         this.setInteractive();
         this.on('pointerdown', this.buttonCheck);
         this.nextTic = 0;
-        this.fireRate = 1000;
+        this.fireRate = 800;
     },
     place: function(i, j) {
 
