@@ -157,6 +157,8 @@
                 ];
     var waveN = [];
     var test = true;
+    var scrapMultiplier = 1;
+    //[30,50,30,1],
 
 
 export default class LakeLevel extends Phaser.Scene {
@@ -259,7 +261,7 @@ export default class LakeLevel extends Phaser.Scene {
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
     this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
-    this.load.audio('victoryMusic', 'assets/sounds/VictorySong.wav');
+    this.load.audio('victoryMusic', 'assets/sounds/ShortVictory.wav');
     // player
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
     this.load.audio('purchase', 'assets/sounds/purchase.mp3');
@@ -1117,7 +1119,22 @@ export default class LakeLevel extends Phaser.Scene {
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            scraps += (3 + waveNumber-2);
+        }
+        //Increment spawn delay
+        if (waveNumber == 5){
+            scrapMultiplier = .65;
+        if (waveNumber == 7){
+            this.spawnDelay = 40;
+            scrapMultiplier = .5
+        }
+        if (waveNumber == 8){
+            this.spawnDelay = 90;
+        }
+        if (waveNumber == 11){
+            scrapMultiplier = .4;
+        }
+        } else if(this.spawnDelay>100){
+            this.spawnDelay -= 100;
         }
     } //End combat phase
 
@@ -1252,7 +1269,7 @@ export default class LakeLevel extends Phaser.Scene {
         }
     }
     //Adjust scrap text
-    scrapText.setText("Scraps: " + scraps);
+    scrapText.setText("Scraps: " + Math.floor(scraps));
 
     //Health and bullet updates
     waterHealth.setFrame(lifecount);
@@ -1340,7 +1357,7 @@ var Regular = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
-                scraps += 1;
+                scraps += 1*scrapMultiplier;
                 enemiesRemaining -= 1;
                 death.play();
             }
@@ -1431,7 +1448,7 @@ var Tough = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
-            scraps += 2;
+            scraps += 1*scrapMultiplier;
             death.play();
             enemiesRemaining -= 1;
         }
@@ -1521,7 +1538,7 @@ var Boss = new Phaser.Class({
             this.setVisible(false);
             tank.stop();
             explode.play()
-            scraps += 10;
+            scraps += 10*scrapMultiplier;
             enemiesRemaining -= 1;;
         }
     },
@@ -1613,7 +1630,7 @@ var Fast = new Phaser.Class({
             if(this.hp <= 0) {
                 this.setActive(false);
                 this.setVisible(false);
-                scraps += 1;
+                scraps += 1*scrapMultiplier;
                 death.play();
                 enemiesRemaining -= 1;
             }

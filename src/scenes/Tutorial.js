@@ -250,7 +250,7 @@ export default class Tutorial extends Phaser.Scene {
     this.load.audio('tick', 'assets/sounds/Tick.mp3');
     this.load.audio('theme', 'assets/sounds/WastelandWarfare.wav');
     this.load.audio('gameOverMusic', 'assets/sounds/DeathSong.wav');
-    this.load.audio('victoryMusic', 'assets/sounds/VictorySong.wav');
+    this.load.audio('victoryMusic', 'assets/sounds/ShortVictory.wav');
     // player
     this.load.audio('reload', 'assets/sounds/reloading.mp3');
     this.load.audio('purchase', 'assets/sounds/purchase.mp3');
@@ -1158,7 +1158,6 @@ export default class Tutorial extends Phaser.Scene {
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            scraps += (3 + waveNumber-2);
         }
     } //End combat phase
 
@@ -1521,7 +1520,7 @@ var Tough = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
-            scraps += 3;
+            scraps += 1;
             death.play();
             enemiesRemaining -= 1;
         }

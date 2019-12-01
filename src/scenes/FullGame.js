@@ -1201,7 +1201,6 @@ export default class FullGame extends Phaser.Scene {
             } else if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            scraps += 2*(waveNumber - 1);
         }
         laserText.setVisible(false)
         laserPointer.setVisible(false)
@@ -1523,7 +1522,7 @@ var Tough = new Phaser.Class({
         if(this.hp <= 0) {
             this.setActive(false);
             this.setVisible(false);
-            scraps += 2*scrapMultiplier;
+            scraps += 1*scrapMultiplier;
             death.play();
             enemiesRemaining -= 1;
         }
