@@ -52,6 +52,8 @@
     var charge = 0;    //Tracks time it has been charged for
     var firetime = 0; // Tracks how long laser has been firing
     var firing = false;
+    var laserText;
+    var laserPointer;
 
     // Misc
     var path;
@@ -516,6 +518,9 @@ export default class LakeLevel extends Phaser.Scene {
                     played = false;
                     reloadme = false;
                 });
+                //Display tutorial text
+                laserText.setVisible(true)
+                laserPointer.setVisible(true)
             }
         } else {
             purchaseLaser.play();
@@ -944,6 +949,11 @@ export default class LakeLevel extends Phaser.Scene {
     restartText = this.add.text(135, 265, "(Press \"ESCAPE\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     restartText.setDepth(1);
+    //Laser tutorial text
+    laserText = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    laserPointer = this.add.image(715, 600, 'pointer');
+    laserText.setVisible(false);
+    laserPointer.setVisible(false);
 
 //Start the game
     pause = false
@@ -1197,6 +1207,8 @@ export default class LakeLevel extends Phaser.Scene {
             }
             scraps+= (waveNumber-1)*2;
         }
+        laserText.setVisible(false)
+        laserPointer.setVisible(false)
     } //End combat phase
 
 
