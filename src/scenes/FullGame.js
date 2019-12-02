@@ -1147,6 +1147,8 @@ export default class FullGame extends Phaser.Scene {
         if (enemiesRemaining <= 0){
             //begin build phase
             buildPhase = true;
+            //
+            ammoCount = 0;
             //Enable time remaining text
             timeText.setVisible(true);
             //reset game time
@@ -1168,9 +1170,9 @@ export default class FullGame extends Phaser.Scene {
                 //Reg enemies
                 enemies[0] += 30
                 //Fast enemies
-                enemies[1] += 30
+                enemies[1] += 35
                 //Tough enemies
-                enemies[2] += 20
+                enemies[2] += 30
                 //Boss enemies + adjust health/speed values every 3 waves
                 if ((waveNumber-10)%3==0){
                     //Health values
@@ -1184,7 +1186,7 @@ export default class FullGame extends Phaser.Scene {
                     TOUGH_SPEED *= 1.25
                     BOSS_SPEED *= 1.25
                     //Increment boss counter
-                    enemies[3] += 2
+                    enemies[3] += 1
                 }
             }
             //Increment spawn delay
@@ -1199,12 +1201,13 @@ export default class FullGame extends Phaser.Scene {
                 scrapMultiplier = .45
             }
             if (waveNumber == 11){
-                scrapMultiplier = .3;
+                scrapMultiplier = .25;
                 this.spawnDelay = 80;
             }
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
+            scraps+= (waveNumber-1)*2;
         }
         laserText.setVisible(false)
         laserPointer.setVisible(false)

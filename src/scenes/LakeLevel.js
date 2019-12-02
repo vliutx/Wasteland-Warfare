@@ -863,12 +863,11 @@ export default class LakeLevel extends Phaser.Scene {
 
     //Add indicators for where turrets can reach
     turretIndicator = this.add.graphics();
-    turretRange = new Phaser.Geom.Circle(0, 0, 132);
+    turretRange = new Phaser.Geom.Circle(0, 0, 196);
     cannonIndicator = this.add.graphics();
-    cannonRange = new Phaser.Geom.Circle(0, 0, 132);
+    cannonRange = new Phaser.Geom.Circle(0, 0, 196);
     teslaIndicator = this.add.graphics();
     teslaRange = new Phaser.Geom.Circle(0, 0, 96);
-
     //turret upgrade feedback
     confirmText = this.add.text(0, 0, "Upgrade?");
     confirmText.setVisible(false);
