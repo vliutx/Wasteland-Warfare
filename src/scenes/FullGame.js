@@ -1213,8 +1213,6 @@ export default class FullGame extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
             scraps += 2*(waveNumber - 1);
-            console.log(this.spawnDelay)
-            console.log(scrapMultiplier);
         }
         laserText.setVisible(false)
         laserPointer.setVisible(false)
