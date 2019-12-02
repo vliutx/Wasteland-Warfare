@@ -1174,21 +1174,21 @@ export default class FullGame extends Phaser.Scene {
                 //Tough enemies
                 enemies[2] += 30
                 //Increment boss spawns every 2 waves
-                if ((waveNunber-10)%2==0){
-                    enemies[3] += 1;
-                }
+                // if ((waveNunber-10)%2==0){
+                //     enemies[3] += 1;
+                // }
                 //Boss enemies + adjust health/speed values every 3 waves
-                if ((waveNumber-10)%3==0){
+                if ((waveNumber-10)%2==0){
                     //Health values
                     REG_HEALTH += 80
                     FAST_HEALTH += 80
                     TOUGH_HEALTH += 120
-                    BOSS_HEALTH += 1000
+                    BOSS_HEALTH += 500
                     //Speed Values
                     REG_SPEED *= 1.25
                     FAST_SPEED *= 1.25
                     TOUGH_SPEED *= 1.25
-                    BOSS_SPEED *= 1.25
+                    BOSS_SPEED *= 1.15
                 }
             }
             //Increment spawn delay

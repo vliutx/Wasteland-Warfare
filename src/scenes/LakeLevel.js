@@ -1162,7 +1162,7 @@ export default class LakeLevel extends Phaser.Scene {
                 //Tough enemies
                 enemies[2] += 30
                 //Boss enemies + adjust health/speed values every 3 waves
-                if ((waveNumber-10)%3==0){
+                if ((waveNumber-10)%2==0){
                     //Health values
                     REG_HEALTH += 80
                     FAST_HEALTH += 80
