@@ -2312,7 +2312,6 @@ function placeTower(pointer) {
                 turret.on('pointerout', function(){
                     turretIndicator.clear();
                 });
-                tick.play();
             }
             button1.alpha = .5;
             turretIndicator.clear();

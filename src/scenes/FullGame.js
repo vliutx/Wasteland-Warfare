@@ -1173,6 +1173,10 @@ export default class FullGame extends Phaser.Scene {
                 enemies[1] += 35
                 //Tough enemies
                 enemies[2] += 30
+                //Increment boss spawns every 2 waves
+                if ((waveNunber-10)%2==0){
+                    enemies[3] += 1;
+                }
                 //Boss enemies + adjust health/speed values every 3 waves
                 if ((waveNumber-10)%3==0){
                     //Health values
@@ -1185,8 +1189,6 @@ export default class FullGame extends Phaser.Scene {
                     FAST_SPEED *= 1.25
                     TOUGH_SPEED *= 1.25
                     BOSS_SPEED *= 1.25
-                    //Increment boss counter
-                    enemies[3] += 1
                 }
             }
             //Increment spawn delay
@@ -1201,7 +1203,7 @@ export default class FullGame extends Phaser.Scene {
                 scrapMultiplier = .45
             }
             if (waveNumber == 11){
-                scrapMultiplier = .25;
+                //scrapMultiplier = .33;
                 this.spawnDelay = 80;
             }
             if(this.spawnDelay>100){
@@ -2380,7 +2382,6 @@ function placeTower(pointer) {
                 turret.on('pointerout', function(){
                     turretIndicator.clear();
                 });
-                tick.play();
             }
             button1.alpha = .5;
             turretIndicator.clear();
