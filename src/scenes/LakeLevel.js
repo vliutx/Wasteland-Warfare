@@ -78,19 +78,19 @@
 
     // Enemies
     var fast_enemies;
-    var FAST_SPEED = 1/12500;
+    var FAST_SPEED = 1/11000;
     var FAST_HEALTH = 80;
 
     var reg_enemies;
-    var REG_SPEED = 1/17500;
+    var REG_SPEED = 1/16000;
     var REG_HEALTH = 160;
 
     var tough_enemies;
-    var TOUGH_SPEED = 1/20000;
+    var TOUGH_SPEED = 1/16000;
     var TOUGH_HEALTH = 280;
 
     var boss_enemies;
-    var BOSS_SPEED = 1/20000;
+    var BOSS_SPEED = 1/16500;
     var BOSS_HEALTH = 3000;
 
     // Towers
@@ -1125,7 +1125,8 @@ export default class LakeLevel extends Phaser.Scene {
                 }
 
                 // Include spawn delay
-                this.nextEnemy = gameTime + this.spawnDelay;
+                this.nextEnemy = gameTime + this.spawnDelay
+                console.log(this.spawnDelay, this.nextEnemy);
 
             }
         } // all enemies spawned
@@ -1134,6 +1135,8 @@ export default class LakeLevel extends Phaser.Scene {
         if (enemiesRemaining <= 0){
             //begin build phase
             buildPhase = true;
+            //
+            ammoCount = 0;
             //Enable time remaining text
             timeText.setVisible(true);
             //reset game time
@@ -1142,30 +1145,57 @@ export default class LakeLevel extends Phaser.Scene {
             this.nextEnemy = 0;
             //Increment wave number and remaining waves
             waveNumber += 1;
-            waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
+            if (waveNumber<=11){
+                waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
+            } else {
+                waveText.setText("Wave: " + waveNumber);
+            }
             wavesRemaining -= 1;
             //Increment wave size
-            enemies = waves[waveNumber-1];
+            if (waveNumber<=10){
+                enemies = waves[waveNumber-1];
+            } else { //Enedless Survival
+                //Reg enemies
+                enemies[0] += 30
+                //Fast enemies
+                enemies[1] += 35
+                //Tough enemies
+                enemies[2] += 30
+                //Boss enemies + adjust health/speed values every 3 waves
+                if ((waveNumber-10)%3==0){
+                    //Health values
+                    REG_HEALTH += 80
+                    FAST_HEALTH += 80
+                    TOUGH_HEALTH += 120
+                    BOSS_HEALTH += 1000
+                    //Speed Values
+                    REG_SPEED *= 1.25
+                    FAST_SPEED *= 1.25
+                    TOUGH_SPEED *= 1.25
+                    BOSS_SPEED *= 1.25
+                    //Increment boss counter
+                    enemies[3] += 1
+                }
+            }
             //Increment spawn delay
+            if (waveNumber == 4){
+                scrapMultiplier = .75;
+            }
+            if (waveNumber == 6){
+                scrapMultiplier = .5
+            }
+            if (waveNumber == 7){
+                this.spawnDelay = 90;
+                scrapMultiplier = .45
+            }
+            if (waveNumber == 11){
+                scrapMultiplier = .25;
+                this.spawnDelay = 80;
+            }
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-        }
-        //Increment spawn delay
-        if (waveNumber == 5){
-            scrapMultiplier = .65;
-        if (waveNumber == 7){
-            this.spawnDelay = 40;
-            scrapMultiplier = .5
-        }
-        if (waveNumber == 8){
-            this.spawnDelay = 90;
-        }
-        if (waveNumber == 11){
-            scrapMultiplier = .4;
-        }
-        } else if(this.spawnDelay>100){
-            this.spawnDelay -= 100;
+            scraps+= (waveNumber-1)*2;
         }
     } //End combat phase
 

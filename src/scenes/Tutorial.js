@@ -1145,6 +1145,9 @@ export default class Tutorial extends Phaser.Scene {
             //Increment wave number and remaining waves
             waveNumber += 1;
             waveText.setText("Wave: " + waveNumber + '/' + totalWaves);
+            if (waveNumber == 5){
+                waveText.setText("Wave: " + 5 + '/' + 5);
+            }
             wavesRemaining -= 1;
             //Increment wave size
             if (waveNumber == 2){

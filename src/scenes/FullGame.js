@@ -92,7 +92,7 @@
     var TOUGH_HEALTH = 280;
 
     var boss_enemies;
-    var BOSS_SPEED = 1/20000;
+    var BOSS_SPEED = 1/21000;
     var BOSS_HEALTH = 3000;
 
     // Towers
