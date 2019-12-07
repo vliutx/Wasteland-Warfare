@@ -57,9 +57,14 @@
     var path;
     var tick;
     var death;
+    var laserText;
+    var laserPointer;
+    var machineText;
+    var machinePointer;
     var pointer;
     var pointer2;
     var pointer3;
+    var pointer4;
     var healthpointer;
     var healthtext;
     var tutorialBacking1;
@@ -447,6 +452,9 @@ export default class Tutorial extends Phaser.Scene {
                     machineBulletCount.setVisible(true);
                     laserCharge.setVisible(false);
                 });
+                //Display tutorial text
+                machineText.setVisible(true)
+                machinePointer.setVisible(true)
             }
         } else {
             gbutton2.alpha = 1;
@@ -494,6 +502,9 @@ export default class Tutorial extends Phaser.Scene {
                     played = false;
                     reloadme = false;
                 });
+                //Display tutorial text
+                laserText.setVisible(true)
+                laserPointer.setVisible(true)
             }
         } else {
             purchaseLaser.play();
@@ -919,7 +930,15 @@ export default class Tutorial extends Phaser.Scene {
     restartText = this.add.text(135, 265, "(Press \"ESCAPE\" to restart the game)", {fontSize: 33, color: '#FF0000', fontStyle: 'bold'});
     restartText.setVisible(false);
     restartText.setDepth(1);
-
+    //Laser tutorial text
+    laserText = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    laserPointer = this.add.image(715, 600, 'pointer');
+    machineText = this.add.text(500, 580, "Hold space\nto fire", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    machinePointer = this.add.image(700, 605, 'pointer');
+    laserText.setVisible(false);
+    laserPointer.setVisible(false);
+    machineText.setVisible(false);
+    machinePointer.setVisible(false);
 
     //various tutorial texts
     //tutorialbacking stuff
@@ -944,6 +963,8 @@ export default class Tutorial extends Phaser.Scene {
     healthpointer.setVisible(false);
     selecttext = this.add.text(233, 65, "Select towers by clicking the tower.", {fontSize: 23, color: '#ffffff', depth: 10});
     selecttext.setVisible(false);
+    pointer4 = this.add.image(150, 30, 'pointer');
+    pointer4.setVisible(false);
     placetext = this.add.text(275, 100, "Click a space to place a tower", {fontSize: 23, color: '#ffffff', depth: 10});
     placetext.setVisible(false);
     pointer2 = this.add.image(40, 400, 'pointer').setRotation(Math.PI/2);
@@ -1164,6 +1185,10 @@ export default class Tutorial extends Phaser.Scene {
                 this.spawnDelay -= 100;
             }
         }
+        laserText.setVisible(false)
+        laserPointer.setVisible(false)
+        machineText.setVisible(false)
+        machinePointer.setVisible(false)
     } //End combat phase
 
 
@@ -1361,6 +1386,7 @@ export default class Tutorial extends Phaser.Scene {
       selecttext.setVisible(true);
       placetext.setVisible(true);
       pointer2.setVisible(true);
+      pointer4.setVisible(true);
     }
 
     if (buildPhase == false && waveNumber == 2){
@@ -1369,6 +1395,7 @@ export default class Tutorial extends Phaser.Scene {
       selecttext.setVisible(false);
       placetext.setVisible(false);
       pointer2.setVisible(false);
+      pointer4.setVisible(false);
     }
     //tutorial text number 3
     if (buildPhase == true && waveNumber == 3){

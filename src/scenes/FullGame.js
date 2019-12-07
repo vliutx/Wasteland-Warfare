@@ -60,6 +60,12 @@
     var menuText;
     var laserText;
     var laserPointer;
+    var machineText;
+    var machinePointer;
+    var laserTextWave;
+    var laserPointerWave;
+    var machineTextWave;
+    var machinePointerWave;
 
     // Sounds
     var cannonshot;
@@ -93,7 +99,7 @@
 
     var boss_enemies;
     var BOSS_SPEED = 1/21000;
-    var BOSS_HEALTH = 3000;
+    var BOSS_HEALTH = 2500;
 
     // Towers
     var turrets;
@@ -469,6 +475,11 @@ export default class FullGame extends Phaser.Scene {
                     machineBulletCount.setVisible(true);
                     laserCharge.setVisible(false);
                 });
+                //Display tutorial text
+                machineText.setVisible(true)
+                machinePointer.setVisible(true)
+                machineTextWave.setVisible(true)
+                machinePointerWave.setVisible(true)
             }
         } else {
             gbutton2.alpha = 1;
@@ -519,6 +530,8 @@ export default class FullGame extends Phaser.Scene {
                 //Display tutorial text
                 laserText.setVisible(true)
                 laserPointer.setVisible(true)
+                laserTextWave.setVisible(true)
+                laserPointerWave.setVisible(true)
            }
         } else {
             purchaseLaser.play();
@@ -950,9 +963,20 @@ export default class FullGame extends Phaser.Scene {
     //Laser tutorial text
     laserText = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
     laserPointer = this.add.image(715, 600, 'pointer');
+    machineText = this.add.text(500, 580, "Hold space\nto fire", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    machinePointer = this.add.image(700, 605, 'pointer');
+    laserTextWave = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    laserPointerWave = this.add.image(715, 600, 'pointer');
+    machineTextWave = this.add.text(500, 580, "Hold space\nto fire", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
+    machinePointerWave = this.add.image(700, 605, 'pointer');
     laserText.setVisible(false);
     laserPointer.setVisible(false);
-
+    machineText.setVisible(false);
+    machinePointer.setVisible(false);
+    laserTextWave.setVisible(false);
+    laserPointerWave.setVisible(false);
+    machineTextWave.setVisible(false);
+    machinePointerWave.setVisible(false);
 
 //Start the game
     pause = false
@@ -1085,6 +1109,10 @@ export default class FullGame extends Phaser.Scene {
             enemiesRemaining = enemies.reduce((a,b) => a + b, 0);
             this.spawned = 0;
         }
+        laserTextWave.setVisible(false)
+        laserPointerWave.setVisible(false)
+        machineTextWave.setVisible(false)
+        machinePointerWave.setVisible(false)
     } //End build phase
 
 
@@ -1094,9 +1122,9 @@ export default class FullGame extends Phaser.Scene {
         gameTime += delta;
         if (waveNumber<=10){
             enemies = waves[waveNumber-1];
-            
+
         }
-        
+
 
         //Spawn in ememies
         if ((JSON.stringify(enemies) != JSON.stringify(empty)) && (gameTime > this.nextEnemy)){
@@ -1209,10 +1237,11 @@ export default class FullGame extends Phaser.Scene {
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
-            scraps+= (waveNumber-1)*2;
         }
         laserText.setVisible(false)
         laserPointer.setVisible(false)
+        machineText.setVisible(false)
+        machinePointer.setVisible(false)
     } //End combat phase
 
 
