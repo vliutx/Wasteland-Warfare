@@ -115,7 +115,7 @@
     var BULLET_DAMAGE = 40;
     var SHELL_DAMAGE = 120;
     var LIGHTNING_DAMAGE = 5;
-    var LASER_DAMAGE = 200;
+    var LASER_DAMAGE = 160;
     var LASER_WIDTH = 50;
 
     // graphics stuff
@@ -138,7 +138,7 @@
 
     // time between fires
     var delts = 0;
-    var frplayer = 200; // might need multiple variables for diff guns
+    var frplayer = 150; // might need multiple variables for diff guns
 
     var nextEnemy = 0;
     var waveSize = 6;

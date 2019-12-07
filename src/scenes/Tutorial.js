@@ -146,7 +146,7 @@
 
     // time between fires
     var delts = 0;
-    var frplayer = 200; // might need multiple variables for diff guns
+    var frplayer = 150; // might need multiple variables for diff guns
 
     var nextEnemy = 0;
     var waveSize = 6;
