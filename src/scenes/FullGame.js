@@ -962,11 +962,11 @@ export default class FullGame extends Phaser.Scene {
     restartText.setDepth(1);
     //Laser tutorial text
     laserText = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
-    laserPointer = this.add.image(715, 600, 'pointer');
+    laserPointer = this.add.image(700, 600, 'pointer');
     machineText = this.add.text(500, 580, "Hold space\nto fire", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
     machinePointer = this.add.image(700, 605, 'pointer');
     laserTextWave = this.add.text(500, 580, "Hold space\nto charge", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
-    laserPointerWave = this.add.image(715, 600, 'pointer');
+    laserPointerWave = this.add.image(700, 600, 'pointer');
     machineTextWave = this.add.text(500, 580, "Hold space\nto fire", {fontSize: 28, color: '#FF0000', fontStyle: 'bold', depth: 10});
     machinePointerWave = this.add.image(700, 605, 'pointer');
     laserText.setVisible(false);
@@ -1237,6 +1237,7 @@ export default class FullGame extends Phaser.Scene {
             if(this.spawnDelay>100){
                 this.spawnDelay -= 100;
             }
+            scraps+= (waveNumber-1)*2;
         }
         laserText.setVisible(false)
         laserPointer.setVisible(false)
