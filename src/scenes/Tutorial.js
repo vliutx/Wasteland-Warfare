@@ -1009,7 +1009,7 @@ export default class Tutorial extends Phaser.Scene {
 
         //Display victory text
         victoryText.setVisible(true);
-        timeText.setVisible(true);
+        timeText.setVisible(false);
         theme.stop();
         victorySong = this.sound.add('victoryMusic', {loop: false, volume: 0.5});
         if (victoryPlayed == false) {
