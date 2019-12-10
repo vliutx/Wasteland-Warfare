@@ -253,12 +253,12 @@ export default class LakeLevel extends Phaser.Scene {
     this.load.image('xmark', 'assets/xmark.png');
     this.load.image('pointer', './assets/ArrowPointer.png');
     // player
-    this.load.image('playerBullet', 'assets/newBullet.png');
+    this.load.image('playerBullet', 'assets/NewBullet.png');
     this.load.image('laser', 'assets/laser.png');
     this.load.image('laserbeam', 'assets/Laser.png')
     // turrets
     this.load.image('turret', 'assets/Turret1.png');
-    this.load.image('bullet', 'assets/Bullet.png');
+    this.load.image('bullet', 'assets/bullet.png');
     //
     this.load.image('cannon', 'assets/cannon.png');
     this.load.image('shell', 'assets/Cannonball.png');
