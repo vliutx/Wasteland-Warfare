@@ -9,11 +9,13 @@ var shells;
 var waterHealth;
 var bulletCount;
 var machineBulletCount;
+var laserCharge;
 
 // Sounds
 var gunfire;
 var cannonshot;
 var wind;
+var victorySong;
 
 // Texts
 var timeText;
@@ -40,7 +42,6 @@ var enemiesRemainingText
 
 
 // Trackers
-
 var timeRemaining;
 var enemiesRemaining;
 var waveNumber;
@@ -48,3 +49,6 @@ var waveNumber;
 // Upgrade Button
 var buttonYes;
 var buttonNo;
+var confirmText;
+var confirmBox;
+var blackBox;

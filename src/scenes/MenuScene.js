@@ -34,20 +34,25 @@ export default class MenuScene extends Phaser.Scene {
     //Create the scene
     var titleTheme = this.sound.add('theme', {loop: true, volume: 0.3});
     titleTheme.play();
+
+    //Uncomment to mute
+    //titleTheme.stop();
+
     var background = this.add.image(this.centerX, this.centerY, "background");
     background.setScale(6.4);
 
-    var turret1 = this.add.image(600, 585, "turret").setRotation(18*Math.PI/13);
-    var turret2 = this.add.image(270, 500, "turret").setRotation(18*Math.PI/13);
+    var turret = this.add.image(270, 500, "turret").setRotation(18*Math.PI/13);
     var tesla1 = this.add.sprite(40, 605, "lightning");
     var tesla2 = this.add.sprite(190, 605, "lightning");
     var cannon = this.add.image(110, 500, "cannon").setRotation(Math.PI);
     cannon.setScale(1.5);
 
     var tutorialButton =  this.add.sprite(this.centerX, 450, "button").setInteractive();
-    var fullGameButton =  this.add.sprite(this.centerX, 570, "button").setInteractive();
+    var fullGameButton =  this.add.sprite(this.centerX - 100, 570, "button").setInteractive();
+    var lakeButton =  this.add.sprite(this.centerX + 100, 570, "button").setInteractive();
     tutorialButton.setScale(3);
     fullGameButton.setScale(3);
+    lakeButton.setScale(3);
     tutorialButton.on('pointerup', function(){
       titleTheme.stop()
       this.scene.start('Tutorial');
@@ -58,8 +63,14 @@ export default class MenuScene extends Phaser.Scene {
       this.scene.start('FullGame');
     }, this
     );
-    startText  = this.add.text(this.centerX - 75, 435, "Tutorial", {fontSize: 32, color: "#FFFFFF", fontStyle: "bold"});
-    startText  = this.add.text(this.centerX - 40, 555, "Game", {fontSize: 32, color: "#FFFFFF", fontStyle: "bold"});
+    lakeButton.on('pointerup', function(){
+      titleTheme.stop();
+      this.scene.start('LakeLevel');
+    }, this
+    );
+    var startText  = this.add.text(this.centerX - 75, 435, "Tutorial", {fontSize: 32, color: "#FFFFFF", fontStyle: "bold"});
+    var wastelandText  = this.add.text(this.centerX - 168, 559, "Wasteland", {fontSize: 26, color: "#FFFFFF", fontStyle: "bold"});
+    var lakeText  = this.add.text(this.centerX + 60, 555, "Lake", {fontSize: 32, color: "#FFFFFF", fontStyle: "bold"});
 
   }
 
