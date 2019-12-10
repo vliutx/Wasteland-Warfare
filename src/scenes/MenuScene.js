@@ -13,7 +13,7 @@ export default class MenuScene extends Phaser.Scene {
 
     this.load.image('background', './assets/titleScreen.png');
     this.load.image('turret', 'assets/Turret1.png');
-    this.load.image('cannon', 'assets/cannon.png');
+    this.load.image('cannon', 'assets/Cannon.png');
 
     this.load.image('button', 'assets/TitleButton.png');
 
